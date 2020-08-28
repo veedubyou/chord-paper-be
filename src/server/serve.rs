@@ -12,11 +12,20 @@ pub async fn serve(addr: impl Into<SocketAddr> + 'static) {
         .map(|request: crate::gateway::login::VerifyLoginRequest| {
             let gateway = gateway::login::Google::new(GOOGLE_CLIENT_ID);
             gateway.verify_login(request)
-        });
+        })
+        // TODO: insert a configurable list of allowed origins beyond local development
+        .with(cors_filter(vec!["http://localhost:3000"], vec!["POST"]));
 
-    let paths = verify_login;
+    let paths = verify_login.with(warp::log("info"));
 
     warp::serve(paths)
         .run(addr)
         .await;
+}
+
+fn cors_filter(allowed_origins: Vec<&str>, allowed_methods: Vec<&str>) -> warp::filters::cors::Builder {
+    warp::cors()
+        .allow_origins(allowed_origins)
+        .allow_methods(allowed_methods)
+        .allow_header("content-type")
 }
