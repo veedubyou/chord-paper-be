@@ -5,7 +5,7 @@ use http::StatusCode;
 
 pub struct Google {
     usecase: usecases::login::Google,
-}
+
 
 #[derive(Deserialize)]
 pub struct VerifyLoginRequest {
