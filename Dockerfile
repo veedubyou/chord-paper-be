@@ -7,7 +7,7 @@ WORKDIR ./chord-paper-be
 # Copy only the Cargo.toml to working directory, so at this point it will be an empty project
 # (bar hello world in main.rs) and all the dependencies.  The goal here is to build the deps
 # first.
-COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.toml ./Cargo.lock ./
 RUN cargo build --release --all-features
 
 # after building, remove the src directory (basically the hello world main.rs), and add back
@@ -17,7 +17,7 @@ ADD . ./
 
 # remove the hello world main.rs binaries, and now build the actual code
 RUN rm ./target/release/deps/chord_paper_be*
-RUN cargo build --release
+RUN cargo build --release --all-features
 
 # now for the actual image that runs the program, use debian image:
 FROM debian:buster-slim
