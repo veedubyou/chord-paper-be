@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chord-be
+  labels:
+    app: chord-be
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: chord-be
+  template:
+    metadata:
+      labels:
+        app: chord-be
+      annotations:
+        restartedAt: ""
+    spec:
+      containers:
+      - name: chord-be
+        image: pw1124/chord-be:latest
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+
