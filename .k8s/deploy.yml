@@ -19,8 +19,15 @@ spec:
       containers:
       - name: chord-be
         image: pw1124/chord-be:latest
+        env: 
+        - name: CORS_ORIGIN
+          valueFrom:
+            secretKeyRef:
+              name: cors-origin
+              key: url
         ports:
         - containerPort: 80
       imagePullSecrets:
       - name: regcred
 
+# note: for CORS_ORIGIN environment variable, a local k8s secret needs to be created.
