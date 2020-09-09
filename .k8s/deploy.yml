@@ -31,4 +31,3 @@ spec:
       - name: regcred
 
 # note: for CORS_ORIGIN environment variable, a local k8s secret needs to be created.
-
