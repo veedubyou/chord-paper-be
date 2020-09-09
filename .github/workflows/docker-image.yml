@@ -13,7 +13,7 @@ on:
     
 jobs:
   push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # Checkout with history (to get git describe output properly)
