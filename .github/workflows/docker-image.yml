@@ -13,7 +13,7 @@ on:
     
 jobs:
   push:
-    runs-on: self-hosted
+    runs-on: chord-paper-be-runner
 
     steps:
       # Checkout with history (to get git describe output properly)
