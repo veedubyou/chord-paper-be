@@ -29,6 +29,9 @@ pub async fn serve(addr: impl Into<SocketAddr> + 'static) {
 }
 
 fn cors_filter(allowed_origins: Vec<&str>, allowed_methods: Vec<&str>) -> warp::filters::cors::Builder {
+    println!("Building cors filter");
+    println!("{:#?}", allowed_origins);
+
     warp::cors()
         .allow_origins(allowed_origins)
         .allow_methods(allowed_methods)
