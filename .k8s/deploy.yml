@@ -20,7 +20,7 @@ spec:
       - name: chord-be
         image: pw1124/chord-be:latest
         env: 
-        - name: CORS_ORIGIN
+        - name: ALLOWED_FE_ORIGINS
           valueFrom:
             secretKeyRef:
               name: cors-origin
