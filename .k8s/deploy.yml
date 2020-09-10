@@ -19,7 +19,9 @@ spec:
       containers:
       - name: chord-be
         image: pw1124/chord-be:latest
-        env: 
+        env:
+        - name: RUST_LOG
+          value: "info"
         - name: ALLOWED_FE_ORIGINS
           valueFrom:
             secretKeyRef:
