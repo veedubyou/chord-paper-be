@@ -3,9 +3,9 @@ use std::error::Error;
 
 #[derive(Serialize)]
 pub struct User {
-    id: String,
-    name: Option<String>,
-    email: Option<String>,
+    pub id: String,
+    pub name: Option<String>,
+    pub email: Option<String>,
 }
 
 pub struct Google {
