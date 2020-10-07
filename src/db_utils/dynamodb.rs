@@ -12,7 +12,8 @@ pub fn db_client() -> rusoto_dynamodb::DynamoDbClient {
 }
 
 fn aws_client() -> rusoto_dynamodb::DynamoDbClient {
-    rusoto_dynamodb::DynamoDbClient::new(rusoto_core::Region::UsWest1)
+    // choosing N Virginia because it's cheaper?
+    rusoto_dynamodb::DynamoDbClient::new(rusoto_core::Region::UsEast1)
 }
 
 fn local_client() -> rusoto_dynamodb::DynamoDbClient {

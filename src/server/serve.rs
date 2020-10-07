@@ -2,16 +2,19 @@ use std::env;
 use std::net::SocketAddr;
 
 use crate::environment;
-use crate::server::users::create_users_gateway;
+use crate::server::users;
 use warp::Filter;
 
 pub async fn serve(addr: impl Into<SocketAddr> + 'static) {
-    let users_gateway = create_users_gateway();
+    let users_gateway = users::create_users_gateway();
+
+    let with_users_gateway = warp::any().map(move || users_gateway.clone());
 
     let login = warp::post()
+        .and(with_users_gateway)
         .and(warp::path!("login" / String))
         .and(warp::header::<String>("authorization"))
-        .map(move |user_id: String, auth_value: String| users_gateway.login(&user_id, &auth_value))
+        .and_then(users::login)
         .with(cors_filter(vec!["POST"]));
 
     let paths = login.with(warp::log("info"));

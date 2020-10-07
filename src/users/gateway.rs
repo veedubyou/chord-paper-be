@@ -13,7 +13,7 @@ impl Gateway {
         Gateway { usecase: usecase }
     }
 
-    pub fn login(&self, user_id: &str, auth_header_value: &str) -> Box<dyn warp::Reply> {
+    pub async fn login(&self, user_id: &str, auth_header_value: &str) -> Box<dyn warp::Reply> {
         let token: String = match auth::extract_bearer_token(&auth_header_value) {
             Ok(auth_token) => auth_token,
             Err(error) => {
@@ -24,7 +24,7 @@ impl Gateway {
             }
         };
 
-        let user: User = match self.usecase.login(&token) {
+        let user: User = match self.usecase.login(&token).await {
             Ok(user) => user,
             Err(error) => {
                 return Box::new(warp::reply::with_status(
