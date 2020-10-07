@@ -1,5 +1,6 @@
 use super::entity;
 use crate::users::DynamoDB;
+use google_signin::IdInfo;
 use std::error::Error;
 
 pub struct Usecase {
@@ -23,12 +24,17 @@ impl Usecase {
     pub async fn login(&self, id_token: &str) -> Result<entity::User, Box<dyn Error>> {
         let id_info = self.client.verify(id_token)?;
 
-        let id_str = self.datastore.ensure_user(&id_info.sub).await?;
+        let input_user = entity_user_from_google_verification(id_info);
+        let output_user = self.datastore.ensure_user(&input_user).await?;
 
-        Ok(entity::User {
-            id: id_str,
-            name: id_info.name,
-        })
+        Ok(output_user)
+    }
+}
+
+fn entity_user_from_google_verification(id_info: IdInfo) -> entity::User {
+    entity::User {
+        id: id_info.sub.to_string(),
+        name: id_info.name,
     }
 }
 
