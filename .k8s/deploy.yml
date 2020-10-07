@@ -27,12 +27,12 @@ spec:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
-              name: aws_dynamodb
+              name: aws-dynamodb
               key: access_key_id
         - name: AWS_SECRET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: aws_dynamodb
+              name: aws-dynamodb
               key: secret_access_key
         - name: ALLOWED_FE_ORIGINS
           valueFrom:
@@ -44,4 +44,4 @@ spec:
       imagePullSecrets:
       - name: regcred
 
-# note: for CORS_ORIGIN environment variable, a local k8s secret needs to be created.
+# note: for secretKeyRefs, you have to create the secret in your k8s cluster.
