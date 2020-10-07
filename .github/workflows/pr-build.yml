@@ -9,7 +9,7 @@ jobs:
     #runs-on: chord-paper-be-runner
     steps:
       - name: Install OpenSSL
-        run: apt-get install libssl-dev pkg-config
+        run: pacman -S pkg-config openssl
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
