@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
 
+const TABLE_NAME: &str = "Users";
 const ID_FIELD: &str = "id";
 const NAME_FIELD: &str = "username";
 
@@ -89,7 +90,7 @@ impl DynamoDB {
         let update_result = self
             .db_client
             .update_item(UpdateItemInput {
-                table_name: "Users".to_string(),
+                table_name: TABLE_NAME.to_string(),
                 return_values: Some("ALL_NEW".to_string()),
                 key: key,
                 attribute_updates: None,
