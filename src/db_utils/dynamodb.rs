@@ -2,8 +2,6 @@ use crate::environment;
 use rusoto_core;
 use rusoto_dynamodb;
 
-// for now, until DB is implemented
-#[allow(dead_code)]
 pub fn db_client() -> rusoto_dynamodb::DynamoDbClient {
     match environment::get_environment() {
         environment::Environment::Production => aws_client(),
@@ -12,7 +10,8 @@ pub fn db_client() -> rusoto_dynamodb::DynamoDbClient {
 }
 
 fn aws_client() -> rusoto_dynamodb::DynamoDbClient {
-    rusoto_dynamodb::DynamoDbClient::new(rusoto_core::Region::UsWest1)
+    // choosing us east because it's cheaper?
+    rusoto_dynamodb::DynamoDbClient::new(rusoto_core::Region::UsEast2)
 }
 
 fn local_client() -> rusoto_dynamodb::DynamoDbClient {

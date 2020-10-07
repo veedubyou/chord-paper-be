@@ -22,6 +22,18 @@ spec:
         env:
         - name: RUST_LOG
           value: "info"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws_dynamodb
+              key: access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws_dynamodb
+              key: secret_access_key
         - name: ALLOWED_FE_ORIGINS
           valueFrom:
             secretKeyRef:
