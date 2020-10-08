@@ -1,25 +1,30 @@
 use crate::users::entity;
-use rusoto_dynamodb::{AttributeValue, DynamoDb, UpdateItemInput, UpdateItemOutput};
+use rusoto_dynamodb::{
+    AttributeValue, DynamoDb, UpdateItemError, UpdateItemInput, UpdateItemOutput,
+};
+use snafu::Snafu;
 use std::collections::HashMap;
-use std::error::Error;
-use std::fmt;
 
 const TABLE_NAME: &str = "Users";
 const ID_FIELD: &str = "id";
 const NAME_FIELD: &str = "username";
 
-#[derive(Debug, Clone)]
-struct DBError {
-    detail: String,
-}
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("DynamoDB encountered an error: {}", source))]
+    DynamoDBUpdateItemError {
+        source: rusoto_core::RusotoError<UpdateItemError>,
+    },
 
-impl fmt::Display for DBError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.detail)
-    }
-}
+    #[snafu(display("An attribute in the data record is missing: {}", detail))]
+    MissingAttributeError { detail: String },
 
-impl Error for DBError {}
+    #[snafu(display(
+        "An attribute in the data record does not have the expected type: {}",
+        detail
+    ))]
+    WrongAttributeTypeError { detail: String },
+}
 
 #[derive(Clone)]
 pub struct DynamoDB {
@@ -33,10 +38,7 @@ impl DynamoDB {
         }
     }
 
-    pub async fn ensure_user(
-        &self,
-        input_user: &entity::User,
-    ) -> Result<entity::User, Box<dyn Error>> {
+    pub async fn ensure_user(&self, input_user: &entity::User) -> Result<entity::User, Error> {
         let key = {
             let mut keymap: HashMap<String, AttributeValue> = HashMap::new();
             keymap.insert(
@@ -103,20 +105,23 @@ impl DynamoDB {
                 return_item_collection_metrics: None,
                 update_expression: update_expression,
             })
-            .await?;
+            .await;
 
-        entity_user(update_result)
+        match update_result {
+            Ok(update_output) => entity_user(update_output),
+            Err(err) => Err(Error::DynamoDBUpdateItemError { source: err }),
+        }
     }
 }
 
-fn entity_user(output: UpdateItemOutput) -> Result<entity::User, Box<dyn Error>> {
+fn entity_user(output: UpdateItemOutput) -> Result<entity::User, Error> {
     let attributes = {
         match output.attributes {
             Some(attributes) => attributes,
             None => {
-                return Err(Box::new(DBError {
-                    detail: "No attributes found on user update call".to_string(),
-                }))
+                return Err(Error::MissingAttributeError {
+                    detail: "All attributes are missing".to_string(),
+                })
             }
         }
     };
@@ -127,14 +132,14 @@ fn entity_user(output: UpdateItemOutput) -> Result<entity::User, Box<dyn Error>>
     })
 }
 
-fn entity_user_id(attributes: &HashMap<String, AttributeValue>) -> Result<String, Box<dyn Error>> {
+fn entity_user_id(attributes: &HashMap<String, AttributeValue>) -> Result<String, Error> {
     let id_value = {
         match attributes.get(ID_FIELD) {
             Some(attribute_value) => attribute_value,
             None => {
-                return Err(Box::new(DBError {
-                    detail: "No id found in user attributes".to_string(),
-                }))
+                return Err(Error::MissingAttributeError {
+                    detail: "No id found in user".to_string(),
+                })
             }
         }
     };
@@ -142,16 +147,14 @@ fn entity_user_id(attributes: &HashMap<String, AttributeValue>) -> Result<String
     match &id_value.s {
         Some(id_str) => Ok(id_str.to_string()),
         None => {
-            return Err(Box::new(DBError {
+            return Err(Error::WrongAttributeTypeError {
                 detail: "ID attribute on user is not a string".to_string(),
-            }))
+            })
         }
     }
 }
 
-fn entity_user_name(
-    attributes: &HashMap<String, AttributeValue>,
-) -> Result<Option<String>, Box<dyn Error>> {
+fn entity_user_name(attributes: &HashMap<String, AttributeValue>) -> Result<Option<String>, Error> {
     let name_value = {
         match attributes.get(NAME_FIELD) {
             Some(attribute_value) => attribute_value,
@@ -162,9 +165,9 @@ fn entity_user_name(
     match &name_value.s {
         Some(name_str) => Ok(Some(name_str.to_string())),
         None => {
-            return Err(Box::new(DBError {
+            return Err(Error::WrongAttributeTypeError {
                 detail: "Name attribute on user is not a string".to_string(),
-            }))
+            })
         }
     }
 }
