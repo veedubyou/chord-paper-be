@@ -1,16 +1,25 @@
 use super::entity;
-use crate::users::DynamoDB;
+use crate::users::dynamodb;
 use google_signin::IdInfo;
-use std::error::Error;
+use snafu::Snafu;
+
+#[derive(Debug, Snafu)]
+pub enum Error {
+    #[snafu(display("Failed Google token verification: {}", source))]
+    VerificationError { source: google_signin::Error },
+
+    #[snafu(display("Data store failed: {}", source))]
+    DatastoreError { source: dynamodb::Error },
+}
 
 pub struct Usecase {
     client_id: String,
     client: google_signin::Client,
-    datastore: DynamoDB,
+    datastore: dynamodb::DynamoDB,
 }
 
 impl Usecase {
-    pub fn new(google_client_id: &str, user_datastore: DynamoDB) -> Usecase {
+    pub fn new(google_client_id: &str, user_datastore: dynamodb::DynamoDB) -> Usecase {
         let mut client = google_signin::Client::new();
         client.audiences.push(google_client_id.to_string());
 
@@ -21,13 +30,21 @@ impl Usecase {
         }
     }
 
-    pub async fn login(&self, id_token: &str) -> Result<entity::User, Box<dyn Error>> {
-        let id_info = self.client.verify(id_token)?;
+    pub async fn login(&self, id_token: &str) -> Result<entity::User, Error> {
+        let id_info_result = self.client.verify(id_token);
+
+        let id_info = match id_info_result {
+            Ok(id_info) => id_info,
+            Err(err) => return Err(Error::VerificationError { source: err }),
+        };
 
         let input_user = entity_user_from_google_verification(id_info);
-        let output_user = self.datastore.ensure_user(&input_user).await?;
+        let output_user_result = self.datastore.ensure_user(&input_user).await;
 
-        Ok(output_user)
+        match output_user_result {
+            Ok(output_user) => Ok(output_user),
+            Err(err) => Err(Error::DatastoreError { source: err }),
+        }
     }
 }
 
