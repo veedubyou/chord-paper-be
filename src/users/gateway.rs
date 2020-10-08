@@ -1,15 +1,15 @@
-use super::Usecase;
-use super::User;
+use super::entity;
+use super::usecase;
 use crate::gateway_utils::auth;
 use http::StatusCode;
 
 #[derive(Clone)]
 pub struct Gateway {
-    usecase: Usecase,
+    usecase: usecase::Usecase,
 }
 
 impl Gateway {
-    pub fn new(usecase: Usecase) -> Gateway {
+    pub fn new(usecase: usecase::Usecase) -> Gateway {
         Gateway { usecase: usecase }
     }
 
@@ -24,13 +24,15 @@ impl Gateway {
             }
         };
 
-        let user: User = match self.usecase.login(&token).await {
+        let user: entity::User = match self.usecase.login(&token).await {
             Ok(user) => user,
-            Err(error) => {
-                return Box::new(warp::reply::with_status(
-                    error.to_string(),
-                    StatusCode::UNAUTHORIZED,
-                ))
+            Err(err) => {
+                let status_code = match err {
+                    usecase::Error::VerificationError { .. } => StatusCode::UNAUTHORIZED,
+                    usecase::Error::DatastoreError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+                };
+
+                return Box::new(warp::reply::with_status(err.to_string(), status_code));
             }
         };
 
