@@ -1,8 +1,8 @@
+mod application;
 mod db_utils;
 mod environment;
 mod gateway_utils;
 mod server;
-mod users;
 
 #[tokio::main]
 async fn main() {

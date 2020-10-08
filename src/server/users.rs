@@ -1,5 +1,5 @@
+use crate::application::users;
 use crate::db_utils::dynamodb::db_client;
-use crate::users;
 
 const GOOGLE_CLIENT_ID: &str =
     "650853277550-ta69qbfcvdl6tb5ogtnh2d07ae9rcdlf.apps.googleusercontent.com";

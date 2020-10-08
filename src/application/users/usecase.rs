@@ -1,5 +1,5 @@
+use super::dynamodb;
 use super::entity;
-use crate::users::dynamodb;
 use google_signin::IdInfo;
 use snafu::Snafu;
 

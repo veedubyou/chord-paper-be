@@ -1,4 +1,4 @@
-use crate::users::entity;
+use super::entity;
 use rusoto_dynamodb::{
     AttributeValue, DynamoDb, UpdateItemError, UpdateItemInput, UpdateItemOutput,
 };
