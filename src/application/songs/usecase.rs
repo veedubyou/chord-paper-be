@@ -39,14 +39,12 @@ impl Usecase {
     }
 
     pub async fn get_song(&self, id: &str) -> Result<entity::Song, Error> {
-        self.datastore.get_song(id).await.map_err(|err| match err {
-            dynamodb::Error::NotFoundError => Error::NotFoundError { id: id.to_string() },
-            dynamodb::Error::GenericDynamoError { .. }
-            | dynamodb::Error::MalformedDataError { .. }
-            | dynamodb::Error::SongSerializationError { .. } => {
-                Error::DatastoreError { source: err }
-            }
-        })
+        let get_song_result = self.datastore.get_song(id).await;
+
+        match get_song_result {
+            Ok(song) => Ok(song),
+            Err(err) => Err(map_datastore_error(err, id)),
+        }
     }
 
     pub async fn create_song(
@@ -71,14 +69,18 @@ impl Usecase {
 
         match self.datastore.create_song(&song).await {
             Ok(()) => Ok(song),
-            Err(err) => match err {
-                dynamodb::Error::NotFoundError => Err(Error::NotFoundError { id: song.id }),
-                dynamodb::Error::GenericDynamoError { .. }
-                | dynamodb::Error::MalformedDataError { .. }
-                | dynamodb::Error::SongSerializationError { .. } => {
-                    Err(Error::DatastoreError { source: err })
-                }
-            },
+            Err(err) => Err(map_datastore_error(err, &song.id)),
         }
+    }
+}
+
+fn map_datastore_error(err: dynamodb::Error, song_id: &str) -> Error {
+    match err {
+        dynamodb::Error::NotFoundError => Error::NotFoundError {
+            id: song_id.to_string(),
+        },
+        dynamodb::Error::GenericDynamoError { .. }
+        | dynamodb::Error::MalformedDataError { .. }
+        | dynamodb::Error::SongSerializationError { .. } => Error::DatastoreError { source: err },
     }
 }
