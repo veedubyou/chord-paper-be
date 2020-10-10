@@ -10,16 +10,16 @@ const ID_FIELD: &str = "id";
 pub enum Error {
     #[snafu(display("Failed to convert entity song to dynamodb format: {}", source))]
     SongSerializationError { source: serde_dynamodb::Error },
-    #[snafu(display("Failed to get new song from dynamodb: {}", source))]
-    GetItemError {
-        source: rusoto_core::RusotoError<rusoto_dynamodb::GetItemError>,
+
+    #[snafu(display("{}: {}", detail, source))]
+    GenericDynamoError {
+        detail: String,
+        source: Box<dyn std::error::Error>,
     },
-    #[snafu(display("Failed to insert new song to dynamodb format: {}", source))]
-    PutItemError {
-        source: rusoto_core::RusotoError<rusoto_dynamodb::PutItemError>,
-    },
+
     #[snafu(display("Song ID not found"))]
     NotFoundError,
+
     #[snafu(display("Data from dynamodb cannot be deserialized into a song: {}", source))]
     MalformedDataError { source: serde_dynamodb::Error },
 }
@@ -59,8 +59,6 @@ impl DynamoDB {
             })
             .await;
 
-        println!("{:#?}", get_result);
-
         match get_result {
             Ok(output) => song_from_attributes(output.item),
             Err(rusoto_err) => {
@@ -70,7 +68,10 @@ impl DynamoDB {
                     }
                 }
 
-                Err(Error::GetItemError { source: rusoto_err })
+                Err(Error::GenericDynamoError {
+                    detail: "Failed to get song from data store".to_string(),
+                    source: Box::new(rusoto_err),
+                })
             }
         }
     }
@@ -91,7 +92,10 @@ impl DynamoDB {
 
         match put_result {
             Ok(_) => Ok(()),
-            Err(err) => Err(Error::PutItemError { source: err }),
+            Err(err) => Err(Error::GenericDynamoError {
+                detail: "Failed to put song into data store".to_string(),
+                source: Box::new(err),
+            }),
         }
     }
 }

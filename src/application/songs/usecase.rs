@@ -41,10 +41,11 @@ impl Usecase {
     pub async fn get_song(&self, id: &str) -> Result<entity::Song, Error> {
         self.datastore.get_song(id).await.map_err(|err| match err {
             dynamodb::Error::NotFoundError => Error::NotFoundError { id: id.to_string() },
-            dynamodb::Error::GetItemError { .. }
+            dynamodb::Error::GenericDynamoError { .. }
             | dynamodb::Error::MalformedDataError { .. }
-            | dynamodb::Error::SongSerializationError { .. }
-            | dynamodb::Error::PutItemError { .. } => Error::DatastoreError { source: err },
+            | dynamodb::Error::SongSerializationError { .. } => {
+                Error::DatastoreError { source: err }
+            }
         })
     }
 
@@ -72,10 +73,9 @@ impl Usecase {
             Ok(()) => Ok(song),
             Err(err) => match err {
                 dynamodb::Error::NotFoundError => Err(Error::NotFoundError { id: song.id }),
-                dynamodb::Error::GetItemError { .. }
+                dynamodb::Error::GenericDynamoError { .. }
                 | dynamodb::Error::MalformedDataError { .. }
-                | dynamodb::Error::SongSerializationError { .. }
-                | dynamodb::Error::PutItemError { .. } => {
+                | dynamodb::Error::SongSerializationError { .. } => {
                     Err(Error::DatastoreError { source: err })
                 }
             },
