@@ -16,4 +16,6 @@ serde_json = "*"
 http = "*"
 rusoto_core = "*"
 rusoto_dynamodb = "*"
+serde_dynamodb = "*"
 snafu = "*"
+uuid = { version = "*", features = ["v4", "serde"] }

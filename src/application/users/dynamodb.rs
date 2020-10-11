@@ -45,44 +45,28 @@ impl DynamoDB {
                 ID_FIELD.to_string(),
                 AttributeValue {
                     s: Some(input_user.id.to_string()),
-                    b: None,
-                    bool: None,
-                    bs: None,
-                    l: None,
-                    m: None,
-                    n: None,
-                    ns: None,
-                    null: None,
-                    ss: None,
+                    ..Default::default()
                 },
             );
             keymap
         };
 
-        let user_name_var_name = ":new_name";
-
         let (expression_attribute, update_expression) = {
             match &input_user.name {
                 None => (None, None),
                 Some(input_user_name) => {
+                    const USER_NAME_VAR_NAME: &str = ":new_name";
+
                     let mut expression_attribute: HashMap<String, AttributeValue> = HashMap::new();
                     expression_attribute.insert(
-                        user_name_var_name.to_string(),
+                        USER_NAME_VAR_NAME.to_string(),
                         AttributeValue {
                             s: Some(input_user_name.to_string()),
-                            b: None,
-                            bool: None,
-                            bs: None,
-                            l: None,
-                            m: None,
-                            n: None,
-                            ns: None,
-                            null: None,
-                            ss: None,
+                            ..Default::default()
                         },
                     );
 
-                    let update_expression = format!("set {} = {}", NAME_FIELD, user_name_var_name);
+                    let update_expression = format!("set {} = {}", NAME_FIELD, USER_NAME_VAR_NAME);
 
                     (Some(expression_attribute), Some(update_expression))
                 }
@@ -95,15 +79,9 @@ impl DynamoDB {
                 table_name: TABLE_NAME.to_string(),
                 return_values: Some("ALL_NEW".to_string()),
                 key: key,
-                attribute_updates: None,
-                condition_expression: None,
-                conditional_operator: None,
-                expected: None,
-                expression_attribute_names: None,
                 expression_attribute_values: expression_attribute,
-                return_consumed_capacity: None,
-                return_item_collection_metrics: None,
                 update_expression: update_expression,
+                ..Default::default()
             })
             .await;
 

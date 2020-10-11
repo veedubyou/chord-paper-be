@@ -1,19 +1,33 @@
+use super::cors;
+use crate::application::concerns;
 use crate::application::users;
 use crate::db_utils::dynamodb::db_client;
+use warp::Filter;
 
-const GOOGLE_CLIENT_ID: &str =
-    "650853277550-ta69qbfcvdl6tb5ogtnh2d07ae9rcdlf.apps.googleusercontent.com";
+pub fn users_server() -> warp::filters::BoxedFilter<(impl warp::reply::Reply,)> {
+    let users_gateway = create_users_gateway();
 
-pub fn create_users_gateway() -> users::gateway::Gateway {
+    let with_users_gateway = warp::any().map(move || users_gateway.clone());
+
+    warp::post()
+        .and(with_users_gateway)
+        .and(warp::path!("login"))
+        .and(warp::header::<String>("authorization"))
+        .and_then(login)
+        .with(cors::cors_filter(vec!["POST"]))
+        .boxed()
+}
+
+fn create_users_gateway() -> users::gateway::Gateway {
     let datastore = users::dynamodb::DynamoDB::new(db_client());
-    let usecase = users::usecase::Usecase::new(GOOGLE_CLIENT_ID, datastore);
+    let verification = concerns::google_verification::GoogleVerification::new();
+    let usecase = users::usecase::Usecase::new(verification, datastore);
     users::gateway::Gateway::new(usecase)
 }
 
-pub async fn login(
+async fn login(
     users_gateway: users::gateway::Gateway,
-    user_id: String,
     auth_value: String,
 ) -> Result<Box<dyn warp::Reply>, warp::Rejection> {
-    Ok(users_gateway.login(&user_id, &auth_value).await)
+    Ok(users_gateway.login(&auth_value).await)
 }

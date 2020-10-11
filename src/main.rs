@@ -1,7 +1,6 @@
 mod application;
 mod db_utils;
 mod environment;
-mod gateway_utils;
 mod server;
 
 #[tokio::main]
