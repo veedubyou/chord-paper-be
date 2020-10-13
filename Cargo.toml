@@ -16,6 +16,6 @@ serde_json = "*"
 http = "*"
 rusoto_core = "*"
 rusoto_dynamodb = "*"
-serde_dynamodb = "*"
+serde_dynamodb = { git = "https://github.com/veedubyou/serde_dynamodb", branch = "master" }
 snafu = "*"
 uuid = { version = "*", features = ["v4", "serde"] }

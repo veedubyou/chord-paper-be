@@ -1594,8 +1594,7 @@ dependencies = [
 [[package]]
 name = "serde_dynamodb"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bd887fdf521b38d7fa4bdcec1b72dc47d41c085240f453b2cf7dd0242bf3ea4"
+source = "git+https://github.com/veedubyou/serde_dynamodb#b178b1c2083c731cef591abb3554822b0a33008d"
 dependencies = [
  "bytes",
  "rusoto_dynamodb",
