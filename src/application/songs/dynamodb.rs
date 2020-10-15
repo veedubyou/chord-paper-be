@@ -37,6 +37,10 @@ impl DynamoDB {
     }
 
     pub async fn get_song(&self, id: &str) -> Result<entity::Song, Error> {
+        if id.is_empty() {
+            return Err(Error::NotFoundError);
+        }
+
         let key = {
             let mut map: HashMap<String, AttributeValue> = HashMap::new();
             map.insert(
@@ -77,8 +81,7 @@ impl DynamoDB {
     }
 
     pub async fn create_song(&self, song: &entity::Song) -> Result<(), Error> {
-        let dynamodb_item = serde_dynamodb::to_hashmap(&song)
-            .map_err(|err| Error::SongSerializationError { source: err })?;
+        let dynamodb_item = dynamodb_item_from_song(song)?;
 
         let put_result = self
             .db_client
@@ -98,6 +101,35 @@ impl DynamoDB {
             }),
         }
     }
+
+    pub async fn update_song(&self, song: &entity::Song) -> Result<(), Error> {
+        if song.id.is_empty() {
+            return Err(Error::NotFoundError);
+        }
+
+        let dynamodb_item = dynamodb_item_from_song(song)?;
+        let put_result = self
+            .db_client
+            .put_item(rusoto_dynamodb::PutItemInput {
+                table_name: TABLE_NAME.to_string(),
+                item: dynamodb_item,
+                condition_expression: Some("attribute_exists(id)".to_string()),
+                ..Default::default()
+            })
+            .await;
+
+        match put_result {
+            Ok(_) => Ok(()),
+            Err(err) => Err(Error::GenericDynamoError {
+                detail: "Failed to update song in data store".to_string(),
+                source: Box::new(err),
+            }),
+        }
+    }
+}
+
+fn dynamodb_item_from_song(song: &entity::Song) -> Result<HashMap<String, AttributeValue>, Error> {
+    serde_dynamodb::to_hashmap(&song).map_err(|err| Error::SongSerializationError { source: err })
 }
 
 fn song_from_attributes(

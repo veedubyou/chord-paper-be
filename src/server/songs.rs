@@ -14,14 +14,26 @@ pub fn songs_server() -> warp::filters::BoxedFilter<(impl warp::reply::Reply,)> 
 
     let create_song_path = warp::post()
         .and(with_songs_gateway())
-        .and(warp::path!("songs"))
         .and(warp::header::<String>("authorization"))
+        .and(warp::path!("songs"))
         .and(warp::filters::body::json())
         .and_then(create_song)
         .with(cors::cors_filter(vec!["POST"]))
         .boxed();
 
-    get_song_path.or(create_song_path).boxed()
+    let update_song_path = warp::post()
+        .and(with_songs_gateway())
+        .and(warp::header::<String>("authorization"))
+        .and(warp::path!("songs" / String))
+        .and(warp::filters::body::json())
+        .and_then(update_song)
+        .with(cors::cors_filter(vec!["POST"]))
+        .boxed();
+
+    get_song_path
+        .or(create_song_path)
+        .or(update_song_path)
+        .boxed()
 }
 
 fn with_songs_gateway() -> warp::filters::BoxedFilter<(gateway::Gateway,)> {
@@ -46,4 +58,15 @@ async fn create_song(
     song: entity::Song,
 ) -> Result<Box<dyn warp::Reply>, warp::Rejection> {
     Ok(songs_gateway.create_song(&auth_header_value, song).await)
+}
+
+async fn update_song(
+    songs_gateway: gateway::Gateway,
+    auth_header_value: String,
+    song_id: String,
+    song: entity::Song,
+) -> Result<Box<dyn warp::Reply>, warp::Rejection> {
+    Ok(songs_gateway
+        .update_song(&auth_header_value, &song_id, song)
+        .await)
 }

@@ -1,6 +1,7 @@
 use super::dynamodb;
 use super::entity;
 use crate::application::concerns::google_verification;
+use crate::application::users;
 use snafu::Snafu;
 use std::str::FromStr;
 
@@ -11,6 +12,16 @@ pub enum Error {
 
     #[snafu(display("Song cannot be created if it already has an ID"))]
     ExistingSongError,
+
+    #[snafu(display(
+        "The song ID to be modified is not equal to ID inside the song data: {} and {}",
+        song_id_1,
+        song_id_2
+    ))]
+    WrongIDError {
+        song_id_1: String,
+        song_id_2: String,
+    },
 
     #[snafu(display("Song owner must be equal to the user persisting the song"))]
     WrongOwnerError,
@@ -40,7 +51,7 @@ impl Usecase {
     }
 
     pub async fn get_song(&self, id: &str) -> Result<entity::Song, Error> {
-        validate_id(id)?;
+        validate_song_id(id)?;
 
         let get_song_result = self.datastore.get_song(id).await;
 
@@ -55,10 +66,7 @@ impl Usecase {
         user_id_token: &str,
         mut song: entity::Song,
     ) -> Result<entity::Song, Error> {
-        let user = self
-            .google_verification
-            .verify(user_id_token)
-            .map_err(|err| Error::VerificationError { source: err })?;
+        let user = self.verify_user(user_id_token)?;
 
         if !song.is_new() {
             return Err(Error::ExistingSongError);
@@ -75,9 +83,45 @@ impl Usecase {
             Err(err) => Err(map_datastore_error(err, &song.id)),
         }
     }
+
+    pub async fn update_song(
+        &self,
+        user_id_token: &str,
+        song_id: &str,
+        song: entity::Song,
+    ) -> Result<entity::Song, Error> {
+        let user = self.verify_user(user_id_token)?;
+
+        if song_id.is_empty() {
+            return Err(Error::NotFoundError { id: "".to_string() });
+        }
+
+        if song_id != song.id {
+            return Err(Error::WrongIDError {
+                song_id_1: song_id.to_string(),
+                song_id_2: song.id.to_string(),
+            });
+        }
+
+        if song.owner != user.id {
+            return Err(Error::WrongOwnerError);
+        }
+
+        match self.datastore.update_song(&song).await {
+            Ok(()) => Ok(song),
+            Err(err) => Err(map_datastore_error(err, &song.id)),
+        }
+    }
+
+    fn verify_user(&self, user_id_token: &str) -> Result<users::entity::User, Error> {
+        match self.google_verification.verify(user_id_token) {
+            Ok(user) => Ok(user),
+            Err(err) => Err(Error::VerificationError { source: err }),
+        }
+    }
 }
 
-fn validate_id(id: &str) -> Result<(), Error> {
+fn validate_song_id(id: &str) -> Result<(), Error> {
     match uuid::Uuid::from_str(id) {
         Ok(_) => Ok(()),
         // if it's not a UUID we won't find it in the datastore
