@@ -11,6 +11,7 @@
       <env name="AWS_ACCESS_KEY_ID" value="local" />
       <env name="AWS_SECRET_ACCESS_KEY" value="local" />
       <env name="ENVIRONMENT" value="development" />
+      <env name="RUST_BACKTRACE" value="full" />
     </envs>
     <method v="2">
       <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
