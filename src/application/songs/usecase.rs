@@ -8,7 +8,7 @@ use std::str::FromStr;
 #[derive(Debug, Snafu)]
 pub enum Error {
     #[snafu(display("Failed Google token verification: {}", source))]
-    VerificationError { source: google_signin::Error },
+    GoogleVerificationError { source: google_signin::Error },
 
     #[snafu(display("Song cannot be created if it already has an ID"))]
     ExistingSongError,
@@ -72,7 +72,7 @@ impl Usecase {
             return Err(Error::ExistingSongError);
         }
 
-        if song.owner != user.id {
+        if song.summary.owner != user.id {
             return Err(Error::WrongOwnerError);
         }
 
@@ -80,7 +80,7 @@ impl Usecase {
 
         match self.datastore.create_song(&song).await {
             Ok(()) => Ok(song),
-            Err(err) => Err(map_datastore_error(err, &song.id)),
+            Err(err) => Err(map_datastore_error(err, &song.summary.id)),
         }
     }
 
@@ -96,27 +96,27 @@ impl Usecase {
             return Err(Error::NotFoundError { id: "".to_string() });
         }
 
-        if song_id != song.id {
+        if song_id != song.summary.id {
             return Err(Error::WrongIDError {
                 song_id_1: song_id.to_string(),
-                song_id_2: song.id.to_string(),
+                song_id_2: song.summary.id.to_string(),
             });
         }
 
-        if song.owner != user.id {
+        if song.summary.owner != user.id {
             return Err(Error::WrongOwnerError);
         }
 
         match self.datastore.update_song(&song).await {
             Ok(()) => Ok(song),
-            Err(err) => Err(map_datastore_error(err, &song.id)),
+            Err(err) => Err(map_datastore_error(err, &song.summary.id)),
         }
     }
 
     fn verify_user(&self, user_id_token: &str) -> Result<users::entity::User, Error> {
         match self.google_verification.verify(user_id_token) {
             Ok(user) => Ok(user),
-            Err(err) => Err(Error::VerificationError { source: err }),
+            Err(err) => Err(Error::GoogleVerificationError { source: err }),
         }
     }
 }

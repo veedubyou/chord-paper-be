@@ -61,7 +61,7 @@ impl Gateway {
 
 fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let status_code = match err {
-        usecase::Error::VerificationError { .. } => http::StatusCode::UNAUTHORIZED,
+        usecase::Error::GoogleVerificationError { .. } => http::StatusCode::UNAUTHORIZED,
         usecase::Error::ExistingSongError
         | usecase::Error::WrongOwnerError
         | usecase::Error::WrongIDError { .. } => http::StatusCode::BAD_REQUEST,
