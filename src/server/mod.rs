@@ -2,5 +2,5 @@ pub use serve::serve;
 
 mod cors;
 mod serve;
-mod songs;
+pub mod songs;
 mod users;
