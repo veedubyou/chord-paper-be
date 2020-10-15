@@ -21,13 +21,13 @@ pub fn songs_server() -> warp::filters::BoxedFilter<(impl warp::reply::Reply,)> 
         .with(cors::cors_filter(vec!["POST"]))
         .boxed();
 
-    let update_song_path = warp::post()
+    let update_song_path = warp::put()
         .and(with_songs_gateway())
         .and(warp::header::<String>("authorization"))
         .and(warp::path!("songs" / String))
         .and(warp::filters::body::json())
         .and_then(update_song)
-        .with(cors::cors_filter(vec!["POST"]))
+        .with(cors::cors_filter(vec!["PUT"]))
         .boxed();
 
     get_song_path
