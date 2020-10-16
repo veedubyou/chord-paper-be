@@ -23,6 +23,11 @@ pub enum Error {
         song_id_2: String,
     },
 
+    #[snafu(display(
+    "This song was previously saved at a more recent time - overwriting is will cause data loss.",
+    ))]
+    OverwriteError,
+
     #[snafu(display("Song owner must be equal to the user persisting the song"))]
     WrongOwnerError,
 
@@ -108,6 +113,8 @@ impl Usecase {
             return Err(Error::WrongOwnerError);
         }
 
+        self.protect_overwrite_song(&song).await?;
+
         song.set_saved_time();
 
         match self.datastore.update_song(&song).await {
@@ -121,6 +128,43 @@ impl Usecase {
             Ok(user) => Ok(user),
             Err(err) => Err(Error::GoogleVerificationError { source: err }),
         }
+    }
+
+    async fn protect_overwrite_song(&self, song_to_update: &entity::Song) -> Result<(), Error> {
+        let next_last_saved_at = song_to_update
+            .summary
+            .last_saved_at
+            .ok_or(Error::OverwriteError)?;
+
+        let curr_song = self.get_song(&song_to_update.summary.id).await?;
+        match curr_song.summary.last_saved_at {
+            Some(curr_last_saved_at) => {
+                // prevent overwriting a more recent save if the last saved at timestamp is greater than the current one
+                // example:
+                // A --> B
+                //   \----->C
+                //
+                // Suppose I open the song at time A on two computers, make edits on both somewhat absentmindedly
+                // I first save at time B - the payload for the song for the last saved at would be A
+                // presume this succeeds, the server copy is now from time B and its last saved at time is also B
+                //
+                // Now I save another copy at time C, but the predecessor of my copy at time C was from A
+                // If I just go with last write wins, then all changes from the copy at time B would be overwritten
+                // So by comparing the timestamp at the save at C (A vs B), the save will fail to protect overwriting data.
+                //
+                // The user can then refetch the copy at time B and copy over their changes from time C (manual merge)
+                // and form a copy that will be accepted by the server:
+                //
+                // A --> B----->B+C
+                //   \----->C---/
+                if curr_last_saved_at.gt(&next_last_saved_at) {
+                    return Err(Error::OverwriteError);
+                }
+            }
+            None => {} // really unexpected....but don't block on this I guess
+        }
+
+        Ok(())
     }
 }
 
