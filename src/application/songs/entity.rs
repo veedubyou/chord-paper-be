@@ -1,3 +1,4 @@
+use chrono::Timelike;
 use serde::{Deserialize, Serialize};
 
 // this struct is entirely structured around the JSON representation being the canonical
@@ -36,6 +37,10 @@ impl Song {
     }
 
     pub fn set_saved_time(&mut self) {
-        self.summary.last_saved_at = Some(chrono::Utc::now());
+        // truncate nanoseconds because this will be consumed by the browser
+        // and browser dates have only millisecond resolution
+        //
+        // this will result in only second level resolution but will minimize confusion
+        self.summary.last_saved_at = chrono::Utc::now().with_nanosecond(0);
     }
 }
