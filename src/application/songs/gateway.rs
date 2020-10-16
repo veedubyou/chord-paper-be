@@ -63,6 +63,7 @@ fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let status_code = match err {
         usecase::Error::GoogleVerificationError { .. } => http::StatusCode::UNAUTHORIZED,
         usecase::Error::ExistingSongError
+        | usecase::Error::OverwriteError
         | usecase::Error::WrongOwnerError
         | usecase::Error::WrongIDError { .. } => http::StatusCode::BAD_REQUEST,
         usecase::Error::NotFoundError { .. } => http::StatusCode::NOT_FOUND,
