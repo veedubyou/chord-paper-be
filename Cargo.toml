@@ -20,3 +20,4 @@ serde_dynamodb = { git = "https://github.com/veedubyou/serde_dynamodb", branch =
 snafu = "*"
 uuid = { version = "*", features = ["v4", "serde"] }
 chrono = "*"
+log = "0.4.11"

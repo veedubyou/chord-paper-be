@@ -158,6 +158,10 @@ impl Usecase {
                 // A --> B----->B+C
                 //   \----->C---/
                 if curr_last_saved_at.gt(&next_last_saved_at) {
+                    log::info!("Overwriting error encountered");
+                    log::info!("Current saved at: {}", curr_last_saved_at.to_rfc3339());
+                    log::info!("Next saved at: {}", next_last_saved_at.to_rfc3339());
+
                     return Err(Error::OverwriteError);
                 }
             }

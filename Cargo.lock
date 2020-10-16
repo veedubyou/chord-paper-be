@@ -183,6 +183,7 @@ dependencies = [
  "chrono",
  "google-signin",
  "http",
+ "log 0.4.11",
  "pretty_env_logger",
  "rusoto_core",
  "rusoto_dynamodb",
