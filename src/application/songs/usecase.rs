@@ -77,6 +77,7 @@ impl Usecase {
         }
 
         song.create_id();
+        song.set_saved_time();
 
         match self.datastore.create_song(&song).await {
             Ok(()) => Ok(song),
@@ -88,7 +89,7 @@ impl Usecase {
         &self,
         user_id_token: &str,
         song_id: &str,
-        song: entity::Song,
+        mut song: entity::Song,
     ) -> Result<entity::Song, Error> {
         let user = self.verify_user(user_id_token)?;
 
@@ -106,6 +107,8 @@ impl Usecase {
         if song.summary.owner != user.id {
             return Err(Error::WrongOwnerError);
         }
+
+        song.set_saved_time();
 
         match self.datastore.update_song(&song).await {
             Ok(()) => Ok(song),

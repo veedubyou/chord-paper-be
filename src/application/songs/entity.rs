@@ -17,6 +17,8 @@ pub struct Song {
 pub struct SongSummary {
     pub id: String,
     pub owner: String,
+    #[serde(rename = "lastSavedAt")]
+    pub last_saved_at: Option<chrono::DateTime<chrono::Utc>>,
     metadata: serde_json::Map<String, serde_json::Value>,
 }
 
@@ -31,5 +33,9 @@ impl Song {
         }
 
         self.summary.id = uuid::Uuid::new_v4().to_string();
+    }
+
+    pub fn set_saved_time(&mut self) {
+        self.summary.last_saved_at = Some(chrono::Utc::now());
     }
 }
