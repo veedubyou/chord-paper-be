@@ -43,8 +43,8 @@ impl Gateway {
 
 fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let status_code = match err {
-        usecase::Error::GoogleVerificationError { .. }
-        | usecase::Error::OwnerVerificationError { .. } => StatusCode::UNAUTHORIZED,
+        usecase::Error::GoogleVerificationError { .. } => StatusCode::UNAUTHORIZED,
+        usecase::Error::OwnerVerificationError { .. } => StatusCode::FORBIDDEN,
         usecase::Error::DatastoreError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
     };
 
