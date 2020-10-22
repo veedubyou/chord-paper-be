@@ -1,6 +1,8 @@
 use super::usecase;
 use crate::application::concerns::gateway::auth;
-use http::StatusCode;
+use crate::application::concerns::gateway::errors::{
+    error_reply, ForbiddenError, GatewayError, InternalServerError, UnauthorizedError,
+};
 
 #[derive(Clone)]
 pub struct Gateway {
@@ -42,11 +44,23 @@ impl Gateway {
 }
 
 fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
-    let status_code = match err {
-        usecase::Error::GoogleVerificationError { .. } => StatusCode::UNAUTHORIZED,
-        usecase::Error::OwnerVerificationError { .. } => StatusCode::FORBIDDEN,
-        usecase::Error::DatastoreError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+    let gateway_error: Box<dyn GatewayError> = match err {
+        usecase::Error::GoogleVerificationError { source } => {
+            Box::new(UnauthorizedError::FailedGoogleVerification {
+                msg: source.to_string(),
+            })
+        }
+        usecase::Error::OwnerVerificationError => {
+            Box::new(ForbiddenError::GetSongsForUserNotAllowed {
+                msg: "You don't have permission to access this user's resources".to_string(),
+            })
+        }
+        usecase::Error::DatastoreError { source } => {
+            Box::new(InternalServerError::DatastoreError {
+                msg: source.to_string(),
+            })
+        }
     };
 
-    Box::new(warp::reply::with_status(err.to_string(), status_code))
+    error_reply(gateway_error)
 }

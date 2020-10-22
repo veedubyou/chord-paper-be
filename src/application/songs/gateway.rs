@@ -1,6 +1,10 @@
 use super::entity;
 use super::usecase;
 use crate::application::concerns::gateway::auth;
+use crate::application::concerns::gateway::errors::{
+    error_reply, BadRequestError, ForbiddenError, GatewayError, InternalServerError, NotFoundError,
+    UnauthorizedError,
+};
 
 #[derive(Clone)]
 pub struct Gateway {
@@ -59,18 +63,38 @@ impl Gateway {
     }
 }
 
-fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
-    let status_code = match err {
-        usecase::Error::GoogleVerificationError { .. } => http::StatusCode::UNAUTHORIZED,
-        usecase::Error::WrongOwnerError | usecase::Error::WrongIDError { .. } => {
-            http::StatusCode::FORBIDDEN
+pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
+    let gateway_error: Box<dyn GatewayError> = match err {
+        usecase::Error::GoogleVerificationError { source } => {
+            Box::new(UnauthorizedError::FailedGoogleVerification {
+                msg: source.to_string(),
+            })
         }
-        usecase::Error::ExistingSongError | usecase::Error::OverwriteError => {
-            http::StatusCode::BAD_REQUEST
-        }
-        usecase::Error::NotFoundError { .. } => http::StatusCode::NOT_FOUND,
-        usecase::Error::DatastoreError { .. } => http::StatusCode::INTERNAL_SERVER_ERROR,
+        usecase::Error::WrongOwnerError => Box::new(ForbiddenError::UpdateSongOwnerNotAllowed {
+            msg: "You do not have permission to modify this user's songs".to_string(),
+        }),
+        usecase::Error::WrongIDError {
+            song_id_1,
+            song_id_2,
+        } => Box::new(ForbiddenError::UpdateSongWrongID {
+            msg: format!(
+                "The requested resource ID and the payload ID do not match: {}, {}",
+                song_id_1, song_id_2
+            ),
+        }),
+        usecase::Error::ExistingSongError => Box::new(BadRequestError::CreateSongExists {
+            msg: "Cannot create a song that already exists".to_string(),
+        }),
+        usecase::Error::OverwriteError => Box::new(BadRequestError::UpdateSongOverwrite {
+            msg: "Cannot update this song - contents will be clobbered. Please refresh the song and try again".to_string(),
+        }),
+        usecase::Error::NotFoundError { id } => Box::new(NotFoundError::SongNotFound {
+            msg: format!("Song ID not found: {}", id),
+        }),
+        usecase::Error::DatastoreError { source } => Box::new(InternalServerError::DatastoreError {
+            msg: source.to_string(),
+        }),
     };
 
-    Box::new(warp::reply::with_status(err.to_string(), status_code))
+    error_reply(gateway_error)
 }
