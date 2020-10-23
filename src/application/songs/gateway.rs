@@ -76,7 +76,7 @@ pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
         usecase::Error::WrongIDError {
             song_id_1,
             song_id_2,
-        } => Box::new(ForbiddenError::UpdateSongWrongID {
+        } => Box::new(ForbiddenError::UpdateSongWrongId {
             msg: format!(
                 "The requested resource ID and the payload ID do not match: {}, {}",
                 song_id_1, song_id_2
