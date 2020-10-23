@@ -74,7 +74,7 @@ impl GatewayError for UnauthorizedError {
 pub enum ForbiddenError {
     GetSongsForUserNotAllowed { msg: String },
     UpdateSongOwnerNotAllowed { msg: String },
-    UpdateSongWrongID { msg: String },
+    UpdateSongWrongId { msg: String },
 }
 
 #[typetag::serde]
