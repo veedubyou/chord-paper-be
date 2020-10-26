@@ -36,16 +36,13 @@ jobs:
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
       - name: Push image latest
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:latest
-      - name: Get Current Timestamp
-        run: echo "::set-env name=date::$(date +%s)"
 
-      - name: Deploy K8S to Private Server
-        uses: satak/webrequest-action@master
+      - name: Deploy Project to K8S Cluster
+        uses: steebchen/kubectl@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.K8S_CONFIG_DATA }}
         with:
-          url: ${{ secrets.K8S_URL }}/apis/apps/v1/namespaces/default/deployments/chord-be
-          method: PATCH
-          payload: '[{"op": "replace", "path": "/spec/template/metadata/annotations/restartedAt", "value":"${{ env.date }}"}]'
-          headers: '{"Authorization": "Bearer ${{ secrets.K8S_TOKEN }}", "Content-Type": "application/json-patch+json", "Accept": "application/json"}'
+          args: set image --record deploy/chord-be chord-be=${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
           
       #- name: Setup GCloud CLI
       #  uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
