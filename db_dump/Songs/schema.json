@@ -1,0 +1,55 @@
+{
+  "Table": {
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "id",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "owner",
+        "AttributeType": "S"
+      }
+    ],
+    "TableName": "Songs",
+    "KeySchema": [
+      {
+        "AttributeName": "id",
+        "KeyType": "HASH"
+      }
+    ],
+    "TableStatus": "ACTIVE",
+    "CreationDateTime": 1613816819.933,
+    "ProvisionedThroughput": {
+      "LastIncreaseDateTime": 0.0,
+      "LastDecreaseDateTime": 0.0,
+      "NumberOfDecreasesToday": 0,
+      "ReadCapacityUnits": 3,
+      "WriteCapacityUnits": 3
+    },
+    "TableSizeBytes": 140389,
+    "ItemCount": 16,
+    "TableArn": "arn:aws:dynamodb:ddblocal:000000000000:table/Songs",
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexName": "owner-index",
+        "KeySchema": [
+          {
+            "AttributeName": "owner",
+            "KeyType": "HASH"
+          }
+        ],
+        "Projection": {
+          "ProjectionType": "ALL"
+        },
+        "IndexStatus": "ACTIVE",
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 3,
+          "WriteCapacityUnits": 3
+        },
+        "IndexSizeBytes": 140389,
+        "ItemCount": 16,
+        "IndexArn": "arn:aws:dynamodb:ddblocal:000000000000:table/Songs/index/owner-index"
+      }
+    ]
+  }
+}
