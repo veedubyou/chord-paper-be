@@ -1,13 +1,6 @@
 {
+  "Count": 2,
   "Items": [
-    {
-      "id": {
-        "S": "114135225559751053856"
-      },
-      "username": {
-        "S": "Vincent Woo"
-      }
-    },
     {
       "id": {
         "S": "109453974626961032486"
@@ -15,8 +8,15 @@
       "username": {
         "S": "Philip Wong"
       }
+    },
+    {
+      "id": {
+        "S": "114135225559751053856"
+      },
+      "username": {
+        "S": "Vincent Woo"
+      }
     }
   ],
-  "Count": 2,
   "ScannedCount": 2
 }

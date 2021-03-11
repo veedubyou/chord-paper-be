@@ -6,24 +6,23 @@
         "AttributeType": "S"
       }
     ],
-    "TableName": "Users",
+    "CreationDateTime": 1602104423.315,
+    "ItemCount": 2,
     "KeySchema": [
       {
         "AttributeName": "id",
         "KeyType": "HASH"
       }
     ],
-    "TableStatus": "ACTIVE",
-    "CreationDateTime": 1613816806.659,
     "ProvisionedThroughput": {
-      "LastIncreaseDateTime": 0.0,
-      "LastDecreaseDateTime": 0.0,
       "NumberOfDecreasesToday": 0,
-      "ReadCapacityUnits": 3,
-      "WriteCapacityUnits": 3
+      "ReadCapacityUnits": 2,
+      "WriteCapacityUnits": 2
     },
+    "TableArn": "arn:aws:dynamodb:us-east-2:579696076733:table/Users",
+    "TableId": "ae965a09-fba8-4efc-8977-d102a6ef2323",
+    "TableName": "Users",
     "TableSizeBytes": 84,
-    "ItemCount": 2,
-    "TableArn": "arn:aws:dynamodb:ddblocal:000000000000:table/Users"
+    "TableStatus": "ACTIVE"
   }
 }
