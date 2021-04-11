@@ -15,28 +15,28 @@ pub enum Error {
     MalformedDataError { source: serde_dynamodb::Error },
 }
 
-pub fn deserialize_from_optional_list_attributes<'a, T: Deserialize<'a>>(
+pub fn from_optional_list_attributes<'a, T: Deserialize<'a>>(
     output: Option<Vec<HashMap<String, AttributeValue>>>,
 ) -> Result<Vec<T>, Error> {
     let maps = output.ok_or(Error::NotFoundError)?;
     let mut list: Vec<T> = vec![];
 
     for attribute in maps {
-        let object: T = deserialize_from_attributes(attribute)?;
+        let object: T = from_attributes(attribute)?;
         list.push(object);
     }
 
     Ok(list)
 }
 
-pub fn deserialize_from_optional_attributes<'a, T: Deserialize<'a>>(
+pub fn from_optional_attributes<'a, T: Deserialize<'a>>(
     output: Option<HashMap<String, AttributeValue>>,
 ) -> Result<T, Error> {
     let map = output.ok_or(Error::NotFoundError)?;
-    deserialize_from_attributes(map)
+    from_attributes(map)
 }
 
-pub fn deserialize_from_attributes<'a, T: Deserialize<'a>>(
+pub fn from_attributes<'a, T: Deserialize<'a>>(
     map: HashMap<String, AttributeValue>,
 ) -> Result<T, Error> {
     let object: T = serde_dynamodb::from_hashmap(map)

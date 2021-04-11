@@ -38,7 +38,7 @@ impl DynamoDB {
             return Ok(entity::TrackList::empty(song_id));
         }
 
-        let key = expression::make_single_string_expression(ID_FIELD, song_id);
+        let key = expression::make_single_string(ID_FIELD, song_id);
 
         let get_result = self
             .db_client
@@ -52,7 +52,7 @@ impl DynamoDB {
 
         match get_result {
             Ok(output) => {
-                let result = deserialize::deserialize_from_optional_attributes(output.item);
+                let result = deserialize::from_optional_attributes(output.item);
                 map_deserialize_errors(song_id, result)
             }
             Err(rusoto_err) => Err(Error::GenericDynamoError {

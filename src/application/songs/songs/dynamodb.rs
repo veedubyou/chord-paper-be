@@ -45,7 +45,7 @@ impl DynamoDB {
             return Err(Error::NotFoundError);
         }
 
-        let key = expression::make_single_string_expression(ID_FIELD, id);
+        let key = expression::make_single_string(ID_FIELD, id);
 
         let get_result = self
             .db_client
@@ -59,7 +59,7 @@ impl DynamoDB {
 
         match get_result {
             Ok(output) => {
-                let result = deserialize::deserialize_from_optional_attributes(output.item);
+                let result = deserialize::from_optional_attributes(output.item);
                 map_deserialize_errors(result)
             }
             Err(rusoto_err) => {
@@ -88,8 +88,7 @@ impl DynamoDB {
         const OWNER_FIELD_VAR_NAME: &str = "#owner";
         const OWNER_FIELD_VAR_VALUE: &str = ":owner";
 
-        let owner_expression =
-            expression::make_single_string_expression(OWNER_FIELD_VAR_VALUE, owner_id);
+        let owner_expression = expression::make_single_string(OWNER_FIELD_VAR_VALUE, owner_id);
         let owner_name =
             expression::make_hashmap(OWNER_FIELD_VAR_NAME.to_string(), OWNER_FIELD.to_string());
 
@@ -110,7 +109,7 @@ impl DynamoDB {
 
         match query_result {
             Ok(output) => {
-                let result = deserialize::deserialize_from_optional_list_attributes(output.items);
+                let result = deserialize::from_optional_list_attributes(output.items);
                 map_deserialize_errors(result)
             }
             Err(err) => Err(Error::GenericDynamoError {

@@ -1,7 +1,7 @@
 use rusoto_dynamodb::AttributeValue;
 use std::collections::HashMap;
 
-pub fn make_single_string_expression(key: &str, value: &str) -> HashMap<String, AttributeValue> {
+pub fn make_single_string(key: &str, value: &str) -> HashMap<String, AttributeValue> {
     make_hashmap(
         key.to_string(),
         AttributeValue {
