@@ -1,5 +1,6 @@
 use chrono::Timelike;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 // this struct is entirely structured around the JSON representation being the canonical
 // since the primary purpose is to persist and retrieve this data
@@ -24,6 +25,13 @@ pub struct SongSummary {
 }
 
 impl Song {
+    pub fn is_valid_id(song_id: &str) -> bool {
+        match uuid::Uuid::from_str(song_id) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
     pub fn is_new(&self) -> bool {
         self.summary.id.is_empty()
     }

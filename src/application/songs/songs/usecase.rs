@@ -3,7 +3,6 @@ use super::entity;
 use crate::application::concerns::google_verification;
 use crate::application::users;
 use snafu::Snafu;
-use std::str::FromStr;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -56,7 +55,11 @@ impl Usecase {
     }
 
     pub async fn get_song(&self, id: &str) -> Result<entity::Song, Error> {
-        validate_song_id(id)?;
+        if !entity::Song::is_valid_id(id) {
+            // if it's not a UUID we won't find it in the datastore
+            // just short circuit and don't hit the DB
+            return Err(Error::NotFoundError { id: id.to_string() });
+        }
 
         let get_song_result = self.datastore.get_song(id).await;
 
@@ -165,15 +168,6 @@ impl Usecase {
         }
 
         Ok(())
-    }
-}
-
-fn validate_song_id(id: &str) -> Result<(), Error> {
-    match uuid::Uuid::from_str(id) {
-        Ok(_) => Ok(()),
-        // if it's not a UUID we won't find it in the datastore
-        // just short circuit and don't hit the DB
-        Err(_) => Err(Error::NotFoundError { id: id.to_string() }),
     }
 }
 

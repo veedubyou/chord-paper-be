@@ -1,4 +1,5 @@
 use super::entity;
+use crate::application::concerns::dynamodb::{deserialize, expression};
 use rusoto_dynamodb::{AttributeValue, DynamoDb, GetItemInput, QueryInput};
 use serde::Deserialize;
 use snafu::Snafu;
@@ -44,7 +45,7 @@ impl DynamoDB {
             return Err(Error::NotFoundError);
         }
 
-        let key = make_dynamodb_expression(ID_FIELD, id);
+        let key = expression::make_single_string(ID_FIELD, id);
 
         let get_result = self
             .db_client
@@ -57,7 +58,10 @@ impl DynamoDB {
             .await;
 
         match get_result {
-            Ok(output) => deserialize_from_maybe_attributes(output.item),
+            Ok(output) => {
+                let result = deserialize::from_optional_attributes(output.item);
+                map_deserialize_errors(result)
+            }
             Err(rusoto_err) => {
                 if let rusoto_core::RusotoError::Service(err) = &rusoto_err {
                     if let rusoto_dynamodb::GetItemError::ResourceNotFound(_) = err {
@@ -84,8 +88,9 @@ impl DynamoDB {
         const OWNER_FIELD_VAR_NAME: &str = "#owner";
         const OWNER_FIELD_VAR_VALUE: &str = ":owner";
 
-        let owner_expression = make_dynamodb_expression(OWNER_FIELD_VAR_VALUE, owner_id);
-        let owner_name = make_hashmap(OWNER_FIELD_VAR_NAME.to_string(), OWNER_FIELD.to_string());
+        let owner_expression = expression::make_single_string(OWNER_FIELD_VAR_VALUE, owner_id);
+        let owner_name =
+            expression::make_hashmap(OWNER_FIELD_VAR_NAME.to_string(), OWNER_FIELD.to_string());
 
         let query_result = self
             .db_client
@@ -103,7 +108,10 @@ impl DynamoDB {
             .await;
 
         match query_result {
-            Ok(output) => deserialize_from_maybe_list_attributes(output.items),
+            Ok(output) => {
+                let result = deserialize::from_optional_list_attributes(output.items);
+                map_deserialize_errors(result)
+            }
             Err(err) => Err(Error::GenericDynamoError {
                 detail: "Failed to query all songs from data store".to_string(),
                 source: Box::new(err),
@@ -163,47 +171,13 @@ fn dynamodb_item_from_song(song: &entity::Song) -> Result<HashMap<String, Attrib
     serde_dynamodb::to_hashmap(&song).map_err(|err| Error::SongSerializationError { source: err })
 }
 
-fn deserialize_from_maybe_list_attributes<'a, T: Deserialize<'a>>(
-    output: Option<Vec<HashMap<String, AttributeValue>>>,
-) -> Result<Vec<T>, Error> {
-    let maps = output.ok_or(Error::NotFoundError)?;
-    let mut list: Vec<T> = vec![];
-
-    for attribute in maps {
-        let song: T = deserialize_from_attributes(attribute)?;
-        list.push(song);
-    }
-
-    Ok(list)
-}
-
-fn deserialize_from_maybe_attributes<'a, T: Deserialize<'a>>(
-    output: Option<HashMap<String, AttributeValue>>,
+fn map_deserialize_errors<'a, T: Deserialize<'a>>(
+    result: Result<T, deserialize::Error>,
 ) -> Result<T, Error> {
-    let map = output.ok_or(Error::NotFoundError)?;
-    deserialize_from_attributes(map)
-}
-
-fn deserialize_from_attributes<'a, T: Deserialize<'a>>(
-    map: HashMap<String, AttributeValue>,
-) -> Result<T, Error> {
-    let object: T = serde_dynamodb::from_hashmap(map)
-        .map_err(|err| Error::MalformedDataError { source: err })?;
-    Ok(object)
-}
-
-fn make_dynamodb_expression(key: &str, value: &str) -> HashMap<String, AttributeValue> {
-    make_hashmap(
-        key.to_string(),
-        AttributeValue {
-            s: Some(value.to_string()),
-            ..Default::default()
-        },
-    )
-}
-
-fn make_hashmap<T>(key: String, value: T) -> HashMap<String, T> {
-    let mut map: HashMap<String, T> = HashMap::new();
-    map.insert(key, value);
-    map
+    result.map_err(|err| match err {
+        deserialize::Error::NotFoundError => Error::NotFoundError,
+        deserialize::Error::MalformedDataError { source } => {
+            Error::MalformedDataError { source: source }
+        }
+    })
 }
