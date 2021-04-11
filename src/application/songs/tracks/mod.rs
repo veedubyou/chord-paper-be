@@ -1,3 +1,4 @@
 pub mod dynamodb;
+pub mod entity;
 pub mod gateway;
-pub mod google_verification;
+pub mod usecase;
