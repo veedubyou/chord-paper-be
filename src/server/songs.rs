@@ -38,7 +38,7 @@ pub fn songs_server() -> warp::filters::BoxedFilter<(impl warp::reply::Reply,)> 
 
 fn with_songs_gateway() -> warp::filters::BoxedFilter<(gateway::Gateway,)> {
     let datastore = dynamodb::DynamoDB::new(db_client());
-    let verification = concerns::google_verification::GoogleVerification::new();
+    let verification = concerns::user_validation::UserValidation::new();
     let usecase = usecase::Usecase::new(verification, datastore);
     let gateway = gateway::Gateway::new(usecase);
 

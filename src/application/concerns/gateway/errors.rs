@@ -31,6 +31,7 @@ pub fn error_reply(error: Box<dyn GatewayError>) -> Box<dyn warp::Reply> {
 pub enum BadRequestError {
     CreateSongExists { msg: String },
     UpdateSongOverwrite { msg: String },
+    InvalidID { msg: String },
 }
 
 #[typetag::serde]

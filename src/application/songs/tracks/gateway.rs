@@ -1,6 +1,9 @@
+use super::entity;
 use super::usecase;
+use crate::application::concerns::gateway::auth::extract_auth_token;
 use crate::application::concerns::gateway::errors::{
-    error_reply, GatewayError, InternalServerError,
+    error_reply, BadRequestError, ForbiddenError, GatewayError, InternalServerError,
+    UnauthorizedError,
 };
 
 #[derive(Clone)]
@@ -21,6 +24,25 @@ impl Gateway {
             Err(err) => map_usecase_errors(err),
         }
     }
+
+    pub async fn put_tracklist(
+        &self,
+        auth_header_value: &str,
+        song_id: &str,
+        tracklist: entity::TrackList,
+    ) -> Box<dyn warp::Reply> {
+        let token: String = match extract_auth_token(&auth_header_value) {
+            Ok(token) => token,
+            Err(reply) => return reply,
+        };
+
+        let update_tracklist_result = self.usecase.set_tracklist(&token, song_id, tracklist).await;
+
+        match update_tracklist_result {
+            Ok(song) => Box::new(warp::reply::json(&song)),
+            Err(err) => map_usecase_errors(err),
+        }
+    }
 }
 
 pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
@@ -30,6 +52,20 @@ pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
                 msg: source.to_string(),
             })
         }
+        usecase::Error::GoogleVerificationError { source } => {
+            Box::new(UnauthorizedError::FailedGoogleVerification {
+                msg: source.to_string(),
+            })
+        }
+        usecase::Error::WrongOwnerError => Box::new(ForbiddenError::UpdateSongOwnerNotAllowed {
+            msg: "You do not have permission to modify this user's songs".to_string(),
+        }),
+        usecase::Error::InvalidIDError { .. } => Box::new(BadRequestError::InvalidID {
+            msg: "Invalid song ID provided".to_string(),
+        }),
+        usecase::Error::GetSongError { source } => Box::new(InternalServerError::DatastoreError {
+            msg: source.to_string(),
+        }),
     };
 
     error_reply(gateway_error)

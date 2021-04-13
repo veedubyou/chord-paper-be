@@ -27,7 +27,7 @@ pub fn users_server() -> warp::filters::BoxedFilter<(impl warp::reply::Reply,)> 
 fn with_users_gateway() -> warp::filters::BoxedFilter<(users::gateway::Gateway,)> {
     let users_datastore = users::dynamodb::DynamoDB::new(db_client());
     let songs_datastore = songs::dynamodb::DynamoDB::new(db_client());
-    let verification = concerns::google_verification::GoogleVerification::new();
+    let verification = concerns::user_validation::UserValidation::new();
     let usecase = users::usecase::Usecase::new(verification, users_datastore, songs_datastore);
     let gateway = users::gateway::Gateway::new(usecase);
 

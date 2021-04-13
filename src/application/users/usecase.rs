@@ -1,14 +1,14 @@
 use super::dynamodb;
 use super::entity;
-use crate::application::concerns::google_verification;
+use crate::application::concerns::user_validation;
 use crate::application::songs;
 
 use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("Failed Google token verification: {}", source))]
-    GoogleVerificationError { source: google_signin::Error },
+    #[snafu(display("Failed user validation: {}", source))]
+    UserValidationError { source: user_validation::Error },
 
     #[snafu(display("This authenticated user cannot access this user's resources"))]
     OwnerVerificationError,
@@ -19,14 +19,14 @@ pub enum Error {
 
 #[derive(Clone)]
 pub struct Usecase {
-    google_verification: google_verification::GoogleVerification,
+    google_verification: user_validation::UserValidation,
     users_datastore: dynamodb::DynamoDB,
     songs_datastore: songs::dynamodb::DynamoDB,
 }
 
 impl Usecase {
     pub fn new(
-        google_verification: google_verification::GoogleVerification,
+        google_verification: user_validation::UserValidation,
         users_datastore: dynamodb::DynamoDB,
         songs_datastore: songs::dynamodb::DynamoDB,
     ) -> Usecase {
@@ -76,7 +76,7 @@ impl Usecase {
 
     fn verify_user(&self, google_id_token: &str) -> Result<entity::User, Error> {
         self.google_verification
-            .verify(google_id_token)
-            .map_err(|err| Error::GoogleVerificationError { source: err })
+            .verify_user(google_id_token)
+            .map_err(|err| Error::UserValidationError { source: err })
     }
 }

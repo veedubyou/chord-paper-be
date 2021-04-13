@@ -45,7 +45,7 @@ impl Gateway {
 
 fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let gateway_error: Box<dyn GatewayError> = match err {
-        usecase::Error::GoogleVerificationError { source } => {
+        usecase::Error::UserValidationError { source } => {
             Box::new(UnauthorizedError::FailedGoogleVerification {
                 msg: source.to_string(),
             })
