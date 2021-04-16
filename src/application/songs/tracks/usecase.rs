@@ -74,7 +74,7 @@ impl Usecase {
     ) -> Result<entity::TrackList, Error> {
         if !tracklist.has_valid_id() {
             return Err(Error::InvalidIDError {
-                id: tracklist.song_id.to_string(),
+                id: "tracklist.song_id.".to_string(),
             });
         }
 

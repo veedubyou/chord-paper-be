@@ -1,0 +1,28 @@
+{
+  "Table": {
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "song_id",
+        "AttributeType": "S"
+      }
+    ],
+    "CreationDateTime": 1618018582.25,
+    "ItemCount": 5,
+    "KeySchema": [
+      {
+        "AttributeName": "song_id",
+        "KeyType": "HASH"
+      }
+    ],
+    "ProvisionedThroughput": {
+      "NumberOfDecreasesToday": 0,
+      "ReadCapacityUnits": 2,
+      "WriteCapacityUnits": 2
+    },
+    "TableArn": "arn:aws:dynamodb:us-east-2:579696076733:table/TrackLists",
+    "TableId": "4b68347c-cfba-4129-bb87-2f92881fe5e1",
+    "TableName": "TrackLists",
+    "TableSizeBytes": 2527,
+    "TableStatus": "ACTIVE"
+  }
+}

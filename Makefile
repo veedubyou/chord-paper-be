@@ -8,7 +8,7 @@ backup-db:
 	python ./scripts/dynamodump.py -m backup -r local -s "*" --host localhost --port 8000 --accessKey local --secretKey local --dumpPath ./db_dump
 
 backup-production:
-	python ./scripts/dynamodump.py -m backup -r us-east-2 -s "*" --accessKey AKIAJFVPHEENP5LSDZ4Q --secretKey <fill-this-in> --dumpPath ./db_dump
+	python ./scripts/dynamodump.py -m backup -r us-east-2 -s "*" --accessKey AKIAJFVPHEENP5LSDZ4Q --secretKey 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 --dumpPath ./db_dump
 
 restore-db:
 	python ./scripts/dynamodump.py -m restore -r local -s "*" --host localhost --port 8000 --accessKey local --secretKey local --dumpPath ./db_dump

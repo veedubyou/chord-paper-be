@@ -61,6 +61,8 @@ impl DynamoDB {
 
         match get_result {
             Ok(output) => {
+                println!("{:#?}", output.item);
+
                 let result = deserialize::from_optional_attributes(output.item);
                 map_deserialize_errors(song_id, result)
             }
@@ -73,9 +75,7 @@ impl DynamoDB {
 
     pub async fn set_tracklist(&self, tracklist: &entity::TrackList) -> Result<(), Error> {
         if !tracklist.has_valid_id() {
-            return Err(Error::InvalidIDError {
-                id: tracklist.song_id.to_string(),
-            });
+            return Err(Error::InvalidIDError { id: "".to_string() });
         }
 
         let dynamodb_item = serialize_tracklist(tracklist)?;
