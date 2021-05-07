@@ -1,6 +1,7 @@
 mod application;
 mod db_utils;
 mod environment;
+mod rabbitmq_utils;
 mod server;
 
 #[tokio::main]

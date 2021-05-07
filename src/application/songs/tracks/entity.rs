@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+static SPLIT_TRACK_TYPES: [&'static str; 3] = ["split_2stems", "split_4stems", "split_5stems"];
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Track {
     pub id: String,
@@ -26,6 +28,15 @@ impl Track {
 
         self.id = uuid::Uuid::new_v4().to_string();
     }
+
+    pub fn is_split_request(&self) -> bool {
+        for split_track_type in SPLIT_TRACK_TYPES.iter() {
+            if self.track_type == *split_track_type {
+                return true;
+            }
+        }
+        false
+    }
 }
 
 impl TrackList {
@@ -37,14 +48,6 @@ impl TrackList {
         TrackList {
             song_id: song_id.to_string(),
             tracks: vec![],
-        }
-    }
-
-    pub fn ensure_track_ids(&mut self) {
-        for track in &mut self.tracks {
-            if track.is_new() {
-                track.create_id();
-            }
         }
     }
 }

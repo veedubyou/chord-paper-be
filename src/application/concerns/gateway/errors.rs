@@ -90,6 +90,7 @@ impl GatewayError for ForbiddenError {
 #[serde(rename_all = "snake_case")]
 pub enum InternalServerError {
     DatastoreError { msg: String },
+    PublishQueueError { msg: String },
 }
 
 #[typetag::serde]

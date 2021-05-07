@@ -52,6 +52,9 @@ pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
                 msg: source.to_string(),
             })
         }
+        usecase::Error::PublishError { msg } => Box::new(InternalServerError::PublishQueueError {
+            msg: msg.to_string(),
+        }),
         usecase::Error::GoogleVerificationError { source } => {
             Box::new(UnauthorizedError::FailedGoogleVerification {
                 msg: source.to_string(),
