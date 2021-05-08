@@ -3,6 +3,15 @@ use std::env;
 
 pub const QUEUE_NAME: &str = "chord-paper-tracks";
 
+fn queue_name() -> String {
+    let env_var_result = env::var("RABBITMQ_QUEUE");
+
+    match env_var_result {
+        Ok(val) => val,
+        Err(err) => panic!("Failed to get queue name from env: {}", err),
+    }
+}
+
 pub async fn create_connection() -> lapin::Connection {
     let env_var_result = env::var("RABBITMQ_URL");
 
@@ -28,7 +37,7 @@ pub async fn create_channel(conn: &lapin::Connection) -> lapin::Channel {
 
     let queue_result = channel
         .queue_declare(
-            QUEUE_NAME,
+            &queue_name(),
             lapin::options::QueueDeclareOptions {
                 durable: true,
                 passive: false,
