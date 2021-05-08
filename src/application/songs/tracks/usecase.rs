@@ -3,7 +3,6 @@ use super::entity;
 use crate::application::concerns::user_validation;
 use crate::application::songs;
 use crate::application::songs::tracks::entity::TrackList;
-use crate::rabbitmq_utils::rabbitmq;
 use amq_protocol_types::ShortString;
 use lapin;
 use serde::{Deserialize, Serialize};
@@ -31,6 +30,7 @@ pub struct Usecase {
     songs_datastore: songs::dynamodb::DynamoDB,
     tracks_datastore: dynamodb::DynamoDB,
     rabbitmq_channel: lapin::Channel,
+    queue_name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -45,12 +45,14 @@ impl Usecase {
         tracks_datastore: dynamodb::DynamoDB,
         songs_datastore: songs::dynamodb::DynamoDB,
         rabbitmq_channel: lapin::Channel,
+        queue_name: &str,
     ) -> Usecase {
         Usecase {
             user_validation: user_validation,
             songs_datastore: songs_datastore,
             tracks_datastore: tracks_datastore,
             rabbitmq_channel: rabbitmq_channel,
+            queue_name: queue_name.to_string(),
         }
     }
 
@@ -127,7 +129,7 @@ impl Usecase {
             .rabbitmq_channel
             .basic_publish(
                 "",
-                rabbitmq::QUEUE_NAME,
+                &self.queue_name,
                 lapin::options::BasicPublishOptions {
                     mandatory: true,
                     immediate: false,

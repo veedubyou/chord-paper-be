@@ -37,7 +37,13 @@ async fn with_tracks_gateway(
     let user_validation = concerns::user_validation::UserValidation::new();
     let channel = rabbitmq::create_channel(rabbitmq_conn).await;
 
-    let usecase = usecase::Usecase::new(user_validation, datastore, songs_datastore, channel);
+    let usecase = usecase::Usecase::new(
+        user_validation,
+        datastore,
+        songs_datastore,
+        channel,
+        &rabbitmq::queue_name(),
+    );
     let gateway = gateway::Gateway::new(usecase);
 
     warp::any().map(move || gateway.clone()).boxed()
