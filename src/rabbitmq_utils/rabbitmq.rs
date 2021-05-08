@@ -1,7 +1,7 @@
 use lapin;
 use std::env;
 
-fn queue_name() -> String {
+pub fn queue_name() -> String {
     let env_var_result = env::var("RABBITMQ_QUEUE");
 
     match env_var_result {
