@@ -2,6 +2,11 @@ use super::dynamodb;
 use super::entity;
 use crate::application::concerns::user_validation;
 use crate::application::songs;
+use crate::application::songs::tracks::entity::TrackList;
+use crate::rabbitmq_utils::rabbitmq;
+use amq_protocol_types::ShortString;
+use lapin;
+use serde::{Deserialize, Serialize};
 use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
@@ -16,6 +21,8 @@ pub enum Error {
     DatastoreError { source: dynamodb::Error },
     #[snafu(display("Failed to fetch song for this track: {}", source))]
     GetSongError { source: songs::dynamodb::Error },
+    #[snafu(display("Failed to publish worker message: {}", msg))]
+    PublishError { msg: String },
 }
 
 #[derive(Clone)]
@@ -23,18 +30,27 @@ pub struct Usecase {
     user_validation: user_validation::UserValidation,
     songs_datastore: songs::dynamodb::DynamoDB,
     tracks_datastore: dynamodb::DynamoDB,
+    rabbitmq_channel: lapin::Channel,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SplitRequestTrack {
+    pub tracklist_id: String,
+    pub track_id: String,
 }
 
 impl Usecase {
     pub fn new(
         user_validation: user_validation::UserValidation,
-        track_datastore: dynamodb::DynamoDB,
+        tracks_datastore: dynamodb::DynamoDB,
         songs_datastore: songs::dynamodb::DynamoDB,
+        rabbitmq_channel: lapin::Channel,
     ) -> Usecase {
         Usecase {
             user_validation: user_validation,
             songs_datastore: songs_datastore,
-            tracks_datastore: track_datastore,
+            tracks_datastore: tracks_datastore,
+            rabbitmq_channel: rabbitmq_channel,
         }
     }
 
@@ -79,14 +95,75 @@ impl Usecase {
         }
 
         self.verify_song_and_owner(song_id, user_id_token).await?;
-        tracklist.ensure_track_ids();
+        let split_requests = ensure_track_ids_and_collect_split_requests(&mut tracklist);
 
-        let set_tracklist_result = self.tracks_datastore.set_tracklist(&tracklist).await;
-        match set_tracklist_result {
-            Ok(_) => Ok(tracklist),
-            Err(err) => Err(Error::DatastoreError { source: err }),
+        // crazy futures nonsense - need to keep awaits separated
+        {
+            let set_tracklist_result = self.tracks_datastore.set_tracklist(&tracklist).await;
+            set_tracklist_result.map_err(|err| Error::DatastoreError { source: err })?;
+        }
+        {
+            for split_request in split_requests.iter() {
+                self.publish_split_job(split_request).await?;
+            }
+        }
+
+        Ok(tracklist)
+    }
+
+    async fn publish_split_job(&self, split_request: &SplitRequestTrack) -> Result<(), Error> {
+        let serialize_result = serde_json::to_vec(split_request);
+
+        let payload = serialize_result.map_err(|_| Error::PublishError {
+            msg: "Failed to serialize message payload".to_string(),
+        })?;
+
+        let mut publish_properties = lapin::BasicProperties::default();
+        publish_properties = publish_properties.with_kind(ShortString::from("download_original"));
+        publish_properties =
+            publish_properties.with_content_encoding(ShortString::from("application/json"));
+
+        let publish_result = self
+            .rabbitmq_channel
+            .basic_publish(
+                "",
+                rabbitmq::QUEUE_NAME,
+                lapin::options::BasicPublishOptions {
+                    mandatory: true,
+                    immediate: false,
+                },
+                payload,
+                publish_properties,
+            )
+            .await;
+
+        match publish_result {
+            Ok(_) => Ok(()),
+            Err(_) => Err(Error::PublishError {
+                msg: "Failed to publish message to RabbitMQ".to_string(),
+            }),
         }
     }
+}
+
+fn ensure_track_ids_and_collect_split_requests(
+    tracklist: &mut TrackList,
+) -> Vec<SplitRequestTrack> {
+    let mut split_requests: Vec<SplitRequestTrack> = vec![];
+    for track in &mut tracklist.tracks {
+        if track.is_new() {
+            track.create_id();
+
+            if track.is_split_request() {
+                split_requests.push(SplitRequestTrack {
+                    tracklist_id: tracklist.song_id.to_string(),
+                    track_id: track.id.to_string(),
+                })
+            }
+        }
+    }
+
+    split_requests
 }
 
 fn map_datastore_error(err: dynamodb::Error) -> Error {

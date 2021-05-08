@@ -22,3 +22,5 @@ uuid = { version = "*", features = ["v4", "serde"] }
 chrono = "*"
 log = "0.4.11"
 typetag = "*"
+lapin = "*"
+amq-protocol-types = "*"
