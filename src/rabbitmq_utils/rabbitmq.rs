@@ -1,7 +1,7 @@
 use lapin;
 use std::env;
 
-pub const QUEUE_NAME: &str = "test1";
+pub const QUEUE_NAME: &str = "chord-paper-tracks";
 
 pub async fn create_connection() -> lapin::Connection {
     let env_var_result = env::var("RABBITMQ_URL");
