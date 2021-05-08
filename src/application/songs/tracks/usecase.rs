@@ -4,6 +4,7 @@ use crate::application::concerns::user_validation;
 use crate::application::songs;
 use crate::application::songs::tracks::entity::TrackList;
 use crate::rabbitmq_utils::rabbitmq;
+use amq_protocol_types::ShortString;
 use lapin;
 use serde::{Deserialize, Serialize};
 use snafu::Snafu;
@@ -117,6 +118,11 @@ impl Usecase {
             msg: "Failed to serialize message payload".to_string(),
         })?;
 
+        let mut publish_properties = lapin::BasicProperties::default();
+        publish_properties = publish_properties.with_kind(ShortString::from("download_original"));
+        publish_properties =
+            publish_properties.with_content_encoding(ShortString::from("application/json"));
+
         let publish_result = self
             .rabbitmq_channel
             .basic_publish(
@@ -127,7 +133,7 @@ impl Usecase {
                     immediate: false,
                 },
                 payload,
-                lapin::BasicProperties::default(),
+                publish_properties,
             )
             .await;
 
