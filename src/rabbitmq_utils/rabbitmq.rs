@@ -1,8 +1,6 @@
 use lapin;
 use std::env;
 
-pub const QUEUE_NAME: &str = "chord-paper-tracks";
-
 fn queue_name() -> String {
     let env_var_result = env::var("RABBITMQ_QUEUE");
 
