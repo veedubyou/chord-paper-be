@@ -121,7 +121,7 @@ impl Usecase {
         })?;
 
         let mut publish_properties = lapin::BasicProperties::default();
-        publish_properties = publish_properties.with_kind(ShortString::from("download_original"));
+        publish_properties = publish_properties.with_kind(ShortString::from("transfer_original"));
         publish_properties =
             publish_properties.with_content_encoding(ShortString::from("application/json"));
 
