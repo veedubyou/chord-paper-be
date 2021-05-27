@@ -1,10 +1,5 @@
 /target/
 src/.DS_Store
 .DS_Store
-.idea/workspace.xml
-.idea/chord-paper-be.iml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
+/.idea/
 .envrc
-.idea/runConfigurations/Run_chord_paper_be.xml
