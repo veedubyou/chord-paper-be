@@ -1,5 +1,5 @@
 {
-  "Count": 37,
+  "Count": 39,
   "Items": [
     {
       "metadata": {
@@ -74,11 +74,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-10T01:05:22Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "33400def-b957-4d51-9cdc-901250468684"
@@ -1940,11 +1940,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-04-04T03:40:08Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "61f2b7d1-226e-4240-9f2f-e515230c44f9"
@@ -15273,6 +15273,2193 @@
                         "M": {
                           "serializedLyric": {
                             "S": "\ue400|"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "M": {
+          "title": {
+            "S": "\u5929\u795e"
+          },
+          "composedBy": {
+            "S": "\u8352\u8c37\u7fd4\u5927"
+          },
+          "performedBy": {
+            "S": "yonawo"
+          }
+        }
+      },
+      "owner": {
+        "S": "114135225559751053856"
+      },
+      "lastSavedAt": {
+        "S": "2021-07-16T06:28:45Z"
+      },
+      "id": {
+        "S": "1f91fcac-fc79-4312-99f3-22c9330260a9"
+      },
+      "elements": {
+        "L": [
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Verse"
+                  },
+                  "time": {
+                    "N": "6"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "F^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100asagata okinuke no RADIO"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100kigatsukeba ni do ne no kanojo"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100betto kara surinuke asa no"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "machikado nukereba ki-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "mi to souguu"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F^"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100boketa ashidori furari to "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100tatazumu akegata no gaitou"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100sakki kara nagareru kumo "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "roji ura nukereba mi-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "eru zattou"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Prechorus"
+                  },
+                  "time": {
+                    "N": "30"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100nokori wazuka"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100taimu rimit-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "to ga "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "semarikuru shunkan ni "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100sore wo tomete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100hari wo tomete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "mita "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ke-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "redo"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Chorus"
+                  },
+                  "type": {
+                    "S": "time"
+                  },
+                  "time": {
+                    "N": "51"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tsurenai "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tsura burabura sagete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tamei "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ki wo nomikonde "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "awaku "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "setsunai "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "hibi ni so-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Dm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ma re ba "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "hakanaki "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "akogare koi kogare"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "arifureta "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "wo seji mo dai kangei"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "sayona-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ra mata ne maboro-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "shi"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F^"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "da da la la "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue400"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "da da la la "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Verse"
+                  },
+                  "type": {
+                    "S": "time"
+                  },
+                  "time": {
+                    "N": "88"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "F^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100ano ko no poketto ni wa itsumo "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100kakae kirenu hodo no kanjou"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100sotto ima shizumaru yoru no "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tobari wo nukereba ki-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "mi to souguu"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F^"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100yuugure kutabireta hou wo"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100kokochi yoi yo kaze ga FLOW te "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "BLOW"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "toru ni taranai sai to ai to "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "F#7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "batsu wo "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "kakiatsume-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "te"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Prechorus"
+                  },
+                  "type": {
+                    "S": "time"
+                  },
+                  "time": {
+                    "N": "113"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Gm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "saraba koyoi "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100otozureru hi-"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "bi ga "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "kieuseru shunkan ni"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ki ni mo tomezu "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Am7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100ashi mo tomezu aru kedomo"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Prechorus 2"
+                  },
+                  "time": {
+                    "N": "137"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "dare ka ga kimi wo nonoshi shirouto"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "dare ka ga kimi wo uragirou to"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "sotto anata wo home tataeyou"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "gyutto anata wo dakishimeyou"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "shiwasu no ame wa "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tsumetaku kono hou wo tsutai"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "ima ni koboreochiru"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Chorus"
+                  },
+                  "time": {
+                    "N": "163"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tsurenai tsura burabura sagete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tamei ki wo nomikonde "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "awaku setsunai hibi ni so-ma re ba "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "hakanaki akogare koi kogare"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "arifureta wo seji mo dai kangei"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "sayona-ra mata ne maboro-shi\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tsurenai tsura burabura sagete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "tamei ki wo nomikonde "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "awaku setsunai hibi ni so-ma re ba "
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "hakanaki akogare koi kogare"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "arifureta wo seji mo dai kangei"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "sayona-ra mata ne maboro-shi\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Outro"
+                  },
+                  "time": {
+                    "N": "212"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "da da la la "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Bbm7"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue400"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Abm7"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "da da la la "
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "G7b9"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Db7b9"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "Gb^"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue400"
                           }
                         }
                       }
@@ -29547,11 +31734,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-10T01:05:01Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "7f58ea68-4f3f-4d41-b3e1-6909a837be88"
@@ -33496,11 +35683,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-10T01:06:14Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "9fd1aef2-e520-483b-8f0a-1b8c661285c8"
@@ -53689,11 +55876,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-30T07:21:45Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "018a5466-67af-4e4d-89be-a781982a05e3"
@@ -58851,11 +61038,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-03T07:31:20Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "e94f3324-e876-4507-aa5f-d25c5d59fdb5"
@@ -66255,11 +68442,11 @@
           }
         }
       },
-      "owner": {
-        "S": "114135225559751053856"
-      },
       "lastSavedAt": {
         "S": "2021-03-17T22:18:13Z"
+      },
+      "owner": {
+        "S": "114135225559751053856"
       },
       "id": {
         "S": "14246b50-9a35-4456-ab10-5ea206553a50"
@@ -85406,6 +87593,1142 @@
       "metadata": {
         "M": {
           "title": {
+            "S": "Incomplete"
+          },
+          "performedBy": {
+            "S": "Backstreet Boys"
+          },
+          "composedBy": {
+            "S": "Breer Harriet Isabel / Breer Sabelle"
+          }
+        }
+      },
+      "owner": {
+        "S": "114135225559751053856"
+      },
+      "lastSavedAt": {
+        "S": "2021-07-14T03:25:21Z"
+      },
+      "id": {
+        "S": "189caddc-4dc1-404c-ae45-f1523e3159cc"
+      },
+      "elements": {
+        "L": [
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "type": {
+                    "S": "time"
+                  },
+                  "name": {
+                    "S": "Intro"
+                  },
+                  "time": {
+                    "N": "3"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "F#m"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "C#m"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "E"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Bsus4"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "B"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "F#m"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": "C#m"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "E"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue200"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "Bsus4"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "M": {
+                      "chord": {
+                        "S": "B"
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "\ue100"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Verse"
+                  },
+                  "type": {
+                    "S": "time"
+                  },
+                  "time": {
+                    "N": "17"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Empty spaces fill me up with holes"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Distant faces with no place left to go"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Without you, within me I can find no rest"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Where I'm going is anybody's guess"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Chorus"
+                  },
+                  "type": {
+                    "S": "label"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I tried to go on like I never knew you"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I'm awake but my world is half asleep"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I pray for this heart to be unbroken"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "But without you all I'm going to be is"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Incomplete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": ""
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Verse"
+                  },
+                  "type": {
+                    "S": "label"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Voices tell me I should carry on"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "But I am swimming in an ocean all alone"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Baby, my baby"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "It's written on your face"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "You still wonder if we made a big mistake"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Chorus"
+                  },
+                  "type": {
+                    "S": "label"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I tried to go on like I never knew you"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I'm awake but my world is half asleep"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I pray for this heart to be unbroken"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "But without you all I'm going to be is"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Incomplete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Bridge"
+                  },
+                  "type": {
+                    "S": "label"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I don't mean to drag it on"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "But I can't seem to let you go"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I don't wanna make you face this world alone"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I wanna let you go"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "section": {
+                "M": {
+                  "name": {
+                    "S": "Chorus"
+                  },
+                  "type": {
+                    "S": "label"
+                  }
+                }
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I tried to go on like I never knew you"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I'm awake but my world is half asleep"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "I pray for this heart to be unbroken"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "But without you all I'm going to be is"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "chord": {
+                        "S": ""
+                      },
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Incomplete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "M": {
+              "type": {
+                "S": "ChordLine"
+              },
+              "elements": {
+                "L": [
+                  {
+                    "M": {
+                      "type": {
+                        "S": "ChordBlock"
+                      },
+                      "chord": {
+                        "S": ""
+                      },
+                      "lyric": {
+                        "M": {
+                          "serializedLyric": {
+                            "S": "Incomplete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "M": {
+          "title": {
             "S": "\u5929\u795e"
           },
           "composedBy": {
@@ -85475,11 +88798,11 @@
           }
         }
       },
-      "owner": {
-        "S": "109453974626961032486"
-      },
       "lastSavedAt": {
         "S": "2021-03-07T07:08:19Z"
+      },
+      "owner": {
+        "S": "109453974626961032486"
       },
       "id": {
         "S": "eca8de33-85cc-4eda-b65e-9863ea3445dd"
@@ -85580,5 +88903,5 @@
       }
     }
   ],
-  "ScannedCount": 37
+  "ScannedCount": 39
 }
