@@ -120,6 +120,32 @@ impl Usecase {
         }
     }
 
+    pub async fn delete_song(&self, user_id_token: &str, song_id: &str) -> Result<(), Error> {
+        if song_id.is_empty() {
+            return Err(Error::NotFoundError { id: "".to_string() });
+        }
+
+        let song = self.get_song(song_id).await?;
+
+        if song_id != song.summary.id {
+            return Err(Error::WrongIDError {
+                song_id_1: song_id.to_string(),
+                song_id_2: song.summary.id.to_string(),
+            });
+        }
+
+        let validation_result = self
+            .user_validation
+            .verify_owner(user_id_token, &song.summary);
+
+        validation_result.map_err(map_user_validation_error)?;
+
+        match self.datastore.delete_song(song_id).await {
+            Ok(()) => Ok(()),
+            Err(err) => Err(map_datastore_error(err, song_id)),
+        }
+    }
+
     async fn protect_overwrite_song(&self, song_to_update: &entity::Song) -> Result<(), Error> {
         let next_last_saved_at = song_to_update
             .summary

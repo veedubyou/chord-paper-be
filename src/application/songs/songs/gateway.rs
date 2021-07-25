@@ -61,6 +61,24 @@ impl Gateway {
             Err(err) => map_usecase_errors(err),
         }
     }
+
+    pub async fn delete_song(
+        &self,
+        auth_header_value: &str,
+        song_id: &str,
+    ) -> Box<dyn warp::Reply> {
+        let token: String = match auth::extract_auth_token(&auth_header_value) {
+            Ok(token) => token,
+            Err(reply) => return reply,
+        };
+
+        let delete_song_result = self.usecase.delete_song(&token, song_id).await;
+
+        match delete_song_result {
+            Ok(()) => Box::new(warp::reply()),
+            Err(err) => map_usecase_errors(err),
+        }
+    }
 }
 
 pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
