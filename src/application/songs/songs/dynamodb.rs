@@ -165,6 +165,27 @@ impl DynamoDB {
             }),
         }
     }
+
+    pub async fn delete_song(&self, song_id: &str) -> Result<(), Error> {
+        let key = expression::make_single_string("id", song_id);
+
+        let delete_result = self
+            .db_client
+            .delete_item(rusoto_dynamodb::DeleteItemInput {
+                key: key,
+                table_name: TABLE_NAME.to_string(),
+                ..Default::default()
+            })
+            .await;
+
+        match delete_result {
+            Ok(_) => Ok(()),
+            Err(err) => Err(Error::GenericDynamoError {
+                detail: "Failed to delete song in data store".to_string(),
+                source: Box::new(err),
+            }),
+        }
+    }
 }
 
 fn dynamodb_item_from_song(song: &entity::Song) -> Result<HashMap<String, AttributeValue>, Error> {

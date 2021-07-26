@@ -15,9 +15,9 @@
       {
         "IndexArn": "arn:aws:dynamodb:us-east-2:579696076733:table/Songs/index/owner-index",
         "IndexName": "owner-index",
-        "IndexSizeBytes": 188325,
+        "IndexSizeBytes": 313253,
         "IndexStatus": "ACTIVE",
-        "ItemCount": 23,
+        "ItemCount": 39,
         "KeySchema": [
           {
             "AttributeName": "owner",
@@ -34,7 +34,7 @@
         }
       }
     ],
-    "ItemCount": 23,
+    "ItemCount": 39,
     "KeySchema": [
       {
         "AttributeName": "id",
@@ -49,7 +49,7 @@
     "TableArn": "arn:aws:dynamodb:us-east-2:579696076733:table/Songs",
     "TableId": "8240ca7e-0116-4438-92dc-cc6f2cbd1646",
     "TableName": "Songs",
-    "TableSizeBytes": 188325,
+    "TableSizeBytes": 313253,
     "TableStatus": "ACTIVE"
   }
 }
