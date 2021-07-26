@@ -41,7 +41,7 @@ jobs:
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v.1.19.3
+          version: v1.19.3
           command: set image --record deploy/chord-be chord-be=${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
           
       #- name: Setup GCloud CLI
