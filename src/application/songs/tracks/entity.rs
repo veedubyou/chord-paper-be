@@ -7,7 +7,7 @@ pub struct Track {
     pub id: String,
     pub track_type: String,
     #[serde(flatten)]
-    contents: serde_json::Map<String, serde_json::Value>,
+    pub contents: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
