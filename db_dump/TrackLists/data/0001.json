@@ -1,6 +1,88 @@
 {
-  "Count": 21,
+  "Count": 30,
   "Items": [
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "381ee905-9305-46a2-9d22-f1730f1fd945"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=ZNHAvX12Di4"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/76ab6507-9c1b-400d-b746-0d62b88e2cd0/381ee905-9305-46a2-9d22-f1730f1fd945/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/76ab6507-9c1b-400d-b746-0d62b88e2cd0/381ee905-9305-46a2-9d22-f1730f1fd945/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/76ab6507-9c1b-400d-b746-0d62b88e2cd0/381ee905-9305-46a2-9d22-f1730f1fd945/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/76ab6507-9c1b-400d-b746-0d62b88e2cd0/381ee905-9305-46a2-9d22-f1730f1fd945/4stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "4stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "76ab6507-9c1b-400d-b746-0d62b88e2cd0"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "39e0f82d-b984-4418-9c81-07fd9cf35023"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=eUY0R_wAhHU"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/680775a1-4a8b-4ecb-a6c1-7ab589f7ff84/39e0f82d-b984-4418-9c81-07fd9cf35023/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/680775a1-4a8b-4ecb-a6c1-7ab589f7ff84/39e0f82d-b984-4418-9c81-07fd9cf35023/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/680775a1-4a8b-4ecb-a6c1-7ab589f7ff84/39e0f82d-b984-4418-9c81-07fd9cf35023/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/680775a1-4a8b-4ecb-a6c1-7ab589f7ff84/39e0f82d-b984-4418-9c81-07fd9cf35023/4stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "4stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "680775a1-4a8b-4ecb-a6c1-7ab589f7ff84"
+      }
+    },
     {
       "tracks": {
         "L": [
@@ -97,6 +179,114 @@
       },
       "song_id": {
         "S": "61f2b7d1-226e-4240-9f2f-e515230c44f9"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "5fd2a3e2-5eba-40aa-bd22-557d612dab6a"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=YamDdcxBfDU"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/45c0b536-1acf-4207-9bac-efa08701d25b/5fd2a3e2-5eba-40aa-bd22-557d612dab6a/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/45c0b536-1acf-4207-9bac-efa08701d25b/5fd2a3e2-5eba-40aa-bd22-557d612dab6a/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/45c0b536-1acf-4207-9bac-efa08701d25b/5fd2a3e2-5eba-40aa-bd22-557d612dab6a/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/45c0b536-1acf-4207-9bac-efa08701d25b/5fd2a3e2-5eba-40aa-bd22-557d612dab6a/4stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "4stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "45c0b536-1acf-4207-9bac-efa08701d25b"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "85adeab1-0902-4412-bba9-69c263d95dca"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "track_type": {
+                "S": "4stems"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/drums.mp3"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "M": {
+              "id": {
+                "S": "c2cbe1bb-1ade-41e5-9b83-1a5b72234eb4"
+              },
+              "label": {
+                "S": "4stems-YonYon"
+              },
+              "track_type": {
+                "S": "4stems"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://drive.google.com/uc?export=download&id=1qy8IuI8FJ6E8imA8iv1F73IZkXWCVtQw"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/31617138-8d5d-43bc-86bd-6debacae2af3/85adeab1-0902-4412-bba9-69c263d95dca/4stems/drums.mp3"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "31617138-8d5d-43bc-86bd-6debacae2af3"
       }
     },
     {
@@ -230,6 +420,50 @@
       },
       "song_id": {
         "S": "1f91fcac-fc79-4312-99f3-22c9330260a9"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "de54e6ff-02d4-449c-ab3e-5f11bf5e474f"
+              },
+              "label": {
+                "S": "5stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=s857ala8x00"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/c1f27bf5-b770-4c9e-aa92-fe552131af9e/de54e6ff-02d4-449c-ab3e-5f11bf5e474f/5stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/c1f27bf5-b770-4c9e-aa92-fe552131af9e/de54e6ff-02d4-449c-ab3e-5f11bf5e474f/5stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/c1f27bf5-b770-4c9e-aa92-fe552131af9e/de54e6ff-02d4-449c-ab3e-5f11bf5e474f/5stems/other.mp3"
+                  },
+                  "piano": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/c1f27bf5-b770-4c9e-aa92-fe552131af9e/de54e6ff-02d4-449c-ab3e-5f11bf5e474f/5stems/piano.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/c1f27bf5-b770-4c9e-aa92-fe552131af9e/de54e6ff-02d4-449c-ab3e-5f11bf5e474f/5stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "5stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "c1f27bf5-b770-4c9e-aa92-fe552131af9e"
       }
     },
     {
@@ -407,6 +641,135 @@
       },
       "song_id": {
         "S": "14338ee4-5a96-4653-a45c-9211d4cad5e5"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "88231d4b-657a-4955-aa01-509a29d06311"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "original_url": {
+                "S": "https://drive.google.com/uc?export=download&id=1EnYAZO74KbexxNoBd_7r-UFhoQQhTsLi"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/dfdb2216-5cf8-40ce-92b6-1120d225cbd5/88231d4b-657a-4955-aa01-509a29d06311/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/dfdb2216-5cf8-40ce-92b6-1120d225cbd5/88231d4b-657a-4955-aa01-509a29d06311/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/dfdb2216-5cf8-40ce-92b6-1120d225cbd5/88231d4b-657a-4955-aa01-509a29d06311/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/dfdb2216-5cf8-40ce-92b6-1120d225cbd5/88231d4b-657a-4955-aa01-509a29d06311/4stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "4stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "dfdb2216-5cf8-40ce-92b6-1120d225cbd5"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "a7cd49e7-f1df-4d40-a090-05500d6b006c"
+              },
+              "label": {
+                "S": "5stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=er7oXrWXF8c"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/756d6974-e1b2-4400-a92b-facc363e50c1/a7cd49e7-f1df-4d40-a090-05500d6b006c/5stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/756d6974-e1b2-4400-a92b-facc363e50c1/a7cd49e7-f1df-4d40-a090-05500d6b006c/5stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/756d6974-e1b2-4400-a92b-facc363e50c1/a7cd49e7-f1df-4d40-a090-05500d6b006c/5stems/other.mp3"
+                  },
+                  "piano": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/756d6974-e1b2-4400-a92b-facc363e50c1/a7cd49e7-f1df-4d40-a090-05500d6b006c/5stems/piano.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/756d6974-e1b2-4400-a92b-facc363e50c1/a7cd49e7-f1df-4d40-a090-05500d6b006c/5stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "5stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "756d6974-e1b2-4400-a92b-facc363e50c1"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "905adb8b-daef-4d57-b5ad-c11939dbcf58"
+              },
+              "label": {
+                "S": "5stems"
+              },
+              "original_url": {
+                "S": "https://drive.google.com/uc?export=download&id=1RnDvYxwa9QBw3GkEsZT4J9KN9E_yjQDy"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/9ba4c734-9ec3-41e0-b53d-c68a156b8821/905adb8b-daef-4d57-b5ad-c11939dbcf58/5stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/9ba4c734-9ec3-41e0-b53d-c68a156b8821/905adb8b-daef-4d57-b5ad-c11939dbcf58/5stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/9ba4c734-9ec3-41e0-b53d-c68a156b8821/905adb8b-daef-4d57-b5ad-c11939dbcf58/5stems/other.mp3"
+                  },
+                  "piano": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/9ba4c734-9ec3-41e0-b53d-c68a156b8821/905adb8b-daef-4d57-b5ad-c11939dbcf58/5stems/piano.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/9ba4c734-9ec3-41e0-b53d-c68a156b8821/905adb8b-daef-4d57-b5ad-c11939dbcf58/5stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "5stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "9ba4c734-9ec3-41e0-b53d-c68a156b8821"
       }
     },
     {
@@ -633,6 +996,47 @@
       },
       "song_id": {
         "S": "ec1e1f89-b716-4f3a-bd59-5e53b2ea0611"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "33854b36-e39f-4ed1-8320-b4276089c546"
+              },
+              "label": {
+                "S": "4stems"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=EuqIDseMaU8"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/b0a69c98-a835-4574-9d82-10ee6e96c595/33854b36-e39f-4ed1-8320-b4276089c546/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/b0a69c98-a835-4574-9d82-10ee6e96c595/33854b36-e39f-4ed1-8320-b4276089c546/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/b0a69c98-a835-4574-9d82-10ee6e96c595/33854b36-e39f-4ed1-8320-b4276089c546/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/b0a69c98-a835-4574-9d82-10ee6e96c595/33854b36-e39f-4ed1-8320-b4276089c546/4stems/drums.mp3"
+                  }
+                }
+              },
+              "track_type": {
+                "S": "4stems"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "b0a69c98-a835-4574-9d82-10ee6e96c595"
       }
     },
     {
@@ -1079,5 +1483,5 @@
       }
     }
   ],
-  "ScannedCount": 21
+  "ScannedCount": 30
 }

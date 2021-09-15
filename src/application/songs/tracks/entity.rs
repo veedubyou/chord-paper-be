@@ -7,7 +7,7 @@ pub struct Track {
     pub id: String,
     pub track_type: String,
     #[serde(flatten)]
-    contents: serde_json::Map<String, serde_json::Value>,
+    pub contents: serde_json::Map<String, serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -36,6 +36,29 @@ impl Track {
             }
         }
         false
+    }
+
+    pub fn init_split_request(&mut self) {
+        if !self.is_split_request() {
+            panic!("Cannot init a non split request")
+        }
+
+        self.contents.insert(
+            "job_status".to_string(),
+            serde_json::Value::String("requested".to_string()),
+        );
+
+        self.contents.insert(
+            "job_status_message".to_string(),
+            serde_json::Value::String(
+                "The splitting job for the audio has been requested".to_string(),
+            ),
+        );
+
+        self.contents.insert(
+            "job_status_debug_log".to_string(),
+            serde_json::Value::String("".to_string()),
+        );
     }
 }
 

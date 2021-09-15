@@ -121,7 +121,7 @@ impl Usecase {
         })?;
 
         let mut publish_properties = lapin::BasicProperties::default();
-        publish_properties = publish_properties.with_kind(ShortString::from("transfer_original"));
+        publish_properties = publish_properties.with_kind(ShortString::from("start_job"));
         publish_properties =
             publish_properties.with_content_encoding(ShortString::from("application/json"));
 
@@ -160,7 +160,9 @@ fn ensure_track_ids_and_collect_split_requests(
                 split_requests.push(SplitRequestTrack {
                     tracklist_id: tracklist.song_id.to_string(),
                     track_id: track.id.to_string(),
-                })
+                });
+
+                track.init_split_request();
             }
         }
     }
