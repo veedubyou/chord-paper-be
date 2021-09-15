@@ -162,20 +162,7 @@ fn ensure_track_ids_and_collect_split_requests(
                     track_id: track.id.to_string(),
                 });
 
-                track.contents.insert(
-                    "job_status".to_string(),
-                    serde_json::Value::String("requested".to_string()),
-                );
-                track.contents.insert(
-                    "job_status_message".to_string(),
-                    serde_json::Value::String(
-                        "The splitting job for the audio has been requested".to_string(),
-                    ),
-                );
-                track.contents.insert(
-                    "job_status_debug_log".to_string(),
-                    serde_json::Value::String("".to_string()),
-                );
+                track.init_split_request();
             }
         }
     }
