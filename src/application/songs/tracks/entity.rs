@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 static SPLIT_TRACK_TYPES: [&'static str; 3] = ["split_2stems", "split_4stems", "split_5stems"];
 
@@ -43,22 +44,20 @@ impl Track {
             panic!("Cannot init a non split request")
         }
 
-        self.contents.insert(
-            "job_status".to_string(),
-            serde_json::Value::String("requested".to_string()),
-        );
+        self.contents
+            .insert("job_status".to_string(), json!("requested"));
 
         self.contents.insert(
             "job_status_message".to_string(),
-            serde_json::Value::String(
-                "The splitting job for the audio has been requested".to_string(),
-            ),
+            json!("The splitting job for the audio has been requested"),
         );
 
-        self.contents.insert(
-            "job_status_debug_log".to_string(),
-            serde_json::Value::String("".to_string()),
-        );
+        self.contents
+            .insert("job_status_debug_log".to_string(), json!(""));
+
+        let initial_progress_percentage = json!(5);
+        self.contents
+            .insert("job_progress".to_string(), initial_progress_percentage);
     }
 }
 
