@@ -141,8 +141,8 @@ impl Usecase {
 
         match publish_result {
             Ok(_) => Ok(()),
-            Err(_) => Err(Error::PublishError {
-                msg: "Failed to publish message to RabbitMQ".to_string(),
+            Err(err) => Err(Error::PublishError {
+                msg: format!("Failed to publish message to RabbitMQ: {}", err),
             }),
         }
     }
