@@ -12,6 +12,8 @@
       <env name="AWS_SECRET_ACCESS_KEY" value="local" />
       <env name="ENVIRONMENT" value="development" />
       <env name="RUST_BACKTRACE" value="full" />
+      <env name="RABBITMQ_URL" value="amqps://lsrgxuli:nfwhN_m0rirW8RAwBfK-FivzPqeBIkO9@shrimp.rmq.cloudamqp.com/lsrgxuli" />
+      <env name="RABBITMQ_QUEUE" value="chord-paper-tracks-dev" />
     </envs>
     <method v="2">
       <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
