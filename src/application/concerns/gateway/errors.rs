@@ -59,6 +59,7 @@ impl GatewayError for NotFoundError {
 #[serde(tag = "code")]
 #[serde(rename_all = "snake_case")]
 pub enum UnauthorizedError {
+    NoAccount { msg: String },
     FailedGoogleVerification { msg: String },
 }
 

@@ -1,7 +1,6 @@
 use super::entity;
-use rusoto_dynamodb::{
-    AttributeValue, DynamoDb, UpdateItemError, UpdateItemInput, UpdateItemOutput,
-};
+use crate::application::concerns::dynamodb::expression;
+use rusoto_dynamodb::{AttributeValue, DynamoDb, GetItemInput, GetItemOutput};
 use snafu::Snafu;
 use std::collections::HashMap;
 
@@ -11,9 +10,13 @@ const NAME_FIELD: &str = "username";
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("DynamoDB encountered an error: {}", source))]
-    DynamoDBUpdateItemError {
-        source: rusoto_core::RusotoError<UpdateItemError>,
+    #[snafu(display("User ID not found"))]
+    NotFoundError,
+
+    #[snafu(display("{}: {}", detail, source))]
+    GenericDynamoError {
+        detail: String,
+        source: Box<dyn std::error::Error>,
     },
 
     #[snafu(display("An attribute in the data record is missing: {}", detail))]
@@ -38,69 +41,47 @@ impl DynamoDB {
         }
     }
 
-    pub async fn ensure_user(&self, input_user: &entity::User) -> Result<entity::User, Error> {
-        let key = {
-            let mut keymap: HashMap<String, AttributeValue> = HashMap::new();
-            keymap.insert(
-                ID_FIELD.to_string(),
-                AttributeValue {
-                    s: Some(input_user.id.to_string()),
-                    ..Default::default()
-                },
-            );
-            keymap
-        };
+    pub async fn get_user(&self, user_id: &str) -> Result<entity::User, Error> {
+        if user_id.is_empty() {
+            return Err(Error::NotFoundError);
+        }
 
-        let (expression_attribute, update_expression) = {
-            match &input_user.name {
-                None => (None, None),
-                Some(input_user_name) => {
-                    const USER_NAME_VAR_NAME: &str = ":new_name";
+        let key = expression::make_single_string(ID_FIELD, user_id);
 
-                    let mut expression_attribute: HashMap<String, AttributeValue> = HashMap::new();
-                    expression_attribute.insert(
-                        USER_NAME_VAR_NAME.to_string(),
-                        AttributeValue {
-                            s: Some(input_user_name.to_string()),
-                            ..Default::default()
-                        },
-                    );
-
-                    let update_expression = format!("set {} = {}", NAME_FIELD, USER_NAME_VAR_NAME);
-
-                    (Some(expression_attribute), Some(update_expression))
-                }
-            }
-        };
-
-        let update_result = self
+        let get_result = self
             .db_client
-            .update_item(UpdateItemInput {
-                table_name: TABLE_NAME.to_string(),
-                return_values: Some("ALL_NEW".to_string()),
+            .get_item(GetItemInput {
                 key: key,
-                expression_attribute_values: expression_attribute,
-                update_expression: update_expression,
+                table_name: TABLE_NAME.to_string(),
+                consistent_read: Some(true),
                 ..Default::default()
             })
             .await;
 
-        match update_result {
-            Ok(update_output) => entity_user(update_output),
-            Err(err) => Err(Error::DynamoDBUpdateItemError { source: err }),
+        match get_result {
+            Ok(output) => entity_user(output),
+
+            Err(rusoto_err) => {
+                if let rusoto_core::RusotoError::Service(err) = &rusoto_err {
+                    if let rusoto_dynamodb::GetItemError::ResourceNotFound(_) = err {
+                        return Err(Error::NotFoundError);
+                    }
+                }
+
+                Err(Error::GenericDynamoError {
+                    detail: "Failed to get user from data store".to_string(),
+                    source: Box::new(rusoto_err),
+                })
+            }
         }
     }
 }
 
-fn entity_user(output: UpdateItemOutput) -> Result<entity::User, Error> {
+fn entity_user(output: GetItemOutput) -> Result<entity::User, Error> {
     let attributes = {
-        match output.attributes {
+        match output.item {
             Some(attributes) => attributes,
-            None => {
-                return Err(Error::MissingAttributeError {
-                    detail: "All attributes are missing".to_string(),
-                })
-            }
+            None => return Err(Error::NotFoundError),
         }
     };
 

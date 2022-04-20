@@ -45,21 +45,22 @@ impl Gateway {
 
 fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let gateway_error: Box<dyn GatewayError> = match err {
-        usecase::Error::UserValidationError { source } => {
+        usecase::Error::NoAccountError { .. } => Box::new(UnauthorizedError::NoAccount {
+            msg: err.to_string(),
+        }),
+        usecase::Error::GoogleValidationError { .. } => {
             Box::new(UnauthorizedError::FailedGoogleVerification {
-                msg: source.to_string(),
+                msg: err.to_string(),
             })
         }
         usecase::Error::OwnerVerificationError => {
             Box::new(ForbiddenError::GetSongsForUserNotAllowed {
-                msg: "You don't have permission to access this user's resources".to_string(),
+                msg: err.to_string(),
             })
         }
-        usecase::Error::DatastoreError { source } => {
-            Box::new(InternalServerError::DatastoreError {
-                msg: source.to_string(),
-            })
-        }
+        usecase::Error::DatastoreError { .. } => Box::new(InternalServerError::DatastoreError {
+            msg: err.to_string(),
+        }),
     };
 
     error_reply(gateway_error)
