@@ -10,9 +10,8 @@ pub enum Error {
     #[snafu(display("User account does not exist: {}", source))]
     NoAccountError { source: Box<dyn std::error::Error> },
 
-    #[snafu(display("Failed Google validation: {}, {}", detail, source))]
+    #[snafu(display("Failed Google validation: {}", source))]
     GoogleValidationError {
-        detail: String,
         source: Box<dyn std::error::Error>,
     },
 
@@ -93,7 +92,6 @@ impl Usecase {
         self.google_verification
             .verify_user(google_id_token)
             .map_err(|err| Error::GoogleValidationError {
-                detail: "Failed Google user verification".to_string(),
                 source: Box::new(err),
             })
     }
