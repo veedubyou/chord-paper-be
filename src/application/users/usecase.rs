@@ -7,8 +7,14 @@ use snafu::Snafu;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("Failed user validation: {}", source))]
-    UserValidationError { source: user_validation::Error },
+    #[snafu(display("User account does not exist: {}", source))]
+    NoAccountError { source: Box<dyn std::error::Error> },
+
+    #[snafu(display("Failed Google validation: {}, {}", detail, source))]
+    GoogleValidationError {
+        detail: String,
+        source: Box<dyn std::error::Error>,
+    },
 
     #[snafu(display("This authenticated user cannot access this user's resources"))]
     OwnerVerificationError,
@@ -40,13 +46,22 @@ impl Usecase {
     pub async fn login(&self, google_id_token: &str) -> Result<entity::User, Error> {
         let input_user = self.verify_user(google_id_token)?;
 
-        let output_user_result = self.users_datastore.ensure_user(&input_user).await;
+        let output_user_result = self.users_datastore.get_user(&input_user.id).await;
 
         match output_user_result {
             Ok(output_user) => Ok(output_user),
-            Err(err) => Err(Error::DatastoreError {
-                source: Box::new(err),
-            }),
+
+            Err(datastore_err) => {
+                if let dynamodb::Error::NotFoundError = datastore_err {
+                    return Err(Error::NoAccountError {
+                        source: Box::new(datastore_err),
+                    });
+                }
+
+                Err(Error::DatastoreError {
+                    source: Box::new(datastore_err),
+                })
+            }
         }
     }
 
@@ -77,6 +92,9 @@ impl Usecase {
     fn verify_user(&self, google_id_token: &str) -> Result<entity::User, Error> {
         self.google_verification
             .verify_user(google_id_token)
-            .map_err(|err| Error::UserValidationError { source: err })
+            .map_err(|err| Error::GoogleValidationError {
+                detail: "Failed Google user verification".to_string(),
+                source: Box::new(err),
+            })
     }
 }

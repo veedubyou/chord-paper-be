@@ -83,34 +83,28 @@ impl Gateway {
 
 pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let gateway_error: Box<dyn GatewayError> = match err {
-        usecase::Error::GoogleVerificationError { source } => {
+        usecase::Error::GoogleVerificationError { .. } => {
             Box::new(UnauthorizedError::FailedGoogleVerification {
-                msg: source.to_string(),
+                msg: err.to_string(),
             })
         }
         usecase::Error::WrongOwnerError => Box::new(ForbiddenError::UpdateSongOwnerNotAllowed {
-            msg: "You do not have permission to modify this user's songs".to_string(),
+            msg: err.to_string(),
         }),
-        usecase::Error::WrongIDError {
-            song_id_1,
-            song_id_2,
-        } => Box::new(ForbiddenError::UpdateSongWrongId {
-            msg: format!(
-                "The requested resource ID and the payload ID do not match: {}, {}",
-                song_id_1, song_id_2
-            ),
+        usecase::Error::WrongIDError { .. } => Box::new(ForbiddenError::UpdateSongWrongId {
+            msg: err.to_string(),
         }),
         usecase::Error::ExistingSongError => Box::new(BadRequestError::CreateSongExists {
-            msg: "Cannot create a song that already exists".to_string(),
+            msg: err.to_string(),
         }),
         usecase::Error::OverwriteError => Box::new(BadRequestError::UpdateSongOverwrite {
-            msg: "Cannot update this song - contents will be clobbered. Please refresh the song and try again".to_string(),
+            msg: err.to_string(),
         }),
-        usecase::Error::NotFoundError { id } => Box::new(NotFoundError::SongNotFound {
-            msg: format!("Song ID not found: {}", id),
+        usecase::Error::NotFoundError { .. } => Box::new(NotFoundError::SongNotFound {
+            msg: err.to_string(),
         }),
-        usecase::Error::DatastoreError { source } => Box::new(InternalServerError::DatastoreError {
-            msg: source.to_string(),
+        usecase::Error::DatastoreError { .. } => Box::new(InternalServerError::DatastoreError {
+            msg: err.to_string(),
         }),
     };
 

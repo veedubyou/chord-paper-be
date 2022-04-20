@@ -47,27 +47,25 @@ impl Gateway {
 
 pub fn map_usecase_errors(err: usecase::Error) -> Box<dyn warp::Reply> {
     let gateway_error: Box<dyn GatewayError> = match err {
-        usecase::Error::DatastoreError { source } => {
-            Box::new(InternalServerError::DatastoreError {
-                msg: source.to_string(),
-            })
-        }
-        usecase::Error::PublishError { msg } => Box::new(InternalServerError::PublishQueueError {
-            msg: msg.to_string(),
+        usecase::Error::DatastoreError { .. } => Box::new(InternalServerError::DatastoreError {
+            msg: err.to_string(),
         }),
-        usecase::Error::GoogleVerificationError { source } => {
+        usecase::Error::PublishError { .. } => Box::new(InternalServerError::PublishQueueError {
+            msg: err.to_string(),
+        }),
+        usecase::Error::GoogleVerificationError { .. } => {
             Box::new(UnauthorizedError::FailedGoogleVerification {
-                msg: source.to_string(),
+                msg: err.to_string(),
             })
         }
         usecase::Error::WrongOwnerError => Box::new(ForbiddenError::UpdateSongOwnerNotAllowed {
-            msg: "You do not have permission to modify this user's songs".to_string(),
+            msg: err.to_string(),
         }),
         usecase::Error::InvalidIDError { .. } => Box::new(BadRequestError::InvalidID {
-            msg: "Invalid song ID provided".to_string(),
+            msg: err.to_string(),
         }),
-        usecase::Error::GetSongError { source } => Box::new(InternalServerError::DatastoreError {
-            msg: source.to_string(),
+        usecase::Error::GetSongError { .. } => Box::new(InternalServerError::DatastoreError {
+            msg: err.to_string(),
         }),
     };
 
