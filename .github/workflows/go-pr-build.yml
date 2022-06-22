@@ -1,0 +1,27 @@
+name: PR Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Verify Go Build
+    runs-on: chord-paper-be-runner
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Build
+        working-directory: ./go-rewrite/src
+        run: go build -v
+
+      - name: Test
+        working-directory: ./go-rewrite/src
+        run: go test -v
