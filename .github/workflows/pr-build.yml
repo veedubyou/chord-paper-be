@@ -1,15 +1,10 @@
 name: PR Build
 
-on:
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'Cargo.toml'
-      - 'Cargo.lock'
+on: [pull_request]
 
 jobs:
   build:
-    name: Verify Build
+    name: Verify Rust Build
     #runs-on: ubuntu-latest
     runs-on: chord-paper-be-runner
     steps:
