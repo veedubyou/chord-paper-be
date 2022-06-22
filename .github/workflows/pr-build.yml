@@ -1,11 +1,6 @@
 name: PR Build
 
-on:
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'Cargo.toml'
-      - 'Cargo.lock'
+on: [pull_request]
 
 jobs:
   build:
