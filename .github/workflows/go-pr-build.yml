@@ -1,4 +1,4 @@
-name: Build on PR for Go
+name: PR Build
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-
   build:
+    name: Verify Go Build
     runs-on: chord-paper-be-runner
     steps:
       - uses: actions/checkout@v2
