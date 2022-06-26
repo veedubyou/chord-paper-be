@@ -33,12 +33,8 @@ jobs:
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build image w/version
         run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
-      - name: Build image latest
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:latest
       - name: Push image w/version
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
-      - name: Push image latest
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:latest
 
       - name: Deploy Project to K8S Cluster
         uses: steebchen/kubectl@master
@@ -46,6 +42,9 @@ jobs:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
           version: v1.19.3
           command: set image --record deploy/chord-be chord-be=${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
+
+      - name: Cleanup Images
+        run: docker image prune -af
           
       #- name: Setup GCloud CLI
       #  uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
