@@ -1,4 +1,4 @@
-FROM rust:latest as builder
+FROM rust:1.55.0-buster as builder
 
 # create project, note: it will add the hello world stuff
 RUN USER=root cargo new --bin chord-paper-be
