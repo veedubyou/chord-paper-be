@@ -30,11 +30,7 @@ jobs:
               run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
             - name: Build image w/version
               run: docker build ./.github/runner/ --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-runner:${{ env.gitver }}
-            - name: Build image latest
-              run: docker build ./.github/runner/ --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-runner:latest
             - name: Push image w/version
               run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-runner:${{ env.gitver }}
-            - name: Push image latest
-              run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-runner:latest
             - name: Get Current Timestamp
               run: echo "date=$(date +%s)" >> $GITHUB_ENV
