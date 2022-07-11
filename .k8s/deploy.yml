@@ -1,24 +1,26 @@
+# chord-be-rust
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chord-be
+  name: chord-be-rust
   labels:
-    app: chord-be
+    app: chord-be-rust
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: chord-be
+      app: chord-be-rust
   template:
     metadata:
       labels:
-        app: chord-be
+        app: chord-be-rust
       annotations:
         restartedAt: ""
     spec:
       containers:
-      - name: chord-be
-        image: pw1124/chord-be:latest
+      - name: chord-be-rust
+        image: pw1124/chord-be-rust:${LATEST_RUST_IMAGE}
         env:
         - name: RUST_LOG
           value: "info"
@@ -55,3 +57,38 @@ spec:
       - name: regcred
 
 # note: for secretKeyRefs, you have to create the secret in your k8s cluster.
+
+---
+
+# chord-be-go
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chord-be-go
+  labels:
+    app: chord-be-go
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: chord-be-go
+  template:
+    metadata:
+      labels:
+        app: chord-be-go
+      annotations:
+        restartedAt: ""
+    spec:
+      containers:
+      - name: chord-be-go
+        image: pw1124/chord-be-go:${LATEST_GO_IMAGE}
+        env:
+        - name: LEGACY_BE_HOST
+          value: "chord-be-rust"
+        - name: ENVIRONMENT
+          value: "production"
+        ports:
+        - containerPort: 5001
+      imagePullSecrets:
+      - name: regcred
