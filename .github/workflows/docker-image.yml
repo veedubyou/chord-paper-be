@@ -1,4 +1,5 @@
-name: Deploy to Production
+
+name: Deploy to Production (Rust)
 
 on:
   push:
@@ -32,17 +33,17 @@ jobs:
         run: echo "gitver=$(cat GIT-VERSION-FILE)" >> $GITHUB_ENV
       - name: Login to DockerHub
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Build image w/version
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
-      - name: Push image w/version
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
+      - name: Build Rust image w/version
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-rust:${{ env.gitver }}
+      - name: Push Rust image w/version
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-rust:${{ env.gitver }}
 
       - name: Deploy Project to K8S Cluster
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
           version: v1.19.3
-          command: set image --record deploy/chord-be chord-be=${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
+          command: set image --record deploy/chord-be-rust chord-be-rust=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-rust:${{ env.gitver }}
 
       - name: Cleanup Images
         run: docker image prune -af
