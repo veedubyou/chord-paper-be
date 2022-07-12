@@ -14,23 +14,6 @@ func main() {
 		panic("Legacy backend host env var is not set")
 	}
 
-	runningEnvironment, isSet := os.LookupEnv("ENVIRONMENT")
-	if !isSet {
-		panic("Environment is not set")
-	}
-
-	portAddr := ""
-
-	switch runningEnvironment {
-	case "production":
-		portAddr = ":5000"
-	case "development":
-		portAddr = ":5001"
-	default:
-		panicMsg := "Unrecognized environment: " + runningEnvironment
-		panic(panicMsg)
-	}
-
 	legacyHostURL, err := url.Parse(legacyHostStr)
 	if err != nil {
 		panic(err)
@@ -54,5 +37,5 @@ func main() {
 		},
 	}))
 
-	e.Logger.Fatal(e.Start(portAddr))
+	e.Logger.Fatal(e.Start(":5000"))
 }
