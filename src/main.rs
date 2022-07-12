@@ -8,5 +8,10 @@ mod server;
 async fn main() {
     pretty_env_logger::init();
 
-    server::serve(([0, 0, 0, 0], 5000)).await;
+    let port = match environment::get_environment() {
+        environment::Environment::Development => 5001,
+        environment::Environment::Production => 5000,
+    };
+    
+    server::serve(([0, 0, 0, 0], port)).await;
 }
