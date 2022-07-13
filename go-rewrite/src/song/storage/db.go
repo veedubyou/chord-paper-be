@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/guregu/dynamo"
 	"github.com/pkg/errors"
-	z "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/errlog"
 	songentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/entity"
 )
 
@@ -29,7 +28,7 @@ func (d DB) GetSong(ctx context.Context, songID uuid.UUID) (songentity.Song, err
 		Get(idKey, songID.String()).
 		OneWithContext(ctx, &value)
 
-	if z.Err(err) {
+	if err != nil {
 		return songentity.Song{}, errors.Wrap(err, "Couldn't fetch song")
 	}
 

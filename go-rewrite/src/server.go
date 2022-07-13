@@ -8,11 +8,13 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/env"
-	z "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/errlog"
 	middleware2 "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/middleware"
-	songateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
+	songgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
+	trackgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/gateway"
+	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
+	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
 	"net/http"
 	"net/url"
 	"os"
@@ -25,16 +27,27 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
-	songGateway := makeSongGateway(makeDynamoDB())
-	e.GET("/songs/:id", func(c echo.Context) error {
+	dynamoDB := makeDynamoDB()
+	songGateway := makeSongGateway(dynamoDB)
+	trackGateway := makeTrackGateway(dynamoDB)
+
+	corsMiddleware := makeCorsMiddleware()
+	handleGETRoute := func(path string, handlerFunc echo.HandlerFunc) {
+		e.GET(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
+	}
+
+	handleGETRoute("/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.GetSong(c, songID)
-	}, makeCorsMiddleware(), middleware2.ProxyMarkerOn)
+	})
+
+	handleGETRoute("/songs/:id/tracklist", func(c echo.Context) error {
+		songID := c.Param("id")
+		return trackGateway.GetTrackList(c, songID)
+	})
 
 	proxyMiddleware := makeRustProxyMiddleware()
 
-	// specifically making calling this route out so that it's not caught by the get songs router
-	e.GET("/songs/:id/tracklist", proxyHandler, middleware2.ProxyMarkerOff, proxyMiddleware)
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, proxyMiddleware)
 
 	e.Logger.Fatal(e.Start(":5000"))
@@ -60,10 +73,16 @@ func makeDynamoDB() *dynamo.DB {
 	}
 }
 
-func makeSongGateway(dynamoDB *dynamo.DB) songateway.Gateway {
+func makeSongGateway(dynamoDB *dynamo.DB) songgateway.Gateway {
 	songDB := songstorage.NewDB(dynamoDB)
 	songUsecase := songusecase.NewUsecase(songDB)
-	return songateway.NewGateway(songUsecase)
+	return songgateway.NewGateway(songUsecase)
+}
+
+func makeTrackGateway(dynamoDB *dynamo.DB) trackgateway.Gateway {
+	trackDB := trackstorage.NewDB(dynamoDB)
+	trackUsecase := trackusecase.NewUsecase(trackDB)
+	return trackgateway.NewGateway(trackUsecase)
 }
 
 func proxyHandler(c echo.Context) error {
@@ -77,7 +96,7 @@ func makeRustProxyMiddleware() echo.MiddlewareFunc {
 	}
 
 	legacyHostURL, err := url.Parse(legacyHostStr)
-	if z.Err(err) {
+	if err != nil {
 		err = errors.Wrap(err, "Failed to parse legacy host URL")
 		panic(err)
 	}

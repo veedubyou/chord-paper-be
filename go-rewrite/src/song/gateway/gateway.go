@@ -1,4 +1,4 @@
-package songateway
+package songgateway
 
 import (
 	"github.com/google/uuid"
@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/gateway_errors"
-	z "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/errlog"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
 	"net/http"
 )
@@ -23,14 +22,14 @@ func NewGateway(usecase songusecase.Usecase) Gateway {
 
 func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
 	songID, err := uuid.Parse(songIDStr)
-	if z.Err(err) {
+	if err != nil {
 		err = errors.Wrap(err, "Failed to parse song ID")
 		gatewayErr := gateway_errors.NewInvalidIDError(err)
 		return gateway_errors.ErrorResponse(c, gatewayErr)
 	}
 
 	song, err := g.usecase.GetSong(c.Request().Context(), songID)
-	if z.Err(err) {
+	if err != nil {
 		err = errors.Wrap(err, "Failed to get song")
 
 		if errors.Is(err, dynamo.ErrNotFound) {
