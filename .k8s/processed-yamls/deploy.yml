@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: chord-be-rust
-        image: pw1124/chord-be-rust:${LATEST_RUST_IMAGE}
+        image: pw1124/chord-be-rust:0.6.9.67.g9266e1f
         env:
         - name: RUST_LOG
           value: "info"
@@ -82,7 +82,7 @@ spec:
     spec:
       containers:
       - name: chord-be-go
-        image: pw1124/chord-be-go:${LATEST_GO_IMAGE}
+        image: pw1124/chord-be-go:0.6.9.69.gde59157
         env:
         - name: LEGACY_BE_HOST
           value: "http://chord-be-rust:5000"
