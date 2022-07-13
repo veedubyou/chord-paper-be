@@ -1,4 +1,4 @@
-package songstorage
+package trackstorage
 
 import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -8,21 +8,16 @@ import (
 )
 
 const (
-	idKey    = "id"
-	ownerKey = "owner"
+	idKey = "song_id"
 )
 
-var _ dynamo.ItemUnmarshaler = &dbSong{}
+var _ dynamo.ItemUnmarshaler = &dbTrackList{}
 
-type dbSong map[string]interface{}
+type dbTrackList map[string]interface{}
 
-func (d *dbSong) UnmarshalDynamoItem(dynamoItem map[string]*dynamodb.AttributeValue) error {
+func (d *dbTrackList) UnmarshalDynamoItem(dynamoItem map[string]*dynamodb.AttributeValue) error {
 	if err := dynamolib.ValidateStringField(dynamoItem, idKey); err != nil {
 		return errors.Wrap(err, "Failed to validate id field")
-	}
-
-	if err := dynamolib.ValidateStringField(dynamoItem, ownerKey); err != nil {
-		return errors.Wrap(err, "Failed to validate owner field")
 	}
 
 	plainMap := map[string]interface{}{}

@@ -1,4 +1,4 @@
-package songgateway
+package trackgateway
 
 import (
 	"github.com/google/uuid"
@@ -6,21 +6,21 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/gateway_errors"
-	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
+	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
 	"net/http"
 )
 
 type Gateway struct {
-	usecase songusecase.Usecase
+	usecase trackusecase.Usecase
 }
 
-func NewGateway(usecase songusecase.Usecase) Gateway {
+func NewGateway(usecase trackusecase.Usecase) Gateway {
 	return Gateway{
 		usecase: usecase,
 	}
 }
 
-func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
+func (g Gateway) GetTrackList(c echo.Context, songIDStr string) error {
 	songID, err := uuid.Parse(songIDStr)
 	if err != nil {
 		err = errors.Wrap(err, "Failed to parse song ID")
@@ -28,11 +28,12 @@ func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
 		return gateway_errors.ErrorResponse(c, gatewayErr)
 	}
 
-	song, err := g.usecase.GetSong(c.Request().Context(), songID)
+	tracklist, err := g.usecase.GetTrackList(c.Request().Context(), songID)
 	if err != nil {
-		err = errors.Wrap(err, "Failed to get song")
+		err = errors.Wrap(err, "Failed to get tracklist")
 
 		if errors.Is(err, dynamo.ErrNotFound) {
+			// todo
 			gatewayErr := gateway_errors.NewSongNotFoundError(err)
 			return gateway_errors.ErrorResponse(c, gatewayErr)
 		}
@@ -41,5 +42,5 @@ func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
 		return gateway_errors.ErrorResponse(c, gatewayErr)
 	}
 
-	return c.JSON(http.StatusOK, song)
+	return c.JSON(http.StatusOK, tracklist)
 }
