@@ -88,8 +88,6 @@ spec:
           value: "http://chord-be-rust:5000"
         - name: ENVIRONMENT
           value: "production"
-        - name: ENVIRONMENT
-          value: "production"
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
