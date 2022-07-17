@@ -41,6 +41,19 @@ func (m ErrorMsger) Msg() string {
 	return err.Error()
 }
 
+func NewInternalError(err error) InternalError {
+	return InternalError{
+		ErrorMsger: NewErrorMsger("Something unexpected happened. It's not your fault, it's ours. But it might not be fixed until we find it.", err),
+	}
+}
+
+type InternalError struct {
+	InternalErrorStatus
+	ErrorMsger
+}
+
+func (InternalError) Code() string { return "internal_error" }
+
 type NotFoundStatus struct{}
 
 func (NotFoundStatus) StatusCode() int { return http.StatusNotFound }
