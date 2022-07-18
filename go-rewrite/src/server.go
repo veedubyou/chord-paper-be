@@ -15,6 +15,9 @@ import (
 	trackgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/gateway"
 	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
 	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
+	usergateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/gateway"
+	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/userstorage"
 	"net/http"
 	"net/url"
 	"os"
@@ -23,32 +26,47 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type HTTPMethod string
+
+const (
+	GET  HTTPMethod = "GET"
+	POST HTTPMethod = "POST"
+)
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
+	corsMiddleware := makeCorsMiddleware()
+
+	handleRoute := func(method HTTPMethod, path string, handlerFunc echo.HandlerFunc) {
+		switch method {
+		case GET:
+			e.GET(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
+		case POST:
+			e.POST(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
+		default:
+			panic("unhandled http method!")
+		}
+	}
 
 	dynamoDB := makeDynamoDB()
 	songGateway := makeSongGateway(dynamoDB)
 	trackGateway := makeTrackGateway(dynamoDB)
+	userGateway := makeUserGateway(dynamoDB)
 
-	corsMiddleware := makeCorsMiddleware()
-	handleGETRoute := func(path string, handlerFunc echo.HandlerFunc) {
-		e.GET(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
-	}
-
-	handleGETRoute("/songs/:id", func(c echo.Context) error {
+	handleRoute(GET, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.GetSong(c, songID)
 	})
 
-	handleGETRoute("/songs/:id/tracklist", func(c echo.Context) error {
+	handleRoute(GET, "/songs/:id/tracklist", func(c echo.Context) error {
 		songID := c.Param("id")
 		return trackGateway.GetTrackList(c, songID)
 	})
 
-	proxyMiddleware := makeRustProxyMiddleware()
+	handleRoute(POST, "/login", userGateway.Login)
 
-	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, proxyMiddleware)
+	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 
 	e.Logger.Fatal(e.Start(":5000"))
 }
@@ -83,6 +101,12 @@ func makeTrackGateway(dynamoDB *dynamo.DB) trackgateway.Gateway {
 	trackDB := trackstorage.NewDB(dynamoDB)
 	trackUsecase := trackusecase.NewUsecase(trackDB)
 	return trackgateway.NewGateway(trackUsecase)
+}
+
+func makeUserGateway(dynamoDB *dynamo.DB) usergateway.Gateway {
+	userDB := userstorage.NewDB(dynamoDB)
+	userUsecase := userusecase.NewUsecase(userDB)
+	return usergateway.NewGateway(userUsecase)
 }
 
 func proxyHandler(c echo.Context) error {
