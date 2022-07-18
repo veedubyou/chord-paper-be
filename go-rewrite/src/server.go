@@ -75,15 +75,16 @@ func makeDynamoDB() *dynamo.DB {
 	dbSession := session.Must(session.NewSession())
 
 	config := aws.NewConfig().
-		WithRegion("us-east-2").
 		WithCredentials(credentials.NewEnvCredentials())
 
 	switch env.Get() {
 	case env.Production:
+		config = config.WithRegion("us-east-2")
 		return dynamo.New(dbSession, config)
 
 	case env.Development:
-		config = config.WithEndpoint("http://localhost:8000")
+		config = config.WithEndpoint("http://localhost:8000").
+			WithRegion("localhost")
 		return dynamo.New(dbSession, config)
 
 	default:
