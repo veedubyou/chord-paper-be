@@ -65,3 +65,7 @@ func (BadRequestStatus) StatusCode() int { return http.StatusBadRequest }
 type InternalErrorStatus struct{}
 
 func (InternalErrorStatus) StatusCode() int { return http.StatusInternalServerError }
+
+type UnauthorizedErrorStatus struct{}
+
+func (UnauthorizedErrorStatus) StatusCode() int { return http.StatusUnauthorized }
