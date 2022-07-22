@@ -2,12 +2,12 @@ package songentity
 
 import (
 	"github.com/google/uuid"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/json"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/jsonlib"
 	"time"
 )
 
 type Song struct {
-	json.Flatten[SongFields]
+	jsonlib.Flatten[SongFields]
 }
 
 func (s Song) IsNew() bool {
@@ -23,7 +23,7 @@ func (s *Song) CreateID() {
 }
 
 func (s *Song) SetSavedTime() {
-	// truncate to milliseconds because this will be consumed by the browser
+	// truncate to seconds because this will be consumed by the browser
 	// and browser dates have only millisecond resolution
 
 	now := time.Now().UTC().Truncate(time.Second)

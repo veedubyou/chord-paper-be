@@ -1,4 +1,4 @@
-package json
+package jsonlib
 
 import (
 	"encoding/json"
