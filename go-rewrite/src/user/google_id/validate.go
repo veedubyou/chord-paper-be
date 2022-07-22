@@ -8,26 +8,9 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
 	userentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/entity"
 	"google.golang.org/api/idtoken"
-	"strings"
 )
 
-const (
-	BEARER_PREFIX = "Bearer "
-	// should get injected as an env var, but YAGNI for now as it's not a secret
-	// and there's no other case to reflect this need
-	clientID = "650853277550-ta69qbfcvdl6tb5ogtnh2d07ae9rcdlf.apps.googleusercontent.com"
-)
-
-func ValidateHeader(ctx context.Context, header string) (userentity.User, error) {
-	if !strings.HasPrefix(header, BEARER_PREFIX) {
-		return userentity.User{}, handle.Message(BadAuthorizationHeaderMark, "Authorization header has unexpected shape")
-	}
-
-	token := strings.TrimPrefix(header, BEARER_PREFIX)
-	return ValidateToken(ctx, token)
-}
-
-func ValidateToken(ctx context.Context, requestToken string) (userentity.User, error) {
+func ValidateToken(ctx context.Context, clientID string, requestToken string) (userentity.User, error) {
 	validationResult, err := idtoken.Validate(ctx, requestToken, clientID)
 	if err != nil {
 		return userentity.User{}, handle.Wrap(err, NotValidatedMark, "Token could not be validated")

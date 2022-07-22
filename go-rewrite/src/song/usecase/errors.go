@@ -1,8 +1,10 @@
 package songusecase
 
-import "github.com/cockroachdb/errors/domains"
+import (
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/api"
+)
 
 var (
-	SongNotFoundMark = domains.New("song_not_found")
-	DefaultErrorMark = domains.New("default_error")
+	SongNotFoundCode = api.ErrorCode("song_not_found")
+	ExistingSongCode = api.ErrorCode("create_song_exists")
 )
