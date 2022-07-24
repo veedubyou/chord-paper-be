@@ -8,6 +8,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/api"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/auth"
 	songentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/entity"
+	songerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/errors"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
 )
@@ -32,7 +33,7 @@ func (u Usecase) GetSong(ctx context.Context, songID uuid.UUID) (songentity.Song
 		switch {
 		case markers.Is(err, songstorage.SongNotFoundMark):
 			return songentity.Song{}, api.CommitError(err,
-				SongNotFoundCode,
+				songerrors.SongNotFoundCode,
 				"The song can't be found")
 
 		case markers.Is(err, songstorage.SongUnmarshalMark):
@@ -53,7 +54,7 @@ func (u Usecase) CreateSong(ctx context.Context, authHeader string, song songent
 	if !song.IsNew() {
 		return songentity.Song{}, api.CommitError(
 			errors.New("Song has an assigned ID already"),
-			ExistingSongCode,
+			songerrors.ExistingSongCode,
 			"This song is not in an unsaved state and can't be created")
 	}
 

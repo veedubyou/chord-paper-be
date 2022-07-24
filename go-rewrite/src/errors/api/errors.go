@@ -4,7 +4,7 @@ import "github.com/cockroachdb/errors"
 
 type ErrorCode string
 
-var DefaultErrorCode = ErrorCode("unknown_error")
+const DefaultErrorCode = ErrorCode("unknown_error")
 
 func WrapError(err *Error, msg string) *Error {
 	return &Error{

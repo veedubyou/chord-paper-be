@@ -8,6 +8,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/gateway"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/request"
 	songentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/entity"
+	songerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/errors"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
 	"net/http"
 )
@@ -29,7 +30,7 @@ func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
 	if err != nil {
 		err = errors.Wrap(err, "Failed to parse song ID")
 		apiErr := api.CommitError(err,
-			InvalidIDCode,
+			songerrors.InvalidIDCode,
 			"The song ID provided is malformed")
 		return gateway.ErrorResponse(c, apiErr)
 	}
@@ -50,7 +51,7 @@ func (g Gateway) CreateSong(c echo.Context) error {
 	if err != nil {
 		err = errors.Wrap(err, "Failed to bind request body to song object")
 		apiErr := api.CommitError(err,
-			BadSongDataCode,
+			songerrors.BadSongDataCode,
 			"The song data received was malformed. Please contact the developer")
 		return gateway.ErrorResponse(c, apiErr)
 	}

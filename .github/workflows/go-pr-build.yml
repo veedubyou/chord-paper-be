@@ -24,4 +24,4 @@ jobs:
 
       - name: Test
         working-directory: ./go-rewrite/src
-        run: go test -v
+        run: go test -v ./...
