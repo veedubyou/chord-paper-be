@@ -7,6 +7,7 @@ import (
 	"github.com/guregu/dynamo"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
+	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/env"
 	middleware2 "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/middleware"
 	songgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
@@ -16,8 +17,8 @@ import (
 	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
 	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
 	usergateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/gateway"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/userstorage"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,6 +32,10 @@ type HTTPMethod string
 const (
 	GET  HTTPMethod = "GET"
 	POST HTTPMethod = "POST"
+
+	// should get injected as an env var, but YAGNI for now as it's not a secret
+	// and there's no other case to reflect this need
+	googleClientID = "650853277550-ta69qbfcvdl6tb5ogtnh2d07ae9rcdlf.apps.googleusercontent.com"
 )
 
 func main() {
@@ -50,9 +55,10 @@ func main() {
 	}
 
 	dynamoDB := makeDynamoDB()
-	songGateway := makeSongGateway(dynamoDB)
+	userUsecase := makeUserUsecase(dynamoDB)
+	songGateway := makeSongGateway(dynamoDB, userUsecase)
 	trackGateway := makeTrackGateway(dynamoDB)
-	userGateway := makeUserGateway(dynamoDB)
+	userGateway := makeUserGateway(userUsecase)
 
 	handleRoute(GET, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
@@ -65,13 +71,14 @@ func main() {
 	})
 
 	handleRoute(POST, "/login", userGateway.Login)
+	handleRoute(POST, "/songs", songGateway.CreateSong)
 
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 
 	e.Logger.Fatal(e.Start(":5000"))
 }
 
-func makeDynamoDB() *dynamo.DB {
+func makeDynamoDB() dynamolib.DynamoDBWrapper {
 	dbSession := session.Must(session.NewSession())
 
 	config := aws.NewConfig().
@@ -80,33 +87,37 @@ func makeDynamoDB() *dynamo.DB {
 	switch env.Get() {
 	case env.Production:
 		config = config.WithRegion("us-east-2")
-		return dynamo.New(dbSession, config)
 
 	case env.Development:
 		config = config.WithEndpoint("http://localhost:8000").
 			WithRegion("localhost")
-		return dynamo.New(dbSession, config)
 
 	default:
 		panic("unexpected environment")
 	}
+
+	db := dynamo.New(dbSession, config)
+	return dynamolib.NewDynamoDBWrapper(db)
 }
 
-func makeSongGateway(dynamoDB *dynamo.DB) songgateway.Gateway {
+func makeSongGateway(dynamoDB dynamolib.DynamoDBWrapper, userUsecase userusecase.Usecase) songgateway.Gateway {
 	songDB := songstorage.NewDB(dynamoDB)
-	songUsecase := songusecase.NewUsecase(songDB)
+	songUsecase := songusecase.NewUsecase(songDB, userUsecase)
 	return songgateway.NewGateway(songUsecase)
 }
 
-func makeTrackGateway(dynamoDB *dynamo.DB) trackgateway.Gateway {
+func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper) trackgateway.Gateway {
 	trackDB := trackstorage.NewDB(dynamoDB)
 	trackUsecase := trackusecase.NewUsecase(trackDB)
 	return trackgateway.NewGateway(trackUsecase)
 }
 
-func makeUserGateway(dynamoDB *dynamo.DB) usergateway.Gateway {
+func makeUserUsecase(dynamoDB dynamolib.DynamoDBWrapper) userusecase.Usecase {
 	userDB := userstorage.NewDB(dynamoDB)
-	userUsecase := userusecase.NewUsecase(userDB)
+	return userusecase.NewUsecase(userDB, googleClientID)
+}
+
+func makeUserGateway(userUsecase userusecase.Usecase) usergateway.Gateway {
 	return usergateway.NewGateway(userUsecase)
 }
 

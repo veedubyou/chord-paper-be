@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/guregu/dynamo"
 	"github.com/pkg/errors"
+	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
 	trackentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/entity"
 )
@@ -15,10 +16,10 @@ const (
 )
 
 type DB struct {
-	dynamoDB *dynamo.DB
+	dynamoDB dynamolib.DynamoDBWrapper
 }
 
-func NewDB(dynamoDB *dynamo.DB) DB {
+func NewDB(dynamoDB dynamolib.DynamoDBWrapper) DB {
 	return DB{
 		dynamoDB: dynamoDB,
 	}

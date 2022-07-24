@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
+	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
 	userentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/entity"
 )
@@ -13,10 +14,10 @@ const (
 )
 
 type DB struct {
-	dynamoDB *dynamo.DB
+	dynamoDB dynamolib.DynamoDBWrapper
 }
 
-func NewDB(dynamoDB *dynamo.DB) DB {
+func NewDB(dynamoDB dynamolib.DynamoDBWrapper) DB {
 	return DB{
 		dynamoDB: dynamoDB,
 	}

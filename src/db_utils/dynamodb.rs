@@ -16,7 +16,7 @@ fn aws_client() -> rusoto_dynamodb::DynamoDbClient {
 
 fn local_client() -> rusoto_dynamodb::DynamoDbClient {
     let region = rusoto_core::Region::Custom {
-        name: "local".to_owned(),
+        name: "localhost".to_owned(),
         endpoint: "http://localhost:8000".to_owned(),
     };
 

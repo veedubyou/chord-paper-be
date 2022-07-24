@@ -4,7 +4,8 @@ import (
 	"context"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/google/uuid"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
+	"github.com/pkg/errors"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/api"
 	trackentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/entity"
 	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
 )
@@ -19,9 +20,10 @@ func NewUsecase(db trackstorage.DB) Usecase {
 	}
 }
 
-func (u Usecase) GetTrackList(ctx context.Context, songID uuid.UUID) (trackentity.TrackList, error) {
+func (u Usecase) GetTrackList(ctx context.Context, songID uuid.UUID) (trackentity.TrackList, *api.Error) {
 	tracklist, err := u.db.GetTrackList(ctx, songID)
 	if err != nil {
+		err = errors.Wrap(err, "Failed to get tracklist from DB")
 		switch {
 		case markers.Is(err, trackstorage.TrackListNotFound):
 			// presume the model where all songs have a tracklist
@@ -29,9 +31,13 @@ func (u Usecase) GetTrackList(ctx context.Context, songID uuid.UUID) (trackentit
 			return trackentity.NewTrackList(songID.String()), nil
 
 		case markers.Is(err, trackstorage.TrackListUnmarshalMark):
+			fallthrough
 		case markers.Is(err, trackstorage.DefaultErrorMark):
+			fallthrough
 		default:
-			return trackentity.TrackList{}, handle.Wrap(err, DefaultErrorMark, "Failed to GetTrackList")
+			return trackentity.TrackList{}, api.CommitError(err,
+				api.DefaultErrorCode,
+				"Unknown Error: Failed to fetch Track List")
 		}
 	}
 
