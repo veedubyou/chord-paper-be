@@ -30,8 +30,9 @@ import (
 type HTTPMethod string
 
 const (
-	GET  HTTPMethod = "GET"
-	POST HTTPMethod = "POST"
+	GET    HTTPMethod = "GET"
+	POST   HTTPMethod = "POST"
+	DELETE HTTPMethod = "DELETE"
 
 	// should get injected as an env var, but YAGNI for now as it's not a secret
 	// and there's no other case to reflect this need
@@ -44,11 +45,17 @@ func main() {
 	corsMiddleware := makeCorsMiddleware()
 
 	handleRoute := func(method HTTPMethod, path string, handlerFunc echo.HandlerFunc) {
+		params := func() (string, echo.HandlerFunc, echo.MiddlewareFunc, echo.MiddlewareFunc) {
+			return path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn
+		}
+
 		switch method {
 		case GET:
-			e.GET(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
+			e.GET(params())
 		case POST:
-			e.POST(path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn)
+			e.POST(params())
+		case DELETE:
+			e.DELETE(params())
 		default:
 			panic("unhandled http method!")
 		}
@@ -60,18 +67,23 @@ func main() {
 	trackGateway := makeTrackGateway(dynamoDB)
 	userGateway := makeUserGateway(userUsecase)
 
+	handleRoute(POST, "/login", userGateway.Login)
+
 	handleRoute(GET, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.GetSong(c, songID)
+	})
+
+	handleRoute(POST, "/songs", songGateway.CreateSong)
+	handleRoute(DELETE, "/songs/:id", func(c echo.Context) error {
+		songID := c.Param("id")
+		return songGateway.DeleteSong(c, songID)
 	})
 
 	handleRoute(GET, "/songs/:id/tracklist", func(c echo.Context) error {
 		songID := c.Param("id")
 		return trackGateway.GetTrackList(c, songID)
 	})
-
-	handleRoute(POST, "/login", userGateway.Login)
-	handleRoute(POST, "/songs", songGateway.CreateSong)
 
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 

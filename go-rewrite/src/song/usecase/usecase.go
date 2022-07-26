@@ -82,3 +82,43 @@ func (u Usecase) CreateSong(ctx context.Context, authHeader string, song songent
 
 	return createdSong, nil
 }
+
+func (u Usecase) DeleteSong(ctx context.Context, authHeader string, songID uuid.UUID) *api.Error {
+	if apiErr := u.verifySongOwner(ctx, authHeader, songID); apiErr != nil {
+		return apiErr
+	}
+
+	err := u.db.DeleteSong(ctx, songID)
+	if err != nil {
+		err = errors.Wrap(err, "Failed to delete song")
+		switch {
+		case markers.Is(err, songstorage.SongNotFoundMark):
+			return api.CommitError(err,
+				songerrors.SongNotFoundCode,
+				"The song requested to be deleted couldn't be found")
+
+		case markers.Is(err, songstorage.DefaultErrorMark):
+			fallthrough
+		default:
+			return api.CommitError(err,
+				api.DefaultErrorCode,
+				"Unknown error: Failed to delete song")
+		}
+	}
+
+	return nil
+}
+
+func (u Usecase) verifySongOwner(ctx context.Context, authHeader string, songID uuid.UUID) *api.Error {
+	song, apiErr := u.GetSong(ctx, songID)
+	if apiErr != nil {
+		return api.WrapError(apiErr, "Failed to fetch song")
+	}
+
+	apiErr = u.userUsecase.VerifyOwner(ctx, authHeader, song.Defined.Owner)
+	if apiErr != nil {
+		return api.WrapError(apiErr, "Failed to verify song owner")
+	}
+
+	return nil
+}
