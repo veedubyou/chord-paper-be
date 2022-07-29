@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Verify Go Build
+    name: Go Build
     runs-on: chord-paper-be-runner
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,3 @@ jobs:
       - name: Build
         working-directory: ./go-rewrite/src
         run: go build -v
-
-      - name: Test
-        working-directory: ./go-rewrite/src
-        run: go test -v ./...
