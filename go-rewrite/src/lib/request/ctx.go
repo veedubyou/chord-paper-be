@@ -11,7 +11,7 @@ import (
 
 func Context(c echo.Context) context.Context {
 	switch env.Get() {
-	case env.Production:
+	case env.Production, env.Test:
 		return c.Request().Context()
 
 	case env.Development:

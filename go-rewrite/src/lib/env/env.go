@@ -7,6 +7,7 @@ type Environment string
 const (
 	Production  Environment = "production"
 	Development Environment = "development"
+	Test        Environment = "test"
 )
 
 func Get() Environment {
@@ -20,6 +21,8 @@ func Get() Environment {
 		return Production
 	case "development":
 		return Development
+	case "test":
+		return Test
 	default:
 		panic("Invalid environment is set")
 	}

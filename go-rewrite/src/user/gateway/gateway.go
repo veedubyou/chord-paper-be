@@ -27,7 +27,7 @@ func (g Gateway) Login(c echo.Context) error {
 		return gateway.ErrorResponse(c, apiErr)
 	}
 
-	userJSON := userJSON{
+	userJSON := UserJSON{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,

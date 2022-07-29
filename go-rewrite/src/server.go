@@ -17,6 +17,7 @@ import (
 	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
 	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
 	usergateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/gateway"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/google_id"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
 	"net/http"
@@ -126,7 +127,8 @@ func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper) trackgateway.Gateway {
 
 func makeUserUsecase(dynamoDB dynamolib.DynamoDBWrapper) userusecase.Usecase {
 	userDB := userstorage.NewDB(dynamoDB)
-	return userusecase.NewUsecase(userDB, googleClientID)
+	validator := google_id.GoogleValidator{ClientID: googleClientID}
+	return userusecase.NewUsecase(userDB, validator)
 }
 
 func makeUserGateway(userUsecase userusecase.Usecase) usergateway.Gateway {

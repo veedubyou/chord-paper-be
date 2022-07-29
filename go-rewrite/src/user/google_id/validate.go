@@ -10,8 +10,17 @@ import (
 	"google.golang.org/api/idtoken"
 )
 
-func ValidateToken(ctx context.Context, clientID string, requestToken string) (userentity.User, error) {
-	validationResult, err := idtoken.Validate(ctx, requestToken, clientID)
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . Validator
+type Validator interface {
+	ValidateToken(ctx context.Context, requestToken string) (userentity.User, error)
+}
+
+type GoogleValidator struct {
+	ClientID string
+}
+
+func (g GoogleValidator) ValidateToken(ctx context.Context, requestToken string) (userentity.User, error) {
+	validationResult, err := idtoken.Validate(ctx, requestToken, g.ClientID)
 	if err != nil {
 		return userentity.User{}, handle.Wrap(err, NotValidatedMark, "Token could not be validated")
 	}
