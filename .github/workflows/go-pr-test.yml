@@ -18,14 +18,8 @@ jobs:
         with:
           go-version: 1.18
 
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: local
-          aws-secret-access-key: local
-          aws-region: us-east-2
-
       - name: Setup local DynamoDB
-        run: docker run -p 8000:8000 amazon/dynamodb-local
+        run: docker run -p 8000:8000 amazon/dynamodb-local &
 
       - name: Test
         working-directory: ./go-rewrite/src
