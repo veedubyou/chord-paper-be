@@ -38,7 +38,10 @@ func (d DynamoDBWrapper) Table(tableName string) DynamoTableWrapper {
 	}
 }
 
-func (d DynamoTableWrapper) Put(m map[string]interface{}) *dynamo.Put {
-	dbObj := putMap(m)
-	return d.Table.Put(dbObj)
+func (d DynamoTableWrapper) Put(input interface{}) *dynamo.Put {
+	if m, ok := input.(map[string]interface{}); ok {
+		return d.Table.Put(putMap(m))
+	}
+
+	return d.Table.Put(input)
 }

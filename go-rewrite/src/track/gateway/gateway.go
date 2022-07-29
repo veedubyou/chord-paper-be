@@ -29,7 +29,7 @@ func (g Gateway) GetTrackList(c echo.Context, songIDStr string) error {
 	if err != nil {
 		err = errors.Wrap(err, "Failed to parse song ID for track list")
 		apiErr := api.CommitError(err,
-			songerrors.InvalidIDCode,
+			songerrors.SongNotFoundCode,
 			"The song ID provided for the track list is invalid")
 		return gateway.ErrorResponse(c, apiErr)
 	}

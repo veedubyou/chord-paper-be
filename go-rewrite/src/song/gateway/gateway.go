@@ -91,8 +91,8 @@ func parseSongID(songIDStr string) (uuid.UUID, *api.Error) {
 	if err != nil {
 		err = errors.Wrap(err, "Failed to parse song ID")
 		apiErr := api.CommitError(err,
-			songerrors.InvalidIDCode,
-			"The song ID provided is malformed")
+			songerrors.SongNotFoundCode,
+			"The song ID provided is invalid")
 
 		return uuid.UUID{}, apiErr
 	}
