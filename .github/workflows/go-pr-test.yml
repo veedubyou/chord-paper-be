@@ -21,12 +21,7 @@ jobs:
       - name: Setup DynamoDB Local
         uses: rrainn/dynamodb-action@v2.0.1
         with:
-          dbPath:
-          sharedDb:
-          delayTransientStatuses:
-          optimizeDbBeforeStartup:
           port: 8000
-          cors: '*'
 
       - name: Test
         working-directory: ./go-rewrite/src
