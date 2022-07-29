@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"time"
 )
 
 func loadSong() map[string]interface{} {
@@ -156,8 +157,13 @@ var _ = Describe("Song", func() {
 			})
 
 			Describe("For an authorized owner", func() {
+				var (
+					requestTime time.Time
+				)
+
 				BeforeEach(func() {
 					requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+					requestTime = time.Now().UTC().Truncate(time.Second)
 				})
 
 				Describe("Song fields are accepted", func() {
@@ -170,6 +176,13 @@ var _ = Describe("Song", func() {
 						Expect(responseBody["id"]).NotTo(BeEmpty())
 					})
 
+					It("returns an updated lastSavedAt", func() {
+						responseBody := DecodeJSON[map[string]interface{}](response)
+						lastSavedAtStr := ExpectType[string](responseBody["lastSavedAt"])
+						lastSavedAt := ExpectSuccess(time.Parse(time.RFC3339, lastSavedAtStr))
+						Expect(lastSavedAt).To(BeTemporally(">=", requestTime))
+					})
+
 					It("returns the same song object", func() {
 						responseBody := DecodeJSON[map[string]interface{}](response)
 
@@ -180,8 +193,7 @@ var _ = Describe("Song", func() {
 					It("persists and can be retrieved after", func() {
 						By("Decoding the create song response")
 						createResponseBody := DecodeJSON[map[string]interface{}](response)
-						songID, ok := createResponseBody["id"].(string)
-						Expect(ok).To(BeTrue())
+						songID := ExpectType[string](createResponseBody["id"])
 
 						By("Making a request to Get Song")
 						getRequest := RequestFactory{
@@ -287,9 +299,7 @@ var _ = Describe("Song", func() {
 			By("Extracting the ID from the created song")
 			song := DecodeJSON[map[string]interface{}](response)
 
-			var ok bool
-			songID, ok = song["id"].(string)
-			Expect(ok).To(BeTrue())
+			songID = ExpectType[string](song["id"])
 			Expect(songID).NotTo(BeEmpty())
 		})
 
