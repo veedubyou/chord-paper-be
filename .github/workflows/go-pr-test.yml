@@ -1,4 +1,4 @@
-name: PR Test
+name: PR Checks
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
 jobs:
   test:
     name: Go Test
-    runs-on: chord-paper-be-runner
+    runs-on: ubuntu-latest
+    #runs-on: chord-paper-be-runner
 
     services:
       dynamodb:
