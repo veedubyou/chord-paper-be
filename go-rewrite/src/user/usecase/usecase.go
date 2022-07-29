@@ -10,6 +10,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/google_id"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/storage"
 	"strings"
+	"sync"
 )
 
 const (
@@ -29,23 +30,51 @@ func NewUsecase(db userstorage.DB, googleValidator google_id.Validator) Usecase 
 }
 
 func (u Usecase) VerifyOwner(ctx context.Context, authHeader string, ownerID string) *api.Error {
-	userFromGoogle, apiErr := u.validateHeader(ctx, authHeader)
-	if apiErr != nil {
-		return api.WrapError(apiErr, "Failed to validate auth header")
+	var userFromGoogle userentity.User
+	var validateHeaderErr *api.Error
+	var getOwnerErr *api.Error
+
+	waitgroup := sync.WaitGroup{}
+	waitgroup.Add(2)
+
+	validateHeader := func() {
+		defer waitgroup.Done()
+		userFromGoogle, validateHeaderErr = u.validateHeader(ctx, authHeader)
 	}
 
-	_, apiErr = u.getUser(ctx, userFromGoogle.ID)
-	if apiErr != nil {
-		return api.WrapError(apiErr, "Failed to get user")
+	// check for the owner's ID optimistically
+	// and then match it to the auth header's
+	// if it's wrong, we'll need to do more auth checks to see which error to return
+	// but if it's right then we'll save some time
+	getOwner := func() {
+		defer waitgroup.Done()
+		_, getOwnerErr = u.getUser(ctx, ownerID)
+	}
+
+	go validateHeader()
+	go getOwner()
+
+	waitgroup.Wait()
+
+	if validateHeaderErr != nil {
+		return api.WrapError(validateHeaderErr, "Failed to validate auth header")
 	}
 
 	if userFromGoogle.ID != ownerID {
+		if _, apiErr := u.getUser(ctx, userFromGoogle.ID); apiErr != nil {
+			return api.WrapError(apiErr, "Failed to find user account")
+		}
+
 		return api.CommitError(
 			errors.New("Owner ID and user Google ID don't match"),
 			auth.WrongOwnerCode,
 			"The user requesting access doesn't match the owner")
 	}
-	
+
+	if getOwnerErr != nil {
+		return api.WrapError(getOwnerErr, "Failed to find user account")
+	}
+
 	return nil
 }
 
