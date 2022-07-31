@@ -16,6 +16,9 @@ const (
 	SongsTable            = "Songs"
 	newSongCondition      = "attribute_not_exists(" + idKey + ")"
 	existingSongCondition = "attribute_exists(" + idKey + ")"
+	lastSavedAtField      = "lastSavedAt"
+	metadataField         = "metadata"
+	ownerIndex            = "owner-index"
 )
 
 type DB struct {
@@ -52,6 +55,36 @@ func (d DB) GetSong(ctx context.Context, songID uuid.UUID) (songentity.Song, err
 	}
 
 	return song, nil
+}
+
+func (d DB) GetSongSummariesForUser(ctx context.Context, ownerID string) ([]songentity.SongSummary, error) {
+	values := []dbSong{}
+	err := d.dynamoDB.Table(SongsTable).
+		Get(ownerKey, ownerID).
+		Index(ownerIndex).
+		Project(idKey, ownerKey, lastSavedAtField, metadataField).
+		AllWithContext(ctx, &values)
+
+	if err != nil {
+		return nil, handle.Wrap(err,
+			DefaultErrorMark,
+			"Failed to fetch all songs for owner ID")
+	}
+
+	summaries := []songentity.SongSummary{}
+	for _, value := range values {
+		summary := songentity.SongSummary{}
+		err := summary.FromMap(value)
+		if err != nil {
+			return nil, handle.Wrap(err,
+				SongUnmarshalMark,
+				"Failed to unmarshal song into its entity form")
+		}
+
+		summaries = append(summaries, summary)
+	}
+
+	return summaries, nil
 }
 
 func (d DB) CreateSong(ctx context.Context, newSong songentity.Song) (songentity.Song, error) {

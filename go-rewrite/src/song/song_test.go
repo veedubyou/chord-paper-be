@@ -52,6 +52,29 @@ var _ = Describe("Song", func() {
 		songGateway = songgateway.NewGateway(songUsecase)
 	})
 
+	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
+		By("First creating a song")
+
+		request := RequestFactory{
+			Method:  "POST",
+			Path:    "/songs",
+			JSONObj: songPayload,
+			Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
+		}.Make()
+		response := httptest.NewRecorder()
+		c := PrepareEchoContext(request, response)
+
+		err := songGateway.CreateSong(c)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("Extracting the ID from the created song")
+		song := DecodeJSON[map[string]interface{}](response)
+
+		songID := ExpectType[string](song["id"])
+		Expect(songID).NotTo(BeEmpty())
+		return songID, song
+	}
+
 	BeforeEach(func() {
 		ResetDB(db)
 	})
@@ -115,6 +138,119 @@ var _ = Describe("Song", func() {
 		})
 	})
 
+	Describe("Get Song Summaries for User", func() {
+		Describe("Unauthorized", func() {
+			BeforeEach(func() {
+				authtest.Endpoint = func(c echo.Context) error {
+					return songGateway.GetSongSummariesForUser(c, PrimaryUser.ID)
+				}
+			})
+
+			authtest.ItRejectsUnpermittedRequests("GET", "/users/:id/songs")
+		})
+
+		Describe("Authorized", func() {
+			var (
+				response       *httptest.ResponseRecorder
+				requestFactory RequestFactory
+			)
+
+			BeforeEach(func() {
+				requestFactory = RequestFactory{
+					Method:  "GET",
+					Path:    fmt.Sprintf("/users/%s/songs", PrimaryUser.ID),
+					JSONObj: nil,
+					Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
+				}
+			})
+
+			JustBeforeEach(func() {
+				request := requestFactory.Make()
+				response = httptest.NewRecorder()
+				c := PrepareEchoContext(request, response)
+
+				err := songGateway.GetSongSummariesForUser(c, PrimaryUser.ID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			Describe("With no songs", func() {
+				It("returns success", func() {
+					Expect(response.Code).To(Equal(http.StatusOK))
+				})
+
+				It("returns an empty array", func() {
+					result := DecodeJSON[[]interface{}](response)
+					Expect(result).To(BeEmpty())
+				})
+			})
+
+			Describe("With some songs", func() {
+				var (
+					songs   [3]map[string]interface{}
+					songIDs [3]string
+				)
+
+				var (
+					makeExpectedSummary = func(song map[string]interface{}) map[string]interface{} {
+						summary := map[string]interface{}{}
+
+						summary["id"] = song["id"]
+						summary["owner"] = song["owner"]
+						summary["lastSavedAt"] = song["lastSavedAt"]
+						summary["metadata"] = song["metadata"]
+						return summary
+					}
+				)
+
+				BeforeEach(func() {
+					songs = [3]map[string]interface{}{}
+					songIDs = [3]string{}
+
+					songs[0] = loadSong()
+					Expect(songs[0]["elements"]).NotTo(BeNil())
+					songIDs[0], songs[0] = createSong(songs[0])
+
+					songs[1] = loadSong()
+					Expect(songs[1]["elements"]).NotTo(BeNil())
+					song2Metadata := ExpectType[map[string]interface{}](songs[1]["metadata"])
+					song2Metadata["title"] = "Ocean Wide Canyon Deep"
+					song2Metadata["composedBy"] = "Jacob Collier"
+					song2Metadata["performedBy"] = "Jacob Collier"
+					songIDs[1], songs[1] = createSong(songs[1])
+
+					songs[2] = loadSong()
+					Expect(songs[2]["elements"]).NotTo(BeNil())
+					song3Metadata := ExpectType[map[string]interface{}](songs[2]["metadata"])
+					song3Metadata["title"] = "苺"
+					song3Metadata["composedBy"] = "荒谷翔大"
+					song3Metadata["performedBy"] = "yonawo"
+					songIDs[2], songs[2] = createSong(songs[2])
+				})
+
+				It("returns success", func() {
+					Expect(response.Code).To(Equal(http.StatusOK))
+				})
+
+				It("doesn't return the body of the song", func() {
+					songSummaries := DecodeJSON[[]map[string]interface{}](response)
+					for _, summary := range songSummaries {
+						Expect(summary).NotTo(HaveKey("elements"))
+					}
+				})
+
+				It("returns the other data of the song besides the body", func() {
+					expectedSummaries := []interface{}{}
+					for _, song := range songs {
+						expectedSummaries = append(expectedSummaries, makeExpectedSummary(song))
+					}
+
+					songSummaries := DecodeJSON[[]map[string]interface{}](response)
+					Expect(songSummaries).To(ConsistOf(expectedSummaries...))
+				})
+			})
+		})
+	})
+
 	Describe("Create Song", func() {
 		var (
 			createSongPayload map[string]interface{}
@@ -124,16 +260,16 @@ var _ = Describe("Song", func() {
 			createSongPayload = loadSong()
 		})
 
-		Describe("Shared auth tests", func() {
+		Describe("Unpermitted requests", func() {
 			BeforeEach(func() {
 				authtest.Endpoint = songGateway.CreateSong
 				authtest.JSONBody = createSongPayload
 			})
 
-			authtest.ItRejectsUnauthorizedRequests("POST", "/songs")
+			authtest.ItRejectsUnpermittedRequests("POST", "/songs")
 		})
 
-		Describe("Unshared tests", func() {
+		Describe("Authorized", func() {
 			var (
 				response       *httptest.ResponseRecorder
 				requestFactory RequestFactory
@@ -257,21 +393,6 @@ var _ = Describe("Song", func() {
 					})
 				})
 			})
-
-			Describe("For an unauthorized owner", func() {
-				BeforeEach(func() {
-					requestFactory.Mods.Add(WithUserCred(OtherUser))
-				})
-
-				It("fails with the right error code", func() {
-					resErr := DecodeJSONError(response)
-					Expect(resErr.Code).To(BeEquivalentTo(auth.WrongOwnerCode))
-				})
-
-				It("fails with the right status code", func() {
-					Expect(response.Code).To(Equal(http.StatusForbidden))
-				})
-			})
 		})
 	})
 
@@ -281,29 +402,11 @@ var _ = Describe("Song", func() {
 		)
 
 		BeforeEach(func() {
-			By("First creating a song")
 			createSongPayload := loadSong()
-
-			request := RequestFactory{
-				Method:  "POST",
-				Path:    "/songs",
-				JSONObj: createSongPayload,
-				Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
-			}.Make()
-			response := httptest.NewRecorder()
-			c := PrepareEchoContext(request, response)
-
-			err := songGateway.CreateSong(c)
-			Expect(err).NotTo(HaveOccurred())
-
-			By("Extracting the ID from the created song")
-			song := DecodeJSON[map[string]interface{}](response)
-
-			songID = ExpectType[string](song["id"])
-			Expect(songID).NotTo(BeEmpty())
+			songID, _ = createSong(createSongPayload)
 		})
 
-		Describe("Shared auth tests", func() {
+		Describe("Unpermitted", func() {
 			BeforeEach(func() {
 				authtest.Endpoint = func(c echo.Context) error {
 					Expect(songID).NotTo(BeEmpty())
@@ -311,10 +414,10 @@ var _ = Describe("Song", func() {
 				}
 			})
 
-			authtest.ItRejectsUnauthorizedRequests("DELETE", "/songs/:id")
+			authtest.ItRejectsUnpermittedRequests("DELETE", "/songs/:id")
 		})
 
-		Describe("Unshared tests", func() {
+		Describe("Authorized", func() {
 			var (
 				response       *httptest.ResponseRecorder
 				requestFactory RequestFactory
@@ -328,6 +431,10 @@ var _ = Describe("Song", func() {
 				}
 			})
 
+			BeforeEach(func() {
+				requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+			})
+
 			JustBeforeEach(func() {
 				request := requestFactory.Make()
 				response = httptest.NewRecorder()
@@ -338,10 +445,6 @@ var _ = Describe("Song", func() {
 			})
 
 			Describe("For a nonexisting song", func() {
-				BeforeEach(func() {
-					requestFactory.Mods.Add(WithUserCred(PrimaryUser))
-				})
-
 				Describe("For a valid ID", func() {
 					BeforeEach(func() {
 						songID = uuid.New().String()
@@ -373,11 +476,7 @@ var _ = Describe("Song", func() {
 				})
 			})
 
-			Describe("For an authorized owner", func() {
-				BeforeEach(func() {
-					requestFactory.Mods.Add(WithUserCred(PrimaryUser))
-				})
-
+			Describe("For an existing song", func() {
 				It("returns success", func() {
 					Expect(response.Code).To(Equal(http.StatusOK))
 				})
@@ -402,21 +501,6 @@ var _ = Describe("Song", func() {
 					Expect(getResponse.Code).To(Equal(http.StatusNotFound))
 					getResponseError := DecodeJSON[gateway.JSONAPIError](getResponse)
 					Expect(getResponseError.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
-				})
-			})
-
-			Describe("For an unauthorized owner", func() {
-				BeforeEach(func() {
-					requestFactory.Mods.Add(WithUserCred(OtherUser))
-				})
-
-				It("fails with the right error code", func() {
-					resErr := DecodeJSONError(response)
-					Expect(resErr.Code).To(BeEquivalentTo(auth.WrongOwnerCode))
-				})
-
-				It("fails with the right status code", func() {
-					Expect(response.Code).To(Equal(http.StatusForbidden))
 				})
 			})
 		})

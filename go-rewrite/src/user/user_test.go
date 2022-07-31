@@ -30,7 +30,7 @@ var _ = Describe("User", func() {
 	})
 
 	Describe("Login", func() {
-		Describe("Shared auth tests", func() {
+		Describe("Unauthorized", func() {
 			BeforeEach(func() {
 				authtest.Endpoint = userGateway.Login
 			})

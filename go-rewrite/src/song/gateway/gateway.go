@@ -39,6 +39,22 @@ func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
 	return c.JSON(http.StatusOK, song)
 }
 
+func (g Gateway) GetSongSummariesForUser(c echo.Context, ownerID string) error {
+	ctx := request.Context(c)
+
+	authHeader, apiErr := request.AuthHeader(c)
+	if apiErr != nil {
+		return gateway.ErrorResponse(c, apiErr)
+	}
+
+	songSummaries, apiErr := g.usecase.GetSongSummariesForUser(ctx, authHeader, ownerID)
+	if apiErr != nil {
+		return gateway.ErrorResponse(c, apiErr)
+	}
+
+	return c.JSON(http.StatusOK, songSummaries)
+}
+
 func (g Gateway) CreateSong(c echo.Context) error {
 	ctx := request.Context(c)
 
