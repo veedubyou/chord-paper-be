@@ -86,6 +86,11 @@ func main() {
 		return trackGateway.GetTrackList(c, songID)
 	})
 
+	handleRoute(GET, "/users/:id/songs", func(c echo.Context) error {
+		userID := c.Param("id")
+		return songGateway.GetSongSummariesForUser(c, userID)
+	})
+
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 
 	e.Logger.Fatal(e.Start(":5000"))

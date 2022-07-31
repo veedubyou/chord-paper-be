@@ -17,8 +17,64 @@ var (
 	JSONBody interface{}
 )
 
+func ItRejectsUnpermittedRequests(method string, path string) {
+	ItRejectsUnauthorizedRequests(method, path)
+	ItRejectsWrongOwnerRequests(method, path)
+}
+
+func ItRejectsWrongOwnerRequests(method string, path string) {
+	Describe("Unauthenticated requests", func() {
+		var (
+			response       *httptest.ResponseRecorder
+			requestFactory RequestFactory
+		)
+
+		BeforeEach(func() {
+			requestFactory = RequestFactory{
+				Method:  method,
+				Path:    path,
+				JSONObj: JSONBody,
+			}
+		})
+
+		BeforeEach(func() {
+			Expect(Endpoint).NotTo(BeNil())
+		})
+
+		AfterEach(func() {
+			Endpoint = nil
+			JSONBody = nil
+		})
+
+		JustBeforeEach(func() {
+			request := requestFactory.Make()
+			response = httptest.NewRecorder()
+			c := PrepareEchoContext(request, response)
+
+			Expect(Endpoint).NotTo(BeNil())
+			err := Endpoint(c)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		Describe("For a user that's not the owner of the resources", func() {
+			BeforeEach(func() {
+				requestFactory.Mods.Add(WithUserCred(OtherUser))
+			})
+
+			It("fails with the right error code", func() {
+				resErr := DecodeJSONError(response)
+				Expect(resErr.Code).To(BeEquivalentTo(auth.WrongOwnerCode))
+			})
+
+			It("fails with the right status code", func() {
+				Expect(response.Code).To(Equal(http.StatusForbidden))
+			})
+		})
+	})
+}
+
 func ItRejectsUnauthorizedRequests(method string, path string) {
-	Describe("Shared user authorization tests", func() {
+	Describe("Unauthorized requests", func() {
 		var (
 			response       *httptest.ResponseRecorder
 			requestFactory RequestFactory

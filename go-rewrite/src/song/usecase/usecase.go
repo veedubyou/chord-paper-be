@@ -11,6 +11,7 @@ import (
 	songerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/errors"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
+	"sync"
 )
 
 type Usecase struct {
@@ -48,6 +49,50 @@ func (u Usecase) GetSong(ctx context.Context, songID uuid.UUID) (songentity.Song
 	}
 
 	return song, nil
+}
+
+func (u Usecase) GetSongSummariesForUser(ctx context.Context, authHeader string, ownerID string) ([]songentity.SongSummary, *api.Error) {
+	waitgroup := sync.WaitGroup{}
+
+	waitgroup.Add(2)
+
+	var verifyOwnerErr *api.Error
+	verifyOwner := func() {
+		defer waitgroup.Done()
+		verifyOwnerErr = u.userUsecase.VerifyOwner(ctx, authHeader, ownerID)
+	}
+
+	var summaries []songentity.SongSummary
+	var getSummariesErr error
+	getSummaries := func() {
+		defer waitgroup.Done()
+		summaries, getSummariesErr = u.db.GetSongSummariesForUser(ctx, ownerID)
+	}
+
+	go verifyOwner()
+	go getSummaries()
+
+	waitgroup.Wait()
+
+	if verifyOwnerErr != nil {
+		return nil, api.WrapError(verifyOwnerErr, "Could not verify owner ID")
+	}
+
+	if getSummariesErr != nil {
+		getSummariesErr = errors.Wrap(getSummariesErr, "Could not fetch song summaries")
+		switch {
+		case markers.Is(getSummariesErr, songstorage.SongUnmarshalMark):
+			fallthrough
+		case markers.Is(getSummariesErr, songstorage.DefaultErrorMark):
+			fallthrough
+		default:
+			return nil, api.CommitError(getSummariesErr,
+				api.DefaultErrorCode,
+				"Ran into issues fetching your songs. Please contact the developer")
+		}
+	}
+
+	return summaries, nil
 }
 
 func (u Usecase) CreateSong(ctx context.Context, authHeader string, song songentity.Song) (songentity.Song, *api.Error) {

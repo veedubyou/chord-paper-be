@@ -10,6 +10,13 @@ type Song struct {
 	jsonlib.Flatten[SongFields]
 }
 
+// SongSummary is explicitly distinct from Song because it's meant
+// to be a smaller set of fields. I don't want there to be a confusion
+// where a method takes in a song and a song summary is passed in instead
+type SongSummary struct {
+	jsonlib.Flatten[SongFields]
+}
+
 func (s Song) IsNew() bool {
 	return s.Defined.ID == ""
 }
