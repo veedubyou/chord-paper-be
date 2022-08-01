@@ -52,6 +52,21 @@ var _ = Describe("Song", func() {
 		songGateway = songgateway.NewGateway(songUsecase)
 	})
 
+	var getSong = func(songID string) map[string]interface{} {
+		getRequest := RequestFactory{
+			Method:  "GET",
+			Path:    fmt.Sprintf("/songs/%s", songID),
+			JSONObj: nil,
+		}.Make()
+
+		getResponse := httptest.NewRecorder()
+		c := PrepareEchoContext(getRequest, getResponse)
+		err := songGateway.GetSong(c, songID)
+		Expect(err).NotTo(HaveOccurred())
+
+		return DecodeJSON[map[string]interface{}](getResponse)
+	}
+
 	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
 		By("First creating a song")
 
@@ -347,23 +362,10 @@ var _ = Describe("Song", func() {
 					})
 
 					It("persists and can be retrieved after", func() {
-						By("Decoding the create song response")
 						createResponseBody := DecodeJSON[map[string]interface{}](response)
 						songID := ExpectType[string](createResponseBody["id"])
 
-						By("Making a request to Get Song")
-						getRequest := RequestFactory{
-							Method:  "GET",
-							Path:    fmt.Sprintf("/songs/%s", songID),
-							JSONObj: nil,
-						}.Make()
-						getResponse := httptest.NewRecorder()
-						c := PrepareEchoContext(getRequest, getResponse)
-						err := songGateway.GetSong(c, songID)
-						Expect(err).NotTo(HaveOccurred())
-
-						By("Comparing the response from Get Song")
-						getResponseBody := DecodeJSON[map[string]interface{}](getResponse)
+						getResponseBody := getSong(songID)
 						Expect(getResponseBody).To(Equal(createResponseBody))
 					})
 				})
@@ -488,6 +490,90 @@ var _ = Describe("Song", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
+			Describe("With an acceptable last saved at time", func() {
+				var (
+					previousLastSavedAt time.Time
+				)
+
+				BeforeEach(func() {
+					previousLastSavedAt = time.Now().UTC().Truncate(time.Second)
+					songUpdate["lastSavedAt"] = previousLastSavedAt.Format(time.RFC3339)
+				})
+
+				Describe("With mostly normal stuff", func() {
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("updated the last saved at time", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						updatedTimeStr := ExpectType[string](updatedSong["lastSavedAt"])
+						Expect(updatedTimeStr).NotTo(BeZero())
+						updatedTime := ExpectSuccess(time.Parse(time.RFC3339, updatedTimeStr))
+						Expect(updatedTime).To(BeTemporally(">=", previousLastSavedAt))
+						Expect(updatedTime).To(BeTemporally("<=", time.Now()))
+					})
+
+					It("returns the updated song", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						ExpectJSONEqualExceptLastSavedAt(updatedSong, songUpdate)
+					})
+
+					It("is updated and can be fetched", func() {
+						fetchedSong := getSong(songID)
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						Expect(fetchedSong).To(Equal(updatedSong))
+					})
+				})
+
+				Describe("With a tampered ID", func() {
+					BeforeEach(func() {
+						randomID := uuid.New().String()
+						Expect(randomID).NotTo(Equal(songID))
+						songUpdate["id"] = randomID
+					})
+
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("doesn't overwrite the ID", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						Expect(updatedSong["id"]).To(Equal(songID))
+					})
+				})
+
+				Describe("With a tampered owner", func() {
+					BeforeEach(func() {
+						songUpdate["owner"] = OtherUser.ID
+					})
+
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("doesn't overwrite the owner", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						Expect(updatedSong["owner"]).To(Equal(PrimaryUser.ID))
+					})
+				})
+			})
+
+			Describe("For a song with no last saved at timestamp", func() {
+				BeforeEach(func() {
+					delete(songUpdate, "lastSavedAt")
+				})
+
+				It("rejects the save with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongOverwriteCode))
+				})
+
+				It("rejects the save with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusBadRequest))
+				})
+			})
+
 			Describe("For a song that doesn't exist", func() {
 				BeforeEach(func() {
 					songID = uuid.New().String()
@@ -533,85 +619,6 @@ var _ = Describe("Song", func() {
 
 				It("rejects the save with the right status code", func() {
 					Expect(response.Code).To(Equal(http.StatusBadRequest))
-				})
-			})
-
-			Describe("For a song with no last saved at timestamp", func() {
-				BeforeEach(func() {
-					delete(songUpdate, "lastSavedAt")
-				})
-
-				It("rejects the save with the right error code", func() {
-					resErr := DecodeJSONError(response)
-					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongOverwriteCode))
-				})
-
-				It("rejects the save with the right status code", func() {
-					Expect(response.Code).To(Equal(http.StatusBadRequest))
-				})
-			})
-
-			Describe("With an acceptable last saved at time", func() {
-				var (
-					previousLastSavedAt time.Time
-				)
-
-				BeforeEach(func() {
-					previousLastSavedAt = time.Now().UTC().Truncate(time.Second)
-					songUpdate["lastSavedAt"] = previousLastSavedAt.Format(time.RFC3339)
-				})
-
-				Describe("With mostly normal stuff", func() {
-					It("succeeds", func() {
-						Expect(response.Code).To(Equal(http.StatusOK))
-					})
-
-					It("updated the last saved at time", func() {
-						updatedSong := DecodeJSON[map[string]interface{}](response)
-						updatedTimeStr := ExpectType[string](updatedSong["lastSavedAt"])
-						Expect(updatedTimeStr).NotTo(BeZero())
-						updatedTime := ExpectSuccess(time.Parse(time.RFC3339, updatedTimeStr))
-						Expect(updatedTime).To(BeTemporally(">=", previousLastSavedAt))
-						Expect(updatedTime).To(BeTemporally("<=", time.Now()))
-					})
-
-					It("updated the song", func() {
-						updatedSong := DecodeJSON[map[string]interface{}](response)
-
-						ExpectJSONEqualExceptLastSavedAt(updatedSong, songUpdate)
-					})
-				})
-
-				Describe("With a tampered ID", func() {
-					BeforeEach(func() {
-						randomID := uuid.New().String()
-						Expect(randomID).NotTo(Equal(songID))
-						songUpdate["id"] = randomID
-					})
-
-					It("succeeds", func() {
-						Expect(response.Code).To(Equal(http.StatusOK))
-					})
-
-					It("doesn't overwrite the ID", func() {
-						updatedSong := DecodeJSON[map[string]interface{}](response)
-						Expect(updatedSong["id"]).To(Equal(songID))
-					})
-				})
-
-				Describe("With a tampered owner", func() {
-					BeforeEach(func() {
-						songUpdate["owner"] = OtherUser.ID
-					})
-
-					It("succeeds", func() {
-						Expect(response.Code).To(Equal(http.StatusOK))
-					})
-
-					It("doesn't overwrite the owner", func() {
-						updatedSong := DecodeJSON[map[string]interface{}](response)
-						Expect(updatedSong["owner"]).To(Equal(PrimaryUser.ID))
-					})
 				})
 			})
 		})
