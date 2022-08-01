@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	SongNotFoundCode = api.ErrorCode("song_not_found")
-	ExistingSongCode = api.ErrorCode("create_song_exists")
-	BadSongDataCode  = api.ErrorCode("bad_song_data")
+	SongNotFoundCode  = api.ErrorCode("song_not_found")
+	ExistingSongCode  = api.ErrorCode("create_song_exists")
+	BadSongDataCode   = api.ErrorCode("bad_song_data")
+	SongOverwriteCode = api.ErrorCode("update_song_overwrite")
 )

@@ -29,7 +29,7 @@ func (s *Song) CreateID() {
 	s.Defined.ID = uuid.New().String()
 }
 
-func (s *Song) SetSavedTime() {
+func (s *Song) SetSavedAtToNow() {
 	// truncate to seconds because this will be consumed by the browser
 	// and browser dates have only millisecond resolution
 

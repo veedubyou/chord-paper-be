@@ -5,7 +5,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/google/uuid"
 	"github.com/guregu/dynamo"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
@@ -31,10 +30,15 @@ func NewDB(dynamoDB dynamolib.DynamoDBWrapper) DB {
 	}
 }
 
-func (d DB) GetSong(ctx context.Context, songID uuid.UUID) (songentity.Song, error) {
+func (d DB) GetSong(ctx context.Context, songID string) (songentity.Song, error) {
+	if songID == "" {
+		err := errors.New("Song ID is empty")
+		return songentity.Song{}, handle.Wrap(err, SongNotFoundMark, "No ID provided to fetch song")
+	}
+
 	value := dbSong{}
 	err := d.dynamoDB.Table(SongsTable).
-		Get(idKey, songID.String()).
+		Get(idKey, songID).
 		OneWithContext(ctx, &value)
 
 	if err != nil {
@@ -88,6 +92,11 @@ func (d DB) GetSongSummariesForUser(ctx context.Context, ownerID string) ([]song
 }
 
 func (d DB) CreateSong(ctx context.Context, newSong songentity.Song) (songentity.Song, error) {
+	if newSong.Defined.ID == "" {
+		err := errors.New("Song ID is empty")
+		return songentity.Song{}, handle.Wrap(err, DefaultErrorMark, "No ID provided to create song")
+	}
+
 	err := d.putSong(ctx, newSong, false)
 	if err != nil {
 		if conditionalCheckFailed(err) {
@@ -101,6 +110,27 @@ func (d DB) CreateSong(ctx context.Context, newSong songentity.Song) (songentity
 	}
 
 	return newSong, nil
+}
+
+func (d DB) UpdateSong(ctx context.Context, song songentity.Song) (songentity.Song, error) {
+	if song.Defined.ID == "" {
+		err := errors.New("Song ID is empty")
+		return songentity.Song{}, handle.Wrap(err, SongNotFoundMark, "No ID provided to update song")
+	}
+
+	err := d.putSong(ctx, song, true)
+	if err != nil {
+		if conditionalCheckFailed(err) {
+			return songentity.Song{}, handle.Wrap(err,
+				SongNotFoundMark,
+				"Cannot update: Song of this ID cannot be found")
+
+		}
+
+		return songentity.Song{}, errors.Wrap(err, "Failed to put song into DB")
+	}
+
+	return song, nil
 }
 
 func (d DB) putSong(ctx context.Context, song songentity.Song, expectSongExists bool) error {
@@ -120,8 +150,13 @@ func (d DB) putSong(ctx context.Context, song songentity.Song, expectSongExists 
 	return putExpr.RunWithContext(ctx)
 }
 
-func (d DB) DeleteSong(ctx context.Context, songID uuid.UUID) error {
-	delExpr := d.dynamoDB.Table(SongsTable).Delete(idKey, songID.String())
+func (d DB) DeleteSong(ctx context.Context, songID string) error {
+	if songID == "" {
+		err := errors.New("Song ID is empty")
+		return handle.Wrap(err, SongNotFoundMark, "No ID provided to delete song")
+	}
+
+	delExpr := d.dynamoDB.Table(SongsTable).Delete(idKey, songID)
 	delExpr = delExpr.If(existingSongCondition)
 
 	if err := delExpr.RunWithContext(ctx); err != nil {

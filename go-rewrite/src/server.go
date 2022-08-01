@@ -33,6 +33,7 @@ type HTTPMethod string
 const (
 	GET    HTTPMethod = "GET"
 	POST   HTTPMethod = "POST"
+	PUT    HTTPMethod = "PUT"
 	DELETE HTTPMethod = "DELETE"
 
 	// should get injected as an env var, but YAGNI for now as it's not a secret
@@ -55,6 +56,8 @@ func main() {
 			e.GET(params())
 		case POST:
 			e.POST(params())
+		case PUT:
+			e.PUT(params())
 		case DELETE:
 			e.DELETE(params())
 		default:
@@ -76,6 +79,12 @@ func main() {
 	})
 
 	handleRoute(POST, "/songs", songGateway.CreateSong)
+
+	handleRoute(PUT, "/songs/:id", func(c echo.Context) error {
+		songID := c.Param("id")
+		return songGateway.UpdateSong(c, songID)
+	})
+
 	handleRoute(DELETE, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.DeleteSong(c, songID)

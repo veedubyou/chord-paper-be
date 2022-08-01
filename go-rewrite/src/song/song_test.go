@@ -86,6 +86,11 @@ var _ = Describe("Song", func() {
 				songID   string
 			)
 
+			BeforeEach(func() {
+				songID = ""
+				createSong(loadSong())
+			})
+
 			JustBeforeEach(func() {
 				requestFactory := RequestFactory{
 					Method:  "GET",
@@ -97,13 +102,27 @@ var _ = Describe("Song", func() {
 				response = httptest.NewRecorder()
 				c := PrepareEchoContext(request, response)
 
-				Expect(songID).NotTo(BeEmpty())
 				err := songGateway.GetSong(c, songID)
 				Expect(err).NotTo(HaveOccurred())
 			})
 
 			AfterEach(func() {
 				songID = ""
+			})
+
+			Describe("For an empty ID", func() {
+				BeforeEach(func() {
+					songID = ""
+				})
+
+				It("fails with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+				})
+
+				It("fails with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusNotFound))
+				})
 			})
 
 			Describe("For a malformed ID", func() {
@@ -317,13 +336,14 @@ var _ = Describe("Song", func() {
 						lastSavedAtStr := ExpectType[string](responseBody["lastSavedAt"])
 						lastSavedAt := ExpectSuccess(time.Parse(time.RFC3339, lastSavedAtStr))
 						Expect(lastSavedAt).To(BeTemporally(">=", requestTime))
+						Expect(lastSavedAt).To(BeTemporally("<=", time.Now()))
 					})
 
 					It("returns the same song object", func() {
 						responseBody := DecodeJSON[map[string]interface{}](response)
 
 						responseBody["id"] = ""
-						ExpectEqualSongJSON(responseBody, createSongPayload)
+						ExpectJSONEqualExceptLastSavedAt(responseBody, createSongPayload)
 					})
 
 					It("persists and can be retrieved after", func() {
@@ -359,7 +379,7 @@ var _ = Describe("Song", func() {
 					})
 
 					It("fails with the right status code", func() {
-						Expect(response.Code).To(Equal(http.StatusUnprocessableEntity))
+						Expect(response.Code).To(Equal(http.StatusBadRequest))
 					})
 				})
 
@@ -390,6 +410,207 @@ var _ = Describe("Song", func() {
 
 					It("fails with the right status code", func() {
 						Expect(response.Code).To(Equal(http.StatusBadRequest))
+					})
+				})
+			})
+		})
+	})
+
+	Describe("Update Song", func() {
+		var (
+			songID     string
+			songUpdate map[string]interface{}
+		)
+
+		var getFirstBlock = func(song map[string]interface{}) map[string]interface{} {
+			lines := ExpectType[[]interface{}](song["elements"])
+			Expect(lines).NotTo(BeEmpty())
+			firstLine := ExpectType[map[string]interface{}](lines[0])
+			firstLineElements := ExpectType[[]interface{}](firstLine["elements"])
+			Expect(firstLineElements).NotTo(BeEmpty())
+			firstBlock := ExpectType[map[string]interface{}](firstLineElements[0])
+			return firstBlock
+		}
+
+		var getMetadata = func(song map[string]interface{}) map[string]interface{} {
+			return ExpectType[map[string]interface{}](songUpdate["metadata"])
+		}
+
+		BeforeEach(func() {
+			songID, _ = createSong(loadSong())
+
+			songUpdate = loadSong()
+
+			songUpdate["id"] = songID
+			metadata := getMetadata(songUpdate)
+			metadata["title"] = "Totally gonna give you up"
+
+			firstBlock := getFirstBlock(songUpdate)
+			Expect(firstBlock["chord"]).To(Equal("G^"))
+			firstBlock["chord"] = "Dm7"
+		})
+
+		Describe("Unpermitted requests", func() {
+			BeforeEach(func() {
+				authtest.Endpoint = func(c echo.Context) error {
+					return songGateway.UpdateSong(c, songID)
+				}
+				authtest.JSONBody = songUpdate
+			})
+
+			authtest.ItRejectsUnpermittedRequests("PUT", "/songs/:id")
+		})
+
+		Describe("Authorized", func() {
+			var (
+				response       *httptest.ResponseRecorder
+				requestFactory RequestFactory
+			)
+
+			BeforeEach(func() {
+				requestFactory = RequestFactory{
+					Method:  "PUT",
+					Path:    "/songs/:id",
+					JSONObj: songUpdate,
+				}
+			})
+
+			BeforeEach(func() {
+				requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+			})
+
+			JustBeforeEach(func() {
+				request := requestFactory.Make()
+				response = httptest.NewRecorder()
+				c := PrepareEchoContext(request, response)
+
+				err := songGateway.UpdateSong(c, songID)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			Describe("For a song that doesn't exist", func() {
+				BeforeEach(func() {
+					songID = uuid.New().String()
+					songUpdate["id"] = songID
+				})
+
+				It("fails with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+				})
+
+				It("fails with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusNotFound))
+				})
+			})
+
+			Describe("For an empty ID", func() {
+				BeforeEach(func() {
+					songID = ""
+					songUpdate["id"] = ""
+				})
+
+				It("fails with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+				})
+
+				It("fails with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusNotFound))
+				})
+			})
+
+			Describe("For a song that has an old last saved at timestamp", func() {
+				BeforeEach(func() {
+					anHourAgo := time.Now().UTC().Truncate(time.Second).Add(-time.Hour)
+					songUpdate["lastSavedAt"] = anHourAgo.Format(time.RFC3339)
+				})
+
+				It("rejects the save with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongOverwriteCode))
+				})
+
+				It("rejects the save with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusBadRequest))
+				})
+			})
+
+			Describe("For a song with no last saved at timestamp", func() {
+				BeforeEach(func() {
+					delete(songUpdate, "lastSavedAt")
+				})
+
+				It("rejects the save with the right error code", func() {
+					resErr := DecodeJSONError(response)
+					Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongOverwriteCode))
+				})
+
+				It("rejects the save with the right status code", func() {
+					Expect(response.Code).To(Equal(http.StatusBadRequest))
+				})
+			})
+
+			Describe("With an acceptable last saved at time", func() {
+				var (
+					previousLastSavedAt time.Time
+				)
+
+				BeforeEach(func() {
+					previousLastSavedAt = time.Now().UTC().Truncate(time.Second)
+					songUpdate["lastSavedAt"] = previousLastSavedAt.Format(time.RFC3339)
+				})
+
+				Describe("With mostly normal stuff", func() {
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("updated the last saved at time", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						updatedTimeStr := ExpectType[string](updatedSong["lastSavedAt"])
+						Expect(updatedTimeStr).NotTo(BeZero())
+						updatedTime := ExpectSuccess(time.Parse(time.RFC3339, updatedTimeStr))
+						Expect(updatedTime).To(BeTemporally(">=", previousLastSavedAt))
+						Expect(updatedTime).To(BeTemporally("<=", time.Now()))
+					})
+
+					It("updated the song", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+
+						ExpectJSONEqualExceptLastSavedAt(updatedSong, songUpdate)
+					})
+				})
+
+				Describe("With a tampered ID", func() {
+					BeforeEach(func() {
+						randomID := uuid.New().String()
+						Expect(randomID).NotTo(Equal(songID))
+						songUpdate["id"] = randomID
+					})
+
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("doesn't overwrite the ID", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						Expect(updatedSong["id"]).To(Equal(songID))
+					})
+				})
+
+				Describe("With a tampered owner", func() {
+					BeforeEach(func() {
+						songUpdate["owner"] = OtherUser.ID
+					})
+
+					It("succeeds", func() {
+						Expect(response.Code).To(Equal(http.StatusOK))
+					})
+
+					It("doesn't overwrite the owner", func() {
+						updatedSong := DecodeJSON[map[string]interface{}](response)
+						Expect(updatedSong["owner"]).To(Equal(PrimaryUser.ID))
 					})
 				})
 			})
@@ -474,6 +695,22 @@ var _ = Describe("Song", func() {
 						Expect(response.Code).To(Equal(http.StatusNotFound))
 					})
 				})
+
+				Describe("For an empty ID", func() {
+					BeforeEach(func() {
+						songID = ""
+					})
+
+					It("fails with the right error code", func() {
+						resErr := DecodeJSONError(response)
+						Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+					})
+
+					It("fails with the right status code", func() {
+						Expect(response.Code).To(Equal(http.StatusNotFound))
+					})
+				})
+
 			})
 
 			Describe("For an existing song", func() {
