@@ -16,8 +16,9 @@ var httpStatusCodeMap = map[api.ErrorCode]int{
 	auth.BadAuthorizationHeaderCode: http.StatusBadRequest,
 	auth.WrongOwnerCode:             http.StatusForbidden,
 	songerrors.SongNotFoundCode:     http.StatusNotFound,
-	songerrors.ExistingSongCode:     http.StatusUnprocessableEntity,
+	songerrors.ExistingSongCode:     http.StatusBadRequest,
 	songerrors.BadSongDataCode:      http.StatusBadRequest,
+	songerrors.SongOverwriteCode:    http.StatusBadRequest,
 }
 
 type JSONAPIError struct {

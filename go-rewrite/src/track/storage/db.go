@@ -3,7 +3,6 @@ package trackstorage
 import (
 	"context"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/google/uuid"
 	"github.com/guregu/dynamo"
 	"github.com/pkg/errors"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
@@ -25,10 +24,10 @@ func NewDB(dynamoDB dynamolib.DynamoDBWrapper) DB {
 	}
 }
 
-func (d DB) GetTrackList(ctx context.Context, songID uuid.UUID) (trackentity.TrackList, error) {
+func (d DB) GetTrackList(ctx context.Context, songID string) (trackentity.TrackList, error) {
 	value := dbTrackList{}
 	err := d.dynamoDB.Table(TracklistsTable).
-		Get(idKey, songID.String()).
+		Get(idKey, songID).
 		OneWithContext(ctx, &value)
 
 	if err != nil {

@@ -1,7 +1,6 @@
 package songgateway
 
 import (
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/api"
@@ -23,13 +22,8 @@ func NewGateway(usecase songusecase.Usecase) Gateway {
 	}
 }
 
-func (g Gateway) GetSong(c echo.Context, songIDStr string) error {
+func (g Gateway) GetSong(c echo.Context, songID string) error {
 	ctx := request.Context(c)
-
-	songID, apiErr := parseSongID(songIDStr)
-	if apiErr != nil {
-		return gateway.ErrorResponse(c, apiErr)
-	}
 
 	song, apiErr := g.usecase.GetSong(ctx, songID)
 	if apiErr != nil {
@@ -81,7 +75,7 @@ func (g Gateway) CreateSong(c echo.Context) error {
 	return c.JSON(http.StatusOK, createdSong)
 }
 
-func (g Gateway) DeleteSong(c echo.Context, songIDStr string) error {
+func (g Gateway) UpdateSong(c echo.Context, songID string) error {
 	ctx := request.Context(c)
 
 	authHeader, apiErr := request.AuthHeader(c)
@@ -89,7 +83,28 @@ func (g Gateway) DeleteSong(c echo.Context, songIDStr string) error {
 		return gateway.ErrorResponse(c, apiErr)
 	}
 
-	songID, apiErr := parseSongID(songIDStr)
+	song := songentity.Song{}
+	err := c.Bind(&song)
+	if err != nil {
+		err = errors.Wrap(err, "Failed to bind request body to song object")
+		apiErr := api.CommitError(err,
+			songerrors.BadSongDataCode,
+			"The song data received was malformed. Please contact the developer")
+		return gateway.ErrorResponse(c, apiErr)
+	}
+
+	updatedSong, apiErr := g.usecase.UpdateSong(ctx, authHeader, songID, song)
+	if apiErr != nil {
+		return gateway.ErrorResponse(c, apiErr)
+	}
+
+	return c.JSON(http.StatusOK, updatedSong)
+}
+
+func (g Gateway) DeleteSong(c echo.Context, songID string) error {
+	ctx := request.Context(c)
+
+	authHeader, apiErr := request.AuthHeader(c)
 	if apiErr != nil {
 		return gateway.ErrorResponse(c, apiErr)
 	}
@@ -100,18 +115,4 @@ func (g Gateway) DeleteSong(c echo.Context, songIDStr string) error {
 	}
 
 	return c.NoContent(http.StatusOK)
-}
-
-func parseSongID(songIDStr string) (uuid.UUID, *api.Error) {
-	songID, err := uuid.Parse(songIDStr)
-	if err != nil {
-		err = errors.Wrap(err, "Failed to parse song ID")
-		apiErr := api.CommitError(err,
-			songerrors.SongNotFoundCode,
-			"The song ID provided is invalid")
-
-		return uuid.UUID{}, apiErr
-	}
-
-	return songID, nil
 }
