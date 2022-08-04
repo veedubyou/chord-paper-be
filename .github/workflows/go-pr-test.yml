@@ -7,9 +7,17 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: Go Build
-    runs-on: chord-paper-be-runner
+  test:
+    name: Go Test
+    runs-on: ubuntu-latest
+    #runs-on: chord-paper-be-runner
+
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        ports:
+          - 8000:8000
+
     steps:
       - uses: actions/checkout@v2
 
@@ -18,6 +26,6 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Build
+      - name: Test
         working-directory: ./go-rewrite/src
-        run: go build -v
+        run: go test -v ./...
