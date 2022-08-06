@@ -7,7 +7,7 @@ metadata:
   labels:
     app: chord-be-rust
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: chord-be-rust
@@ -19,6 +19,16 @@ spec:
         restartedAt: ""
     spec:
       containers:
+      - name: tcpdump-sidecar
+        image: nicolaka/netshoot
+        imagePullPolicy: Always
+        command:
+          - tcpdump
+          - -i
+          - eth0
+          - port
+          - "5000"
+          - -U
       - name: chord-be-rust
         image: pw1124/chord-be-rust:${LATEST_RUST_IMAGE}
         env:
@@ -69,7 +79,7 @@ metadata:
   labels:
     app: chord-be-go
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: chord-be-go
