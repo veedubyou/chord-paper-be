@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	db               dynamolib.DynamoDBWrapper
-	rabbitConnection *amqp091.Connection
+	db            dynamolib.DynamoDBWrapper
+	publisherConn *amqp091.Connection
+	consumerConn  *amqp091.Connection
 )
 
 func TestTrack(t *testing.T) {
@@ -23,10 +24,11 @@ func TestTrack(t *testing.T) {
 var _ = BeforeSuite(func() {
 	testlib.SetTestEnv()
 	db = testlib.BeforeSuiteDB("track_integration_test")
-
-	rabbitConnection = testlib.MakeRabbitMQConnection()
+	publisherConn = testlib.MakeRabbitMQConnection()
+	consumerConn = testlib.MakeRabbitMQConnection()
 })
 
 var _ = AfterSuite(func() {
 	testlib.AfterSuiteDB(db)
+	testlib.AfterSuiteRabbitMQ(publisherConn)
 })

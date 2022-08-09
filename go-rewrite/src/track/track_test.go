@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/jsonlib"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/rabbitmq"
 	. "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/testing"
 	authtest "github.com/veedubyou/chord-paper-be/go-rewrite/src/shared_tests/auth"
@@ -14,6 +15,7 @@ import (
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
 	trackentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/entity"
+	trackerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/errors"
 	trackgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/gateway"
 	trackstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/storage"
 	trackusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/usecase"
@@ -34,14 +36,9 @@ var _ = Describe("Track", func() {
 	)
 
 	BeforeEach(func() {
-		ResetDB(db)
-		ResetRabbitMQ(rabbitConnection)
-	})
-
-	BeforeEach(func() {
 		validator = TestingValidator{}
-		publisher = MakeRabbitMQPublisher(rabbitConnection)
-		consumer = NewRabbitMQConsumer(rabbitConnection)
+		publisher = MakeRabbitMQPublisher(publisherConn)
+		consumer = NewRabbitMQConsumer(consumerConn)
 
 		userStorage := userstorage.NewDB(db)
 		userUsecase := userusecase.NewUsecase(userStorage, validator)
@@ -56,7 +53,12 @@ var _ = Describe("Track", func() {
 	})
 
 	BeforeEach(func() {
-		go consumer.Start()
+		ResetDB(db)
+		ResetRabbitMQ(publisherConn)
+	})
+
+	BeforeEach(func() {
+		go consumer.AsyncStart()
 	})
 
 	AfterEach(func() {
@@ -369,14 +371,13 @@ var _ = Describe("Track", func() {
 
 		Describe("Without an existing attached song", func() {
 			var (
-				response       *httptest.ResponseRecorder
-				requestFactory RequestFactory
+				response *httptest.ResponseRecorder
 			)
 
 			BeforeEach(func() {
 				tracklist.Defined.SongID = uuid.New().String()
 
-				requestFactory = RequestFactory{
+				requestFactory := RequestFactory{
 					Method:  "POST",
 					Path:    "/songs/:id/tracklist",
 					JSONObj: ExpectSuccess(tracklist.ToMap()),
@@ -399,6 +400,49 @@ var _ = Describe("Track", func() {
 
 			It("fails with the right status code", func() {
 				Expect(response.Code).To(Equal(http.StatusNotFound))
+			})
+
+			ItDoesntQueueMessages()
+		})
+
+		Describe("Bad tracklist data", func() {
+			var (
+				response *httptest.ResponseRecorder
+			)
+
+			BeforeEach(func() {
+				By("making a deliberately wrongly typed tracks field")
+				jsonObj := ExpectSuccess(jsonlib.StructToMap(struct {
+					SongID string   `json:"song_id"`
+					Tracks []string `json:"tracks"`
+				}{
+					SongID: "hmm",
+					Tracks: []string{"track1", "track2"},
+				}))
+
+				requestFactory := RequestFactory{
+					Method:  "POST",
+					Path:    "/songs/:id/tracklist",
+					JSONObj: jsonObj,
+				}
+
+				requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+
+				request := requestFactory.Make()
+				response = httptest.NewRecorder()
+				c := PrepareEchoContext(request, response)
+
+				err := trackGateway.SetTrackList(c, uuid.New().String())
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("fails with the right error code", func() {
+				resErr := DecodeJSONError(response)
+				Expect(resErr.Code).To(BeEquivalentTo(trackerrors.BadTracklistDataCode))
+			})
+
+			It("fails with the right status code", func() {
+				Expect(response.Code).To(Equal(http.StatusBadRequest))
 			})
 
 			ItDoesntQueueMessages()

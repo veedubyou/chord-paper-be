@@ -3,7 +3,6 @@ package trackusecase
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/apex/log"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/pkg/errors"
@@ -77,16 +76,13 @@ func (u Usecase) SetTrackList(ctx context.Context, authHeader string, songID str
 	if err != nil {
 		err = errors.Wrap(err, "Failed to set tracklist")
 		switch {
-		case markers.Is(err, trackstorage.IDEmptyMark):
-			return trackentity.TrackList{}, api.CommitError(err,
-				trackerrors.NoTracklistIDCode,
-				fmt.Sprintf("The song ID for this tracklist is missing"))
-
 		case markers.Is(err, trackstorage.TrackSizeExceeded):
 			return trackentity.TrackList{}, api.CommitError(err,
 				trackerrors.TrackListSizeExceeded,
 				"The amount of tracks inside the tracklist has exceeded the maximum: 10")
-
+		case markers.Is(err, trackstorage.IDEmptyMark):
+			// this should have been handled in the ID assignment above
+			fallthrough
 		case markers.Is(err, trackstorage.DefaultErrorMark):
 			fallthrough
 		default:

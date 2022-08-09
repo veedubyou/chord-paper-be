@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/rabbitmq"
+	"sync"
 )
 
 const testQueueName = "chord-paper-tracks-test"
@@ -15,6 +16,11 @@ func MakeRabbitMQConnection() *amqp091.Connection {
 func ResetRabbitMQ(conn *amqp091.Connection) {
 	channel := ExpectSuccess(conn.Channel())
 	ExpectSuccess(channel.QueuePurge(testQueueName, false))
+}
+
+func AfterSuiteRabbitMQ(conn *amqp091.Connection) {
+	channel := ExpectSuccess(conn.Channel())
+	ExpectSuccess(channel.QueueDelete(testQueueName, false, false, false))
 }
 
 func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.Publisher {
@@ -29,6 +35,7 @@ type ReceivedMessage struct {
 
 type RabbitMQConsumer struct {
 	channel          *amqp091.Channel
+	channelLock      sync.Mutex
 	queueName        string
 	receivedMessages []ReceivedMessage
 	err              error
@@ -39,14 +46,18 @@ func NewRabbitMQConsumer(conn *amqp091.Connection) RabbitMQConsumer {
 
 	return RabbitMQConsumer{
 		channel:          channel,
+		channelLock:      sync.Mutex{},
 		queueName:        testQueueName,
 		receivedMessages: nil,
 		err:              nil,
 	}
 }
 
-func (r *RabbitMQConsumer) Start() {
-	defer r.channel.Close()
+func (r *RabbitMQConsumer) AsyncStart() {
+	r.channelLock.Lock()
+	if r.channel == nil {
+		return
+	}
 
 	messageStream := ExpectSuccess(r.channel.Consume(
 		r.queueName,
@@ -57,6 +68,7 @@ func (r *RabbitMQConsumer) Start() {
 		false,
 		nil,
 	))
+	r.channelLock.Unlock()
 
 	for message := range messageStream {
 		if r.err != nil {
@@ -80,7 +92,10 @@ func (r *RabbitMQConsumer) Start() {
 }
 
 func (r *RabbitMQConsumer) Stop() {
+	r.channelLock.Lock()
+	defer r.channelLock.Unlock()
 	_ = r.channel.Close()
+	r.channel = nil
 }
 
 func (r *RabbitMQConsumer) Unload() ([]ReceivedMessage, error) {
