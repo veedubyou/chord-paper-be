@@ -20,9 +20,9 @@ func TestUser(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	testlib.SetTestEnv()
-	db = testlib.BeforeSuiteTestDB("user_integration_test")
+	db = testlib.BeforeSuiteDB("user_integration_test")
 })
 
 var _ = AfterSuite(func() {
-	testlib.AfterSuiteTestDB(db)
+	testlib.AfterSuiteDB(db)
 })

@@ -5,7 +5,7 @@ import (
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/mark"
 	userentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/entity"
 )
 
@@ -32,9 +32,9 @@ func (d DB) GetUser(ctx context.Context, userID string) (userentity.User, error)
 	if err != nil {
 		switch {
 		case markers.Is(err, dynamo.ErrNotFound):
-			return userentity.User{}, handle.Wrap(err, UserNotFoundMark, "User is not found")
+			return userentity.User{}, mark.Wrap(err, UserNotFoundMark, "User is not found")
 		default:
-			return userentity.User{}, handle.Wrap(err, DefaultErrorMark, "Failed to fetch user")
+			return userentity.User{}, mark.Wrap(err, DefaultErrorMark, "Failed to fetch user")
 		}
 	}
 

@@ -18,7 +18,7 @@ func (f Flatten[T]) MarshalJSON() ([]byte, error) {
 		outputMap[k] = v
 	}
 
-	definedFieldsMap, err := structToMap(f.Defined)
+	definedFieldsMap, err := StructToMap(f.Defined)
 	if err != nil {
 		return nil, errors.Wrap(err, "Could not convert defined fields into a map")
 	}
@@ -37,7 +37,7 @@ func (f *Flatten[T]) UnmarshalJSON(b []byte) error {
 		return errors.Wrap(err, "Could not unmarshal json data into defined fields")
 	}
 
-	definedFieldsMap, err := structToMap(definedFieldsObj)
+	definedFieldsMap, err := StructToMap(definedFieldsObj)
 	if err != nil {
 		return errors.Wrap(err, "Could not convert defined fields to a map")
 	}
@@ -64,7 +64,7 @@ func (f *Flatten[T]) UnmarshalJSON(b []byte) error {
 }
 
 func (f Flatten[T]) ToMap() (map[string]interface{}, error) {
-	return structToMap(f)
+	return StructToMap(f)
 }
 
 func (f *Flatten[T]) FromMap(m map[string]interface{}) error {
@@ -83,7 +83,7 @@ func (f *Flatten[T]) FromMap(m map[string]interface{}) error {
 	return nil
 }
 
-func structToMap(s interface{}) (map[string]interface{}, error) {
+func StructToMap(s interface{}) (map[string]interface{}, error) {
 	jsonBytes, err := json.Marshal(s)
 	if err != nil {
 		return nil, errors.Wrap(err, "Could not marshal struct")

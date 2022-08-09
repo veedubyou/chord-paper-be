@@ -1,6 +1,7 @@
-package song_test
+package track_test
 
 import (
+	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	testlib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/testing"
 	"testing"
@@ -10,17 +11,20 @@ import (
 )
 
 var (
-	db dynamolib.DynamoDBWrapper
+	db               dynamolib.DynamoDBWrapper
+	rabbitConnection *amqp091.Connection
 )
 
-func TestSong(t *testing.T) {
+func TestTrack(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Song Suite")
+	RunSpecs(t, "Track Suite")
 }
 
 var _ = BeforeSuite(func() {
 	testlib.SetTestEnv()
-	db = testlib.BeforeSuiteDB("song_integration_test")
+	db = testlib.BeforeSuiteDB("track_integration_test")
+
+	rabbitConnection = testlib.MakeRabbitMQConnection()
 })
 
 var _ = AfterSuite(func() {

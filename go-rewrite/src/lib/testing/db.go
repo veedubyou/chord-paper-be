@@ -45,25 +45,25 @@ func ResetDB(db dynamolib.DynamoDBWrapper) {
 	EnsureUsers(db)
 }
 
-func BeforeSuiteTestDB(testRegion string) dynamolib.DynamoDBWrapper {
+func BeforeSuiteDB(testRegion string) dynamolib.DynamoDBWrapper {
 	db := MakeTestDB(testRegion)
 	DeleteAllTables(db)
 	return db
 }
 
-func AfterSuiteTestDB(db dynamolib.DynamoDBWrapper) {
+func AfterSuiteDB(db dynamolib.DynamoDBWrapper) {
 	DeleteAllTables(db)
 }
 
 func CreateAllTables(db dynamolib.DynamoDBWrapper) {
 	err := db.CreateTable(songstorage.SongsTable, song{}).Run()
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 	err = db.CreateTable(userstorage.UsersTable, User{}).Run()
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 	err = db.CreateTable(trackstorage.TracklistsTable, tracklist{}).Run()
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 }
 
 func DeleteAllTables(db dynamolib.DynamoDBWrapper) {
@@ -72,6 +72,6 @@ func DeleteAllTables(db dynamolib.DynamoDBWrapper) {
 
 	for _, tableName := range tableNames {
 		err := db.Table(tableName).DeleteTable().Run()
-		Expect(err).NotTo(HaveOccurred())
+		ExpectWithOffset(1, err).NotTo(HaveOccurred())
 	}
 }

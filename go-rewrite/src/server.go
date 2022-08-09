@@ -7,9 +7,11 @@ import (
 	"github.com/guregu/dynamo"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
+	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/env"
 	middleware2 "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/middleware"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/rabbitmq"
 	songgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
@@ -103,6 +105,22 @@ func main() {
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 
 	e.Logger.Fatal(e.Start(":5000"))
+}
+
+func makeRabbitMQPublisher() rabbitmq.Publisher {
+	//TODO env var it
+	conn, err := amqp091.Dial("localhost:5672")
+	if err != nil {
+		panic(errors.Wrap(err, "Failed to dial rabbitMQ url"))
+	}
+
+	//TODO env var it
+	publisher, err := rabbitmq.NewPublisher(conn, "chord-paper-tracks-dev")
+	if err != nil {
+		panic(errors.Wrap(err, "Failed to create rabbitMQ publisher"))
+	}
+
+	return publisher
 }
 
 func makeDynamoDB() dynamolib.DynamoDBWrapper {
