@@ -69,7 +69,7 @@ func main() {
 	}
 
 	dynamoDB := makeDynamoDB()
-	rabbitmqPublisher := makeRabbitMQPublisher()
+	rabbitmqPublisher := makeRabbitMQPublisherForEnv()
 	userUsecase := makeUserUsecase(dynamoDB)
 	songUsecase := makeSongUsecase(dynamoDB, userUsecase)
 
@@ -116,7 +116,7 @@ func main() {
 	e.Logger.Fatal(e.Start(":5000"))
 }
 
-func makeRabbitMQPublisher() rabbitmq.Publisher {
+func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
 	switch env.Get() {
 	case env.Production:
 		queueName, isSet := os.LookupEnv("RABBITMQ_QUEUE")
@@ -129,17 +129,17 @@ func makeRabbitMQPublisher() rabbitmq.Publisher {
 			panic("RABBITMQ_URL is not set")
 		}
 
-		return makeRabbitMQPublisherForParams(hostURL, queueName)
+		return makeRabbitMQPublisher(hostURL, queueName)
 
 	case env.Development:
-		return makeRabbitMQPublisherForParams("amqp://localhost:5672", "chord-paper-tracks-dev")
+		return makeRabbitMQPublisher("amqp://localhost:5672", "chord-paper-tracks-dev")
 
 	default:
 		panic("unexpected environment")
 	}
 }
 
-func makeRabbitMQPublisherForParams(hostURL string, queueName string) rabbitmq.Publisher {
+func makeRabbitMQPublisher(hostURL string, queueName string) rabbitmq.Publisher {
 	conn, err := amqp091.Dial(hostURL)
 	if err != nil {
 		panic(errors.Wrap(err, "Failed to dial rabbitMQ url"))
