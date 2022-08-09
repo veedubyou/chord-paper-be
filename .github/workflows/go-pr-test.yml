@@ -9,8 +9,8 @@ on:
 jobs:
   test:
     name: Go Test
-    runs-on: chord-be-cluster-runner
-    #runs-on: ubuntu-latest
+    #runs-on: chord-be-cluster-runner
+    runs-on: ubuntu-latest
     #runs-on: chord-paper-be-runner
     
     services:
