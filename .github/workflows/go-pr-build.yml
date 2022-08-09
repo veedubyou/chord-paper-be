@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Go Build
-    runs-on: chord-cluster-runner
+    runs-on: be-cluster-runner
     steps:
       - uses: actions/checkout@v2
 

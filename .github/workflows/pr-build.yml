@@ -6,7 +6,7 @@ jobs:
   build:
     name: Rust Build
     #runs-on: ubuntu-latest
-    runs-on: chord-cluster-runner
+    runs-on: be-cluster-runner
     steps:
       - name: Install prereqs
         run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config

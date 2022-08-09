@@ -19,7 +19,7 @@ on:
 jobs:
   push:
     #runs-on: ubuntu-latest
-    runs-on: chord-cluster-runner
+    runs-on: be-cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)
       - name: Checkout
