@@ -13,10 +13,6 @@ var encoder = dynamodbattribute.NewEncoder(func(e *dynamodbattribute.Encoder) {
 	e.NullEmptyByteSlice = false
 })
 
-type DynamoMarshallable interface {
-	DynamoTagged()
-}
-
 type putMap map[string]interface{}
 
 func (p putMap) MarshalDynamo() (*dynamodb.AttributeValue, error) {

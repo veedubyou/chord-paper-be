@@ -241,6 +241,28 @@ var _ = Describe("Track", func() {
 						ItDoesntQueueMessages()
 					})
 
+					Describe("Too many tracks in the tracklist", func() {
+						BeforeEach(func() {
+							track := trackentity.Track{}
+							track.Defined.TrackType = "4stems"
+
+							for i := 0; i < 11; i++ {
+								tracklist.Defined.Tracks = append(tracklist.Defined.Tracks, track)
+							}
+						})
+
+						It("fails with the right error code", func() {
+							resErr := DecodeJSONError(response)
+							Expect(resErr.Code).To(BeEquivalentTo(trackerrors.TrackListSizeExceeded))
+						})
+
+						It("fails with the right status code", func() {
+							Expect(response.Code).To(Equal(http.StatusBadRequest))
+						})
+
+						ItDoesntQueueMessages()
+					})
+
 					Describe("A tracklist with tracks", func() {
 						var (
 							track0 trackentity.Track
