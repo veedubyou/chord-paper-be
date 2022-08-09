@@ -6,8 +6,10 @@ jobs:
   build:
     name: Rust Build
     #runs-on: ubuntu-latest
-    runs-on: chord-paper-be-runner
+    runs-on: cluster-runner
     steps:
+      - name: Install prereqs
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev pkg-config
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
