@@ -16,7 +16,7 @@ on:
 jobs:
   push:
     #runs-on: ubuntu-latest
-    runs-on: chord-paper-be-runner
+    runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)
       - name: Checkout
@@ -39,7 +39,7 @@ jobs:
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v1.19.3
+          version: v1.24.3
           command: set image --record deploy/chord-be-go chord-be-go=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-go:${{ env.gitver }}
 
       - name: Cleanup Images
