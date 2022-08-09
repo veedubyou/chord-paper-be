@@ -16,7 +16,7 @@ on:
 jobs:
   push:
     #runs-on: ubuntu-latest
-    runs-on: be-cluster-runner
+    runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)
       - name: Checkout

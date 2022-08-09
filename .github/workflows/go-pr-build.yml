@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Go Build
-    runs-on: be-cluster-runner
+    runs-on: cluster-runner
     steps:
       - uses: actions/checkout@v2
 
