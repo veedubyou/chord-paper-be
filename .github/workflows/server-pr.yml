@@ -1,3 +1,5 @@
+name: Server PR
+
 on:
   push:
     branches: [ master ]
@@ -5,12 +7,27 @@ on:
     branches: [ master ]
 
 jobs:
+  build:
+    name: Server Build
+    runs-on: cluster-runner
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Build
+        working-directory: ./server/src
+        run: go build -v
+
   test:
-    name: Server PR Test
+    name: Server Test
     runs-on: cluster-runner
     #runs-on: ubuntu-latest
     #runs-on: chord-paper-be-runner
-    
+
     services:
       dynamodb:
         image: amazon/dynamodb-local
