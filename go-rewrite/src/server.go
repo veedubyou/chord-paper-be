@@ -11,7 +11,6 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/env"
-	middleware2 "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/middleware"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/rabbitmq"
 	songgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
@@ -23,8 +22,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/google_id"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
 )
@@ -48,8 +45,8 @@ func main() {
 	corsMiddleware := makeCorsMiddleware()
 
 	handleRoute := func(method HTTPMethod, path string, handlerFunc echo.HandlerFunc) {
-		params := func() (string, echo.HandlerFunc, echo.MiddlewareFunc, echo.MiddlewareFunc) {
-			return path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn
+		params := func() (string, echo.HandlerFunc, echo.MiddlewareFunc) {
+			return path, handlerFunc, corsMiddleware
 		}
 
 		e.OPTIONS(params())
@@ -77,41 +74,37 @@ func main() {
 	songGateway := makeSongGateway(songUsecase)
 	trackGateway := makeTrackGateway(dynamoDB, songUsecase, rabbitmqPublisher)
 
+	// login route
 	handleRoute(POST, "/login", userGateway.Login)
 
+	// song routes
+	handleRoute(POST, "/songs", songGateway.CreateSong)
 	handleRoute(GET, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.GetSong(c, songID)
 	})
-
-	handleRoute(POST, "/songs", songGateway.CreateSong)
-
 	handleRoute(PUT, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.UpdateSong(c, songID)
 	})
-
 	handleRoute(DELETE, "/songs/:id", func(c echo.Context) error {
 		songID := c.Param("id")
 		return songGateway.DeleteSong(c, songID)
 	})
-
-	handleRoute(GET, "/songs/:id/tracklist", func(c echo.Context) error {
-		songID := c.Param("id")
-		return trackGateway.GetTrackList(c, songID)
-	})
-
-	handleRoute(PUT, "/songs/:id/tracklist", func(c echo.Context) error {
-		songID := c.Param("id")
-		return trackGateway.SetTrackList(c, songID)
-	})
-
 	handleRoute(GET, "/users/:id/songs", func(c echo.Context) error {
 		userID := c.Param("id")
 		return songGateway.GetSongSummariesForUser(c, userID)
 	})
 
-	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
+	// tracklist routes
+	handleRoute(GET, "/songs/:id/tracklist", func(c echo.Context) error {
+		songID := c.Param("id")
+		return trackGateway.GetTrackList(c, songID)
+	})
+	handleRoute(PUT, "/songs/:id/tracklist", func(c echo.Context) error {
+		songID := c.Param("id")
+		return trackGateway.SetTrackList(c, songID)
+	})
 
 	e.Logger.Fatal(e.Start(":5000"))
 }
@@ -198,34 +191,6 @@ func makeUserUsecase(dynamoDB dynamolib.DynamoDBWrapper) userusecase.Usecase {
 
 func makeUserGateway(userUsecase userusecase.Usecase) usergateway.Gateway {
 	return usergateway.NewGateway(userUsecase)
-}
-
-func proxyHandler(c echo.Context) error {
-	return c.String(http.StatusInternalServerError, "Proxy handler, this should never be seen")
-}
-
-func makeRustProxyMiddleware() echo.MiddlewareFunc {
-	legacyHostStr, isSet := os.LookupEnv("LEGACY_BE_HOST")
-	if !isSet {
-		panic("Legacy backend host env var is not set")
-	}
-
-	legacyHostURL, err := url.Parse(legacyHostStr)
-	if err != nil {
-		err = errors.Wrap(err, "Failed to parse legacy host URL")
-		panic(err)
-	}
-
-	balancer := middleware.NewRandomBalancer([]*middleware.ProxyTarget{
-		{
-			Name: "Rust backend",
-			URL:  legacyHostURL,
-		},
-	})
-
-	return middleware.ProxyWithConfig(middleware.ProxyConfig{
-		Balancer: balancer,
-	})
 }
 
 func makeCorsMiddleware() echo.MiddlewareFunc {
