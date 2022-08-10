@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	. "github.com/onsi/gomega"
-	dynamolib "github.com/veedubyou/chord-paper-be/server/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/errors/mark"
-	userentity "github.com/veedubyou/chord-paper-be/server/src/user/entity"
-	"github.com/veedubyou/chord-paper-be/server/src/user/google_id"
-	userstorage "github.com/veedubyou/chord-paper-be/server/src/user/storage"
+	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/errors/mark"
+	userentity "github.com/veedubyou/chord-paper-be/server/src/internal/user/entity"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/user/google_id"
+	userstorage "github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway"
 	"io"
 	"net/http"
 	"net/http/httptest"

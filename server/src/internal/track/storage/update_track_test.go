@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
-	trackentity "github.com/veedubyou/chord-paper-be/server/src/track/entity"
-	trackstorage "github.com/veedubyou/chord-paper-be/server/src/track/storage"
+	. "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
+	trackentity "github.com/veedubyou/chord-paper-be/server/src/internal/track/entity"
+	trackstorage "github.com/veedubyou/chord-paper-be/server/src/internal/track/storage"
 )
 
 var _ = Describe("Track DB", func() {

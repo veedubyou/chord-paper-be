@@ -4,8 +4,8 @@ import (
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/auth"
-	. "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/auth"
+	. "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
 	"net/http"
 	"net/http/httptest"
 )

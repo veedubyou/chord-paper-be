@@ -1,8 +1,8 @@
 package user_test
 
 import (
-	dynamolib "github.com/veedubyou/chord-paper-be/server/src/lib/dynamo"
-	testlib "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
+	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
+	testlib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"

@@ -3,10 +3,10 @@ package gateway
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/auth"
-	songerrors "github.com/veedubyou/chord-paper-be/server/src/song/errors"
-	trackerrors "github.com/veedubyou/chord-paper-be/server/src/track/errors"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/auth"
+	songerrors "github.com/veedubyou/chord-paper-be/server/src/internal/song/errors"
+	trackerrors "github.com/veedubyou/chord-paper-be/server/src/internal/track/errors"
 	"net/http"
 )
 

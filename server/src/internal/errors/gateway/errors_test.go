@@ -4,9 +4,9 @@ import (
 	"github.com/cockroachdb/errors"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway/gatewayfakes"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway/gatewayfakes"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 github.com/labstack/echo/v4.Context

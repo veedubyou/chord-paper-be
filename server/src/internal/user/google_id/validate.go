@@ -5,8 +5,8 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/domains"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/errors/mark"
-	userentity "github.com/veedubyou/chord-paper-be/server/src/user/entity"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/errors/mark"
+	userentity "github.com/veedubyou/chord-paper-be/server/src/internal/user/entity"
 	"google.golang.org/api/idtoken"
 )
 

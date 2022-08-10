@@ -2,7 +2,7 @@ package songentity
 
 import (
 	"github.com/google/uuid"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/jsonlib"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/jsonlib"
 	"time"
 )
 

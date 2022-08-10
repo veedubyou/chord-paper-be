@@ -6,10 +6,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/guregu/dynamo"
 	. "github.com/onsi/gomega"
-	dynamolib "github.com/veedubyou/chord-paper-be/server/src/lib/dynamo"
-	songstorage "github.com/veedubyou/chord-paper-be/server/src/song/storage"
-	trackstorage "github.com/veedubyou/chord-paper-be/server/src/track/storage"
-	userstorage "github.com/veedubyou/chord-paper-be/server/src/user/storage"
+	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
+	songstorage "github.com/veedubyou/chord-paper-be/server/src/internal/song/storage"
+	trackstorage "github.com/veedubyou/chord-paper-be/server/src/internal/track/storage"
+	userstorage "github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
 )
 
 type song struct {

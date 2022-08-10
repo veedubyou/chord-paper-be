@@ -3,12 +3,12 @@ package trackgateway
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/request"
-	trackentity "github.com/veedubyou/chord-paper-be/server/src/track/entity"
-	trackerrors "github.com/veedubyou/chord-paper-be/server/src/track/errors"
-	trackusecase "github.com/veedubyou/chord-paper-be/server/src/track/usecase"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/request"
+	trackentity "github.com/veedubyou/chord-paper-be/server/src/internal/track/entity"
+	trackerrors "github.com/veedubyou/chord-paper-be/server/src/internal/track/errors"
+	trackusecase "github.com/veedubyou/chord-paper-be/server/src/internal/track/usecase"
 	"net/http"
 )
 

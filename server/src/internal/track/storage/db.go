@@ -6,9 +6,9 @@ import (
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
 	"github.com/pkg/errors"
-	dynamolib "github.com/veedubyou/chord-paper-be/server/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/errors/mark"
-	trackentity "github.com/veedubyou/chord-paper-be/server/src/track/entity"
+	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/errors/mark"
+	trackentity "github.com/veedubyou/chord-paper-be/server/src/internal/track/entity"
 )
 
 const (

@@ -3,8 +3,8 @@ package trackstorage
 import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/guregu/dynamo"
-	dynamolib "github.com/veedubyou/chord-paper-be/server/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/errors/mark"
+	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/errors/mark"
 )
 
 const (

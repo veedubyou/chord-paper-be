@@ -7,12 +7,12 @@ import (
 	"github.com/cockroachdb/errors/markers"
 	"github.com/pkg/errors"
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/rabbitmq"
-	songusecase "github.com/veedubyou/chord-paper-be/server/src/song/usecase"
-	trackentity "github.com/veedubyou/chord-paper-be/server/src/track/entity"
-	trackerrors "github.com/veedubyou/chord-paper-be/server/src/track/errors"
-	trackstorage "github.com/veedubyou/chord-paper-be/server/src/track/storage"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/rabbitmq"
+	songusecase "github.com/veedubyou/chord-paper-be/server/src/internal/song/usecase"
+	trackentity "github.com/veedubyou/chord-paper-be/server/src/internal/track/entity"
+	trackerrors "github.com/veedubyou/chord-paper-be/server/src/internal/track/errors"
+	trackstorage "github.com/veedubyou/chord-paper-be/server/src/internal/track/storage"
 )
 
 type Usecase struct {

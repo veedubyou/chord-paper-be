@@ -2,9 +2,9 @@ package usergateway
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/request"
-	userusecase "github.com/veedubyou/chord-paper-be/server/src/user/usecase"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/request"
+	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
 	"net/http"
 )
 

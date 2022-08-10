@@ -3,7 +3,7 @@ package testlib
 import (
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/rabbitmq"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/rabbitmq"
 	"sync"
 )
 

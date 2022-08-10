@@ -3,11 +3,11 @@ package user_test
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
-	authtest "github.com/veedubyou/chord-paper-be/server/src/shared_tests/auth"
-	usergateway "github.com/veedubyou/chord-paper-be/server/src/user/gateway"
-	userstorage "github.com/veedubyou/chord-paper-be/server/src/user/storage"
-	userusecase "github.com/veedubyou/chord-paper-be/server/src/user/usecase"
+	. "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
+	authtest "github.com/veedubyou/chord-paper-be/server/src/internal/shared_tests/auth"
+	usergateway "github.com/veedubyou/chord-paper-be/server/src/internal/user/gateway"
+	userstorage "github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
+	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
 	"net/http"
 	"net/http/httptest"
 )

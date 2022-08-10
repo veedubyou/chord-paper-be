@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/jsonlib"
-	. "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/jsonlib"
+	. "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
 )
 
 type user struct {

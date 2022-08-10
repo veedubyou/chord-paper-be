@@ -1,7 +1,7 @@
 package songerrors
 
 import (
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
 )
 
 const (

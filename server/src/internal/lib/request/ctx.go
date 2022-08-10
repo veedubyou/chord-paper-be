@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/auth"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/env"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/auth"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/env"
 )
 
 func Context(c echo.Context) context.Context {

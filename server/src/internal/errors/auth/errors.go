@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/veedubyou/chord-paper-be/server/src/errors/api"
+import "github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
 
 const (
 	NotGoogleAuthorizedCode    = api.ErrorCode("failed_google_verification")

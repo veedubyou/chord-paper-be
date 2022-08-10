@@ -4,12 +4,12 @@ import (
 	"context"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/pkg/errors"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/auth"
-	songentity "github.com/veedubyou/chord-paper-be/server/src/song/entity"
-	songerrors "github.com/veedubyou/chord-paper-be/server/src/song/errors"
-	songstorage "github.com/veedubyou/chord-paper-be/server/src/song/storage"
-	userusecase "github.com/veedubyou/chord-paper-be/server/src/user/usecase"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/auth"
+	songentity "github.com/veedubyou/chord-paper-be/server/src/internal/song/entity"
+	songerrors "github.com/veedubyou/chord-paper-be/server/src/internal/song/errors"
+	songstorage "github.com/veedubyou/chord-paper-be/server/src/internal/song/storage"
+	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
 	"sync"
 )
 

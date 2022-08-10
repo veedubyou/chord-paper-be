@@ -3,12 +3,12 @@ package songgateway
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
-	"github.com/veedubyou/chord-paper-be/server/src/errors/gateway"
-	"github.com/veedubyou/chord-paper-be/server/src/lib/request"
-	songentity "github.com/veedubyou/chord-paper-be/server/src/song/entity"
-	songerrors "github.com/veedubyou/chord-paper-be/server/src/song/errors"
-	songusecase "github.com/veedubyou/chord-paper-be/server/src/song/usecase"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/gateway"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/request"
+	songentity "github.com/veedubyou/chord-paper-be/server/src/internal/song/entity"
+	songerrors "github.com/veedubyou/chord-paper-be/server/src/internal/song/errors"
+	songusecase "github.com/veedubyou/chord-paper-be/server/src/internal/song/usecase"
 	"net/http"
 )
 

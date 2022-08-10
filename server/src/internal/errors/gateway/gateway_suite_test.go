@@ -1,7 +1,7 @@
 package gateway_test
 
 import (
-	"github.com/veedubyou/chord-paper-be/server/src/errors/api"
+	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
 	"go/constant"
 	"go/types"
 	"golang.org/x/tools/go/packages"
@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
-	. "github.com/veedubyou/chord-paper-be/server/src/lib/testing"
+	. "github.com/veedubyou/chord-paper-be/server/src/internal/lib/testing"
 )
 
 var allErrorCodes []api.ErrorCode
