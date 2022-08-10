@@ -1,4 +1,4 @@
-name: Deploy Server to Production
+name: Server Deploy to Production
 
 on:
   push:
