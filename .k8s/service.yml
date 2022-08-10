@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: chord-be-go
+  name: chord-be
 spec:
   selector:
-    app: chord-be-go
+    app: chord-be
   ports:
     - protocol: TCP
       port: 5000
@@ -12,17 +12,3 @@ spec:
       nodePort: 32000
   type: NodePort
 
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: chord-be-rust
-spec:
-  selector:
-    app: chord-be-rust
-  ports:
-    - protocol: TCP
-      port: 5000
-      targetPort: 5000
- 
