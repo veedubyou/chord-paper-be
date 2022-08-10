@@ -3,27 +3,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chord-be-go
+  name: chord-be
   labels:
-    app: chord-be-go
+    app: chord-be
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: chord-be-go
+      app: chord-be
   template:
     metadata:
       labels:
-        app: chord-be-go
+        app: chord-be
       annotations:
         restartedAt: ""
     spec:
       containers:
-      - name: chord-be-go
-        image: pw1124/chord-be-go:${LATEST_GO_IMAGE}
+      - name: chord-be
+        image: pw1124/chord-be:${LATEST_GO_IMAGE}
         env:
-        - name: LEGACY_BE_HOST
-          value: "http://chord-be-rust:5000"
         - name: ENVIRONMENT
           value: "production"
         - name: AWS_ACCESS_KEY_ID

@@ -2,6 +2,6 @@
 
 # Convenience script to undeploy everything
 
-kubectl delete svc/chord-be-go
-kubectl delete deploy/chord-be-go
+kubectl delete svc/chord-be
+kubectl delete deploy/chord-be
 watch kubectl get all
