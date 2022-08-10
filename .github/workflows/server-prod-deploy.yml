@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  build-and-test:
-    name: Gate
+  server-build-and-test:
+    name: Server Checks
     uses: ./.github/workflows/server-build-and-test.yml
 
   deploy:
