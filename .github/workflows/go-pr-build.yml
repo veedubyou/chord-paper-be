@@ -1,4 +1,4 @@
-name: PR Checks
+name: Server PR Build
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    name: Go Build
     runs-on: cluster-runner
     steps:
       - uses: actions/checkout@v2
@@ -19,5 +18,5 @@ jobs:
           go-version: 1.18
 
       - name: Build
-        working-directory: ./go-rewrite/src
+        working-directory: ./server/src
         run: go build -v
