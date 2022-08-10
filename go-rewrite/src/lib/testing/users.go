@@ -5,7 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/gomega"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/mark"
 	userentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/entity"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/user/google_id"
 	userstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/storage"
@@ -62,7 +62,7 @@ func (t TestingValidator) ValidateToken(ctx context.Context, requestToken string
 		}
 	}
 
-	return userentity.User{}, handle.Message(google_id.NotValidatedMark, "User is not validated")
+	return userentity.User{}, mark.Message(google_id.NotValidatedMark, "User is not validated")
 }
 
 func EnsureUsers(db dynamolib.DynamoDBWrapper) {
@@ -71,6 +71,6 @@ func EnsureUsers(db dynamolib.DynamoDBWrapper) {
 }
 
 func EnsureUser(db dynamolib.DynamoDBWrapper, u User) {
-	err := db.Table(userstorage.UsersTable).Put(u).Run()
-	Expect(err).NotTo(HaveOccurred())
+	err := db.Table(userstorage.UsersTable).Table.Put(u).Run()
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 }

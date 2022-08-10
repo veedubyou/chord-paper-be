@@ -7,5 +7,5 @@ import (
 
 func SetTestEnv() {
 	err := os.Setenv("ENVIRONMENT", "test")
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 }

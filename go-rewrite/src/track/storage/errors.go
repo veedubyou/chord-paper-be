@@ -3,7 +3,11 @@ package trackstorage
 import "github.com/cockroachdb/errors/domains"
 
 var (
-	TrackListNotFound      = domains.New("tracklist_not_found")
-	TrackListUnmarshalMark = domains.New("tracklist_unmarshal_fail")
-	DefaultErrorMark       = domains.New("default_error")
+	TrackListNotFound = domains.New("tracklist_not_found")
+	TrackSizeExceeded = domains.New("track_size_exceeded")
+	MarshalMark       = domains.New("marshal_fail")
+	UnmarshalMark     = domains.New("unmarshal_fail")
+	TrackNotFound     = domains.New("track_not_found")
+	IDEmptyMark       = domains.New("id_empty")
+	DefaultErrorMark  = domains.New("default_error")
 )

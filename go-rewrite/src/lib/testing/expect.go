@@ -3,13 +3,13 @@ package testlib
 import . "github.com/onsi/gomega"
 
 func ExpectSuccess[T any](t T, err error) T {
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 	return t
 }
 
 func ExpectType[T any](thing interface{}) T {
-	Expect(thing).NotTo(BeNil())
+	ExpectWithOffset(1, thing).NotTo(BeNil())
 	realThing, ok := thing.(T)
-	Expect(ok).To(BeTrue())
+	ExpectWithOffset(1, ok).To(BeTrue())
 	return realThing
 }

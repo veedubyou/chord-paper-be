@@ -45,7 +45,7 @@ func (r RequestFactory) Make() *http.Request {
 	if r.JSONObj != nil {
 		buf := &bytes.Buffer{}
 		err := json.NewEncoder(buf).Encode(r.JSONObj)
-		Expect(err).NotTo(HaveOccurred())
+		ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 		body = buf
 	}
@@ -72,7 +72,7 @@ func PrepareEchoContext(request *http.Request, response http.ResponseWriter) ech
 func DecodeJSON[T any](response *httptest.ResponseRecorder) T {
 	t := new(T)
 	err := json.NewDecoder(response.Body).Decode(t)
-	Expect(err).NotTo(HaveOccurred())
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
 	return *t
 }

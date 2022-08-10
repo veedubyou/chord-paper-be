@@ -1,4 +1,4 @@
-package song_test
+package trackstorage_test
 
 import (
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
@@ -13,14 +13,14 @@ var (
 	db dynamolib.DynamoDBWrapper
 )
 
-func TestSong(t *testing.T) {
+func TestStorage(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Song Suite")
+	RunSpecs(t, "Storage Suite")
 }
 
 var _ = BeforeSuite(func() {
 	testlib.SetTestEnv()
-	db = testlib.BeforeSuiteDB("song_integration_test")
+	db = testlib.BeforeSuiteDB("track_db_test")
 })
 
 var _ = AfterSuite(func() {

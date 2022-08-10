@@ -32,16 +32,28 @@ type DynamoTableWrapper struct {
 	dynamo.Table
 }
 
+type DynamoUpdateWrapper struct {
+	*dynamo.Update
+}
+
 func (d DynamoDBWrapper) Table(tableName string) DynamoTableWrapper {
 	return DynamoTableWrapper{
 		Table: d.DB.Table(tableName),
 	}
 }
 
-func (d DynamoTableWrapper) Put(input interface{}) *dynamo.Put {
-	if m, ok := input.(map[string]interface{}); ok {
-		return d.Table.Put(putMap(m))
-	}
+func (d DynamoTableWrapper) Put(input map[string]interface{}) *dynamo.Put {
+	return d.Table.Put(putMap(input))
+}
 
-	return d.Table.Put(input)
+func (d DynamoTableWrapper) Update(hashKey string, value interface{}) DynamoUpdateWrapper {
+	return DynamoUpdateWrapper{
+		Update: d.Table.Update(hashKey, value),
+	}
+}
+
+func (d DynamoUpdateWrapper) Set(path string, value map[string]interface{}) DynamoUpdateWrapper {
+	return DynamoUpdateWrapper{
+		Update: d.Update.Set(path, putMap(value)),
+	}
 }

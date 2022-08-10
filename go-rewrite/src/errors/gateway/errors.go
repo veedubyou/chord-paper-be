@@ -6,19 +6,22 @@ import (
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/api"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/errors/auth"
 	songerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/errors"
+	trackerrors "github.com/veedubyou/chord-paper-be/go-rewrite/src/track/errors"
 	"net/http"
 )
 
 var httpStatusCodeMap = map[api.ErrorCode]int{
-	api.DefaultErrorCode:            http.StatusInternalServerError,
-	auth.NotGoogleAuthorizedCode:    http.StatusUnauthorized,
-	auth.NoAccountCode:              http.StatusUnauthorized,
-	auth.BadAuthorizationHeaderCode: http.StatusBadRequest,
-	auth.WrongOwnerCode:             http.StatusForbidden,
-	songerrors.SongNotFoundCode:     http.StatusNotFound,
-	songerrors.ExistingSongCode:     http.StatusBadRequest,
-	songerrors.BadSongDataCode:      http.StatusBadRequest,
-	songerrors.SongOverwriteCode:    http.StatusBadRequest,
+	api.DefaultErrorCode:              http.StatusInternalServerError,
+	auth.NotGoogleAuthorizedCode:      http.StatusUnauthorized,
+	auth.NoAccountCode:                http.StatusUnauthorized,
+	auth.BadAuthorizationHeaderCode:   http.StatusBadRequest,
+	auth.WrongOwnerCode:               http.StatusForbidden,
+	songerrors.SongNotFoundCode:       http.StatusNotFound,
+	songerrors.ExistingSongCode:       http.StatusBadRequest,
+	songerrors.BadSongDataCode:        http.StatusBadRequest,
+	songerrors.SongOverwriteCode:      http.StatusBadRequest,
+	trackerrors.TrackListSizeExceeded: http.StatusBadRequest,
+	trackerrors.BadTracklistDataCode:  http.StatusBadRequest,
 }
 
 type JSONAPIError struct {

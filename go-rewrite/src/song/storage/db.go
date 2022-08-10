@@ -7,7 +7,7 @@ import (
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/mark"
 	songentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/entity"
 )
 
@@ -33,7 +33,7 @@ func NewDB(dynamoDB dynamolib.DynamoDBWrapper) DB {
 func (d DB) GetSong(ctx context.Context, songID string) (songentity.Song, error) {
 	if songID == "" {
 		err := errors.New("Song ID is empty")
-		return songentity.Song{}, handle.Wrap(err, SongNotFoundMark, "No ID provided to fetch song")
+		return songentity.Song{}, mark.Wrap(err, SongNotFoundMark, "No ID provided to fetch song")
 	}
 
 	value := dbSong{}
@@ -46,16 +46,16 @@ func (d DB) GetSong(ctx context.Context, songID string) (songentity.Song, error)
 		case markers.Is(err, SongUnmarshalMark):
 			return songentity.Song{}, err
 		case errors.Is(err, dynamo.ErrNotFound):
-			return songentity.Song{}, handle.Wrap(err, SongNotFoundMark, "Song for this ID couldn't be found")
+			return songentity.Song{}, mark.Wrap(err, SongNotFoundMark, "Song for this ID couldn't be found")
 		default:
-			return songentity.Song{}, handle.Wrap(err, DefaultErrorMark, "Failed to fetch song due to unknown data store error")
+			return songentity.Song{}, mark.Wrap(err, DefaultErrorMark, "Failed to fetch song due to unknown data store error")
 		}
 	}
 
 	song := songentity.Song{}
 	err = song.FromMap(value)
 	if err != nil {
-		return songentity.Song{}, handle.Wrap(err, SongUnmarshalMark, "Failed to unmarshal song into its entity form")
+		return songentity.Song{}, mark.Wrap(err, SongUnmarshalMark, "Failed to unmarshal song into its entity form")
 	}
 
 	return song, nil
@@ -70,7 +70,7 @@ func (d DB) GetSongSummariesForUser(ctx context.Context, ownerID string) ([]song
 		AllWithContext(ctx, &values)
 
 	if err != nil {
-		return nil, handle.Wrap(err,
+		return nil, mark.Wrap(err,
 			DefaultErrorMark,
 			"Failed to fetch all songs for owner ID")
 	}
@@ -80,7 +80,7 @@ func (d DB) GetSongSummariesForUser(ctx context.Context, ownerID string) ([]song
 		summary := songentity.SongSummary{}
 		err := summary.FromMap(value)
 		if err != nil {
-			return nil, handle.Wrap(err,
+			return nil, mark.Wrap(err,
 				SongUnmarshalMark,
 				"Failed to unmarshal song into its entity form")
 		}
@@ -91,52 +91,52 @@ func (d DB) GetSongSummariesForUser(ctx context.Context, ownerID string) ([]song
 	return summaries, nil
 }
 
-func (d DB) CreateSong(ctx context.Context, newSong songentity.Song) (songentity.Song, error) {
+func (d DB) CreateSong(ctx context.Context, newSong songentity.Song) error {
 	if newSong.Defined.ID == "" {
 		err := errors.New("Song ID is empty")
-		return songentity.Song{}, handle.Wrap(err, DefaultErrorMark, "No ID provided to create song")
+		return mark.Wrap(err, DefaultErrorMark, "No ID provided to create song")
 	}
 
 	err := d.putSong(ctx, newSong, false)
 	if err != nil {
 		if conditionalCheckFailed(err) {
-			return songentity.Song{}, handle.Wrap(err,
+			return mark.Wrap(err,
 				SongAlreadyExistsMark,
 				"Cannot create: A song of this ID already exists")
 
 		}
 
-		return songentity.Song{}, errors.Wrap(err, "Failed to put song into DB")
+		return errors.Wrap(err, "Failed to put song into DB")
 	}
 
-	return newSong, nil
+	return nil
 }
 
-func (d DB) UpdateSong(ctx context.Context, song songentity.Song) (songentity.Song, error) {
+func (d DB) UpdateSong(ctx context.Context, song songentity.Song) error {
 	if song.Defined.ID == "" {
 		err := errors.New("Song ID is empty")
-		return songentity.Song{}, handle.Wrap(err, SongNotFoundMark, "No ID provided to update song")
+		return mark.Wrap(err, SongNotFoundMark, "No ID provided to update song")
 	}
 
 	err := d.putSong(ctx, song, true)
 	if err != nil {
 		if conditionalCheckFailed(err) {
-			return songentity.Song{}, handle.Wrap(err,
+			return mark.Wrap(err,
 				SongNotFoundMark,
 				"Cannot update: Song of this ID cannot be found")
 
 		}
 
-		return songentity.Song{}, errors.Wrap(err, "Failed to put song into DB")
+		return errors.Wrap(err, "Failed to put song into DB")
 	}
 
-	return song, nil
+	return nil
 }
 
 func (d DB) putSong(ctx context.Context, song songentity.Song, expectSongExists bool) error {
 	dbObject, err := song.ToMap()
 	if err != nil {
-		return handle.Wrap(err, SongUnmarshalMark, "Failed to convert song object to a map")
+		return mark.Wrap(err, SongUnmarshalMark, "Failed to convert song object to a map")
 	}
 
 	putExpr := d.dynamoDB.Table(SongsTable).Put(dbObject)
@@ -153,7 +153,7 @@ func (d DB) putSong(ctx context.Context, song songentity.Song, expectSongExists 
 func (d DB) DeleteSong(ctx context.Context, songID string) error {
 	if songID == "" {
 		err := errors.New("Song ID is empty")
-		return handle.Wrap(err, SongNotFoundMark, "No ID provided to delete song")
+		return mark.Wrap(err, SongNotFoundMark, "No ID provided to delete song")
 	}
 
 	delExpr := d.dynamoDB.Table(SongsTable).Delete(idKey, songID)
@@ -161,10 +161,10 @@ func (d DB) DeleteSong(ctx context.Context, songID string) error {
 
 	if err := delExpr.RunWithContext(ctx); err != nil {
 		if conditionalCheckFailed(err) {
-			return handle.Wrap(err, SongNotFoundMark, "Failed to find song to delete")
+			return mark.Wrap(err, SongNotFoundMark, "Failed to find song to delete")
 		}
 
-		return handle.Wrap(err, DefaultErrorMark, "Failed to delete song")
+		return mark.Wrap(err, DefaultErrorMark, "Failed to delete song")
 	}
 
 	return nil

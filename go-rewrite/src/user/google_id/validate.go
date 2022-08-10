@@ -5,7 +5,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/domains"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/handle"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/errors/mark"
 	userentity "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/entity"
 	"google.golang.org/api/idtoken"
 )
@@ -22,22 +22,22 @@ type GoogleValidator struct {
 func (g GoogleValidator) ValidateToken(ctx context.Context, requestToken string) (userentity.User, error) {
 	validationResult, err := idtoken.Validate(ctx, requestToken, g.ClientID)
 	if err != nil {
-		return userentity.User{}, handle.Wrap(err, NotValidatedMark, "Token could not be validated")
+		return userentity.User{}, mark.Wrap(err, NotValidatedMark, "Token could not be validated")
 	}
 
 	sub, err := getStringField(validationResult.Claims, "sub")
 	if err != nil {
-		return userentity.User{}, handle.Wrap(err, MalformedClaimsMark, "sub field on claims is malformed")
+		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "sub field on claims is malformed")
 	}
 
 	name, err := getStringField(validationResult.Claims, "name")
 	if err != nil && !markers.Is(err, keyNotFound) {
-		return userentity.User{}, handle.Wrap(err, MalformedClaimsMark, "name field on claims is malformed")
+		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "name field on claims is malformed")
 	}
 
 	email, err := getStringField(validationResult.Claims, "email")
 	if err != nil && !markers.Is(err, keyNotFound) {
-		return userentity.User{}, handle.Wrap(err, MalformedClaimsMark, "email field on claims is malformed")
+		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "email field on claims is malformed")
 	}
 
 	return userentity.User{

@@ -4,12 +4,15 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/cockroachdb/errors"
 	"github.com/guregu/dynamo"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/pkg/errors"
+	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/env"
 	middleware2 "github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/middleware"
+	"github.com/veedubyou/chord-paper-be/go-rewrite/src/lib/rabbitmq"
 	songgateway "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/gateway"
 	songstorage "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/storage"
 	songusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/song/usecase"
@@ -24,8 +27,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-
-	"github.com/labstack/echo/v4"
 )
 
 type HTTPMethod string
@@ -51,6 +52,8 @@ func main() {
 			return path, handlerFunc, corsMiddleware, middleware2.ProxyMarkerOn
 		}
 
+		e.OPTIONS(params())
+
 		switch method {
 		case GET:
 			e.GET(params())
@@ -66,10 +69,13 @@ func main() {
 	}
 
 	dynamoDB := makeDynamoDB()
+	rabbitmqPublisher := makeRabbitMQPublisherForEnv()
 	userUsecase := makeUserUsecase(dynamoDB)
-	songGateway := makeSongGateway(dynamoDB, userUsecase)
-	trackGateway := makeTrackGateway(dynamoDB)
+	songUsecase := makeSongUsecase(dynamoDB, userUsecase)
+
 	userGateway := makeUserGateway(userUsecase)
+	songGateway := makeSongGateway(songUsecase)
+	trackGateway := makeTrackGateway(dynamoDB, songUsecase, rabbitmqPublisher)
 
 	handleRoute(POST, "/login", userGateway.Login)
 
@@ -95,6 +101,11 @@ func main() {
 		return trackGateway.GetTrackList(c, songID)
 	})
 
+	handleRoute(PUT, "/songs/:id/tracklist", func(c echo.Context) error {
+		songID := c.Param("id")
+		return trackGateway.SetTrackList(c, songID)
+	})
+
 	handleRoute(GET, "/users/:id/songs", func(c echo.Context) error {
 		userID := c.Param("id")
 		return songGateway.GetSongSummariesForUser(c, userID)
@@ -103,6 +114,43 @@ func main() {
 	e.Any("/*", proxyHandler, middleware2.ProxyMarkerOff, makeRustProxyMiddleware())
 
 	e.Logger.Fatal(e.Start(":5000"))
+}
+
+func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
+	switch env.Get() {
+	case env.Production:
+		queueName, isSet := os.LookupEnv("RABBITMQ_QUEUE")
+		if !isSet {
+			panic("RABBITMQ_QUEUE is not set")
+		}
+
+		hostURL, isSet := os.LookupEnv("RABBITMQ_URL")
+		if !isSet {
+			panic("RABBITMQ_URL is not set")
+		}
+
+		return makeRabbitMQPublisher(hostURL, queueName)
+
+	case env.Development:
+		return makeRabbitMQPublisher("amqp://localhost:5672", "chord-paper-tracks-dev")
+
+	default:
+		panic("unexpected environment")
+	}
+}
+
+func makeRabbitMQPublisher(hostURL string, queueName string) rabbitmq.Publisher {
+	conn, err := amqp091.Dial(hostURL)
+	if err != nil {
+		panic(errors.Wrap(err, "Failed to dial rabbitMQ url"))
+	}
+
+	publisher, err := rabbitmq.NewPublisher(conn, queueName)
+	if err != nil {
+		panic(errors.Wrap(err, "Failed to create rabbitMQ publisher"))
+	}
+
+	return publisher
 }
 
 func makeDynamoDB() dynamolib.DynamoDBWrapper {
@@ -127,15 +175,18 @@ func makeDynamoDB() dynamolib.DynamoDBWrapper {
 	return dynamolib.NewDynamoDBWrapper(db)
 }
 
-func makeSongGateway(dynamoDB dynamolib.DynamoDBWrapper, userUsecase userusecase.Usecase) songgateway.Gateway {
+func makeSongUsecase(dynamoDB dynamolib.DynamoDBWrapper, userUsecase userusecase.Usecase) songusecase.Usecase {
 	songDB := songstorage.NewDB(dynamoDB)
-	songUsecase := songusecase.NewUsecase(songDB, userUsecase)
+	return songusecase.NewUsecase(songDB, userUsecase)
+}
+
+func makeSongGateway(songUsecase songusecase.Usecase) songgateway.Gateway {
 	return songgateway.NewGateway(songUsecase)
 }
 
-func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper) trackgateway.Gateway {
+func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper, songUsecase songusecase.Usecase, publisher rabbitmq.Publisher) trackgateway.Gateway {
 	trackDB := trackstorage.NewDB(dynamoDB)
-	trackUsecase := trackusecase.NewUsecase(trackDB)
+	trackUsecase := trackusecase.NewUsecase(trackDB, songUsecase, publisher)
 	return trackgateway.NewGateway(trackUsecase)
 }
 
@@ -189,7 +240,7 @@ func makeCorsMiddleware() echo.MiddlewareFunc {
 
 		allowedOrigins = strings.Split(commaSeparatedOrigins, ",")
 	case env.Development:
-		allowedOrigins = []string{"http://localhost:3000"}
+		allowedOrigins = []string{"*"}
 	default:
 		panic("Unexpected environment")
 	}

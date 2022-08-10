@@ -116,7 +116,7 @@ func (u Usecase) CreateSong(ctx context.Context, authHeader string, song songent
 
 	song.CreateID()
 	song.SetSavedAtToNow()
-	createdSong, err := u.db.CreateSong(ctx, song)
+	err := u.db.CreateSong(ctx, song)
 	if err != nil {
 		return songentity.Song{}, api.CommitError(
 			errors.Wrap(err, "Failed to create the song in the DB"),
@@ -124,7 +124,7 @@ func (u Usecase) CreateSong(ctx context.Context, authHeader string, song songent
 			"Unknown error: Failed to create the song")
 	}
 
-	return createdSong, nil
+	return song, nil
 }
 
 func (u Usecase) UpdateSong(ctx context.Context, authHeader string, songID string, song songentity.Song) (songentity.Song, *api.Error) {
@@ -151,7 +151,7 @@ func (u Usecase) UpdateSong(ctx context.Context, authHeader string, songID strin
 
 	song.SetSavedAtToNow()
 
-	updatedSong, err := u.db.UpdateSong(ctx, song)
+	err := u.db.UpdateSong(ctx, song)
 	if err != nil {
 		err = errors.Wrap(err, "Failed to update song in DB")
 		switch {
@@ -168,7 +168,7 @@ func (u Usecase) UpdateSong(ctx context.Context, authHeader string, songID strin
 		}
 	}
 
-	return updatedSong, nil
+	return song, nil
 }
 
 func protectSongFromOverwriting(songToUpdate songentity.Song, songFromDB FreshlyFetchedSong) *api.Error {
@@ -214,7 +214,7 @@ func protectSongFromOverwriting(songToUpdate songentity.Song, songFromDB Freshly
 }
 
 func (u Usecase) DeleteSong(ctx context.Context, authHeader string, songID string) *api.Error {
-	if apiErr := u.verifySongOwnerBySongID(ctx, authHeader, songID); apiErr != nil {
+	if apiErr := u.VerifySongOwnerBySongID(ctx, authHeader, songID); apiErr != nil {
 		return apiErr
 	}
 
@@ -239,7 +239,7 @@ func (u Usecase) DeleteSong(ctx context.Context, authHeader string, songID strin
 	return nil
 }
 
-func (u Usecase) verifySongOwnerBySongID(ctx context.Context, authHeader string, songID string) *api.Error {
+func (u Usecase) VerifySongOwnerBySongID(ctx context.Context, authHeader string, songID string) *api.Error {
 	song, apiErr := u.GetSong(ctx, songID)
 	if apiErr != nil {
 		return api.WrapError(apiErr, "Failed to fetch song")

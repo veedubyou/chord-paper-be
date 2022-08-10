@@ -1,7 +1,6 @@
 package song_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -19,22 +18,8 @@ import (
 	userusecase "github.com/veedubyou/chord-paper-be/go-rewrite/src/user/usecase"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"time"
 )
-
-func loadSong() map[string]interface{} {
-	file := ExpectSuccess(os.Open("./demo_song_test.json"))
-
-	output := map[string]interface{}{}
-	err := json.NewDecoder(file).Decode(&output)
-	Expect(err).NotTo(HaveOccurred())
-
-	output["id"] = ""
-	output["owner"] = PrimaryUser.ID
-
-	return output
-}
 
 var _ = Describe("Song", func() {
 	var (
@@ -103,7 +88,7 @@ var _ = Describe("Song", func() {
 
 			BeforeEach(func() {
 				songID = ""
-				createSong(loadSong())
+				createSong(LoadDemoSong())
 			})
 
 			JustBeforeEach(func() {
@@ -240,11 +225,11 @@ var _ = Describe("Song", func() {
 					songs = [3]map[string]interface{}{}
 					songIDs = [3]string{}
 
-					songs[0] = loadSong()
+					songs[0] = LoadDemoSong()
 					Expect(songs[0]["elements"]).NotTo(BeNil())
 					songIDs[0], songs[0] = createSong(songs[0])
 
-					songs[1] = loadSong()
+					songs[1] = LoadDemoSong()
 					Expect(songs[1]["elements"]).NotTo(BeNil())
 					song2Metadata := ExpectType[map[string]interface{}](songs[1]["metadata"])
 					song2Metadata["title"] = "Ocean Wide Canyon Deep"
@@ -252,7 +237,7 @@ var _ = Describe("Song", func() {
 					song2Metadata["performedBy"] = "Jacob Collier"
 					songIDs[1], songs[1] = createSong(songs[1])
 
-					songs[2] = loadSong()
+					songs[2] = LoadDemoSong()
 					Expect(songs[2]["elements"]).NotTo(BeNil())
 					song3Metadata := ExpectType[map[string]interface{}](songs[2]["metadata"])
 					song3Metadata["title"] = "苺"
@@ -291,7 +276,7 @@ var _ = Describe("Song", func() {
 		)
 
 		BeforeEach(func() {
-			createSongPayload = loadSong()
+			createSongPayload = LoadDemoSong()
 		})
 
 		Describe("Unpermitted requests", func() {
@@ -439,9 +424,9 @@ var _ = Describe("Song", func() {
 		}
 
 		BeforeEach(func() {
-			songID, _ = createSong(loadSong())
+			songID, _ = createSong(LoadDemoSong())
 
-			songUpdate = loadSong()
+			songUpdate = LoadDemoSong()
 
 			songUpdate["id"] = songID
 			metadata := getMetadata(songUpdate)
@@ -630,7 +615,7 @@ var _ = Describe("Song", func() {
 		)
 
 		BeforeEach(func() {
-			createSongPayload := loadSong()
+			createSongPayload := LoadDemoSong()
 			songID, _ = createSong(createSongPayload)
 		})
 
