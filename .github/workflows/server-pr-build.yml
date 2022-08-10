@@ -1,5 +1,3 @@
-name: Server PR Build
-
 on:
   push:
     branches: [ master ]
@@ -8,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Server PR Build
     runs-on: cluster-runner
     steps:
       - uses: actions/checkout@v2

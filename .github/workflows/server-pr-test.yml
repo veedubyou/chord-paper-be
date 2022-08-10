@@ -1,5 +1,3 @@
-name: Server PR Test
-
 on:
   push:
     branches: [ master ]
@@ -8,6 +6,7 @@ on:
 
 jobs:
   test:
+    name: Server PR Test
     runs-on: cluster-runner
     #runs-on: ubuntu-latest
     #runs-on: chord-paper-be-runner
