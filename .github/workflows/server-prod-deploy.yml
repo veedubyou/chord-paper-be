@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/server-build-and-test.yml
 
   deploy:
-    name: Deploy
+    name: Build Image and Deploy to Production
     needs: build-and-test
     #runs-on: ubuntu-latest
     runs-on: cluster-runner
