@@ -12,6 +12,7 @@ jobs:
 
   deploy:
     name: Deploy
+    needs: build-and-test
     #runs-on: ubuntu-latest
     runs-on: cluster-runner
     steps:
