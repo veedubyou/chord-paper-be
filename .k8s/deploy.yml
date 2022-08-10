@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: chord-be
-        image: pw1124/chord-be:${LATEST_GO_IMAGE}
+        image: pw1124/chord-be:${LATEST_IMAGE}
         env:
         - name: ENVIRONMENT
           value: "production"
