@@ -41,6 +41,3 @@ jobs:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
           version: v1.24.3
           command: set image --record deploy/chord-be-go chord-be-go=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-go:${{ env.gitver }}
-
-      - name: Cleanup Images
-        run: docker image prune -af
