@@ -7,11 +7,11 @@ on:
 
 jobs:
   build-and-test:
-    name: Server Gate
+    name: Gate
     uses: ./.github/workflows/server-build-and-test.yml
 
   deploy:
-    name: Server Deploy
+    name: Deploy
     #runs-on: ubuntu-latest
     runs-on: cluster-runner
     steps:
