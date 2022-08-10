@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Server Build
+    name: Build
     runs-on: cluster-runner
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
         run: go build -v
 
   test:
-    name: Server Test
+    name: Test
     runs-on: cluster-runner
     #runs-on: ubuntu-latest
 
