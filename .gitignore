@@ -3,5 +3,5 @@ src/.DS_Store
 /.idea/
 .envrc
 .idea/runConfigurations/Run_chord_paper_be.xml
-go-rewrite/.idea/
+server/.idea/
 .k8s/processed-yamls/

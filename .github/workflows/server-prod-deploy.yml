@@ -1,0 +1,40 @@
+name: Server Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    name: Gate
+    uses: ./.github/workflows/server-build-and-test.yml
+
+  deploy:
+    name: Deploy
+    #runs-on: ubuntu-latest
+    runs-on: cluster-runner
+    steps:
+      # Checkout with history (to get git describe output properly)
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Run script, updates the GIT-VERSION-FILE with version number
+      - name: Update GIT-VERSION-FILE
+        run: bash git-version.sh
+      - name: Get version tag from GIT-VERSION-FILE
+        run: echo "gitver=$(cat GIT-VERSION-FILE)" >> $GITHUB_ENV
+      - name: Login to DockerHub
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Build Go Image w/version
+        run: docker build . --file ./server/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-go:${{ env.gitver }}
+      - name: Push image w/version
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-go:${{ env.gitver }}
+
+      - name: Deploy Project to K8S Cluster
+        uses: steebchen/kubectl@master
+        with:
+          config: ${{ secrets.KUBE_CONFIG_DATA }}
+          version: v1.24.3
+          command: set image --record deploy/chord-be-go chord-be-go=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-go:${{ env.gitver }}
