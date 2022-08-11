@@ -7,7 +7,7 @@ on:
 
 jobs:
   server-build-and-test:
-    name: Server Checks
+    name: Server Gates
     uses: ./.github/workflows/server-build-and-test.yml
 
   deploy:

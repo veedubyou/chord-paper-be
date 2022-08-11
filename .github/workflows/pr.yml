@@ -6,9 +6,9 @@ on:
 
 jobs:
   server-build-and-test:
-    name: Server Checks
+    name: Server Gates
     uses: ./.github/workflows/server-build-and-test.yml
 
   worker-build-and-test:
-    name: Worker Checks
+    name: Worker Gates
     uses: ./.github/workflows/worker-build-and-test.yml

@@ -45,3 +45,4 @@ jobs:
       - name: Test
         working-directory: ./worker/src
         run: go test -v ./...
+        
