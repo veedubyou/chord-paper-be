@@ -3,7 +3,7 @@ src/.DS_Store
 /.idea/
 .k8s/processed-yamls/
 cloudkey.json
-wd/
+worker/wd/
 
 # Binaries for programs and plugins
 *.exe
