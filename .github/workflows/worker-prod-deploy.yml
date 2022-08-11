@@ -15,6 +15,7 @@ jobs:
 
   push:
     name: Build Image and Deploy
+    needs: worker-build-and-test
     runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)

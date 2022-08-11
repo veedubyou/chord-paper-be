@@ -14,13 +14,11 @@ RUN tar -C /usr/local -xzf go1.18.linux-amd64.tar.gz
 RUN rm go1.18.linux-amd64.tar.gz
 ENV PATH=$PATH:/usr/local/go/bin
 
-WORKDIR /chord-paper-be-workers
+WORKDIR /chord-paper-be/worker
 
-COPY go.mod go.sum ./
-COPY pkg/ ./pkg/
-COPY src/ ./src/
+COPY ./worker/go.mod ./worker/go.sum ./
+COPY ./worker/src/ ./src/
 
 RUN go build -o chord-paper-be-workers ./src/worker.go
  
-#CMD exec /bin/sh -c "trap : TERM INT; sleep 9999999999d & wait"
 CMD ["./chord-paper-be-workers"]
