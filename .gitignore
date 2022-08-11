@@ -5,3 +5,20 @@ src/.DS_Store
 .idea/runConfigurations/Run_chord_paper_be.xml
 server/.idea/
 .k8s/processed-yamls/
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+cloudkey.json
+.idea/
+wd/
+local.envrc
