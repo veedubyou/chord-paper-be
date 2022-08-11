@@ -1,10 +1,10 @@
 package file_splitter
 
 import (
-	"chord-paper-be-workers/src/application/executor"
-	"chord-paper-be-workers/src/application/jobs/split/splitter"
-	"chord-paper-be-workers/src/lib/cerr"
-	"chord-paper-be-workers/src/lib/working_dir"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/executor"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/working_dir"
 	"context"
 	"fmt"
 	"os"

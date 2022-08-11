@@ -2,7 +2,7 @@
 package transferfakes
 
 import (
-	"chord-paper-be-workers/src/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer"
 	"sync"
 )
 

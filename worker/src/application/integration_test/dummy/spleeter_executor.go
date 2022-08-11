@@ -1,7 +1,7 @@
 package dummy
 
 import (
-	"chord-paper-be-workers/src/application/executor"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/executor"
 	"os"
 	"path/filepath"
 )

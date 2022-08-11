@@ -2,7 +2,7 @@
 package publishfakes
 
 import (
-	"chord-paper-be-workers/src/application/publish"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/publish"
 	"sync"
 
 	"github.com/streadway/amqp"

@@ -1,10 +1,10 @@
 package file_splitter
 
 import (
-	cloudstorage "chord-paper-be-workers/src/application/cloud_storage/entity"
-	"chord-paper-be-workers/src/application/jobs/split/splitter"
-	"chord-paper-be-workers/src/lib/cerr"
-	"chord-paper-be-workers/src/lib/working_dir"
+	cloudstorage "github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/working_dir"
 	"context"
 	"fmt"
 	"io/ioutil"

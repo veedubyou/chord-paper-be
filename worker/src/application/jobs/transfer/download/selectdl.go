@@ -1,7 +1,7 @@
 package download
 
 import (
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"net/url"
 	"strings"
 )

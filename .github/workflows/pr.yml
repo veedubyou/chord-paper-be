@@ -8,3 +8,7 @@ jobs:
   server-build-and-test:
     name: Server Checks
     uses: ./.github/workflows/server-build-and-test.yml
+
+  worker-build-and-test:
+    name: Worker Checks
+    uses: ./.github/workflows/worker-build-and-test.yml

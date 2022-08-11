@@ -1,6 +1,6 @@
 package entity
 
-import "chord-paper-be-workers/src/lib/cerr"
+import "github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 
 type TrackType string
 

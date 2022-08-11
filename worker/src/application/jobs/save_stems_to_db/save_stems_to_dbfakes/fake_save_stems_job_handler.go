@@ -2,7 +2,7 @@
 package save_stems_to_dbfakes
 
 import (
-	"chord-paper-be-workers/src/application/jobs/save_stems_to_db"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/save_stems_to_db"
 	"sync"
 )
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/jobs/start"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/start"
 	"encoding/json"
 	"os"
 

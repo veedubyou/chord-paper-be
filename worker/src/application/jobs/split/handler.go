@@ -1,9 +1,9 @@
 package split
 
 import (
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/jobs/split/splitter"
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"context"
 	"encoding/json"
 )

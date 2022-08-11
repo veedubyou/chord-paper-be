@@ -2,7 +2,7 @@
 package startfakes
 
 import (
-	"chord-paper-be-workers/src/application/jobs/start"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/start"
 	"sync"
 )
 

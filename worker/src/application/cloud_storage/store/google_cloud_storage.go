@@ -1,8 +1,8 @@
 package store
 
 import (
-	"chord-paper-be-workers/src/application/cloud_storage/entity"
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"context"
 	"io"
 	"strings"

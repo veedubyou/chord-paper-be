@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"chord-paper-be-workers/src/application/jobs/job_router"
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_router"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 
 	"github.com/apex/log"
 

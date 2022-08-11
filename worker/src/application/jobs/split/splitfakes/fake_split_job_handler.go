@@ -2,7 +2,7 @@
 package splitfakes
 
 import (
-	"chord-paper-be-workers/src/application/jobs/split"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/split"
 	"sync"
 )
 

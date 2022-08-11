@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chord-paper-be-workers/src/application"
+	"github.com/veedubyou/chord-paper-be/worker/src/application"
 )
 
 func main() {

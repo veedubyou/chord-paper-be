@@ -1,9 +1,9 @@
 package store
 
 import (
-	"chord-paper-be-workers/src/application/tracks/entity"
-	"chord-paper-be-workers/src/lib/cerr"
-	"chord-paper-be-workers/src/lib/env"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/env"
 	"context"
 	"fmt"
 	"strconv"

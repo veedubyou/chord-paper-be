@@ -1,7 +1,7 @@
 package dummy
 
 import (
-	"chord-paper-be-workers/src/application/cloud_storage/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/entity"
 	"context"
 	"sync"
 )

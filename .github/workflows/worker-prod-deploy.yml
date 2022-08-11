@@ -1,19 +1,19 @@
-name: Deploy to Production
+name: Worker Deploy to Production
 
 on:
   push:
     branches:
       - master
 
-#env:
-#  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
-#  GKE_ZONE: us-west1-a
-#  GKE_CLUSTER: cluster-1
-    
 jobs:
+  worker-build-and-test:
+    name: Worker Checks
+    uses: ./.github/workflows/worker-build-and-test.yml
+
+
   push:
-    #runs-on: ubuntu-latest
-    runs-on: chord-paper-be-workers-runner
+    name: Build Image and Deploy
+    runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)
       - name: Checkout
@@ -31,14 +31,14 @@ jobs:
       # base image
 
       - name: Build image w/version
-        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }}
+        run: docker build . --file ./worker/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }}
       - name: Push image w/version
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }}
 
       # youtube-dl
 
       - name: Build youtube-dl image w/version
-        run: docker build --no-cache ./youtube-dl --tag ${{ secrets.DOCKERHUB_USERNAME }}/youtube-dl-bin:${{ env.gitver }}
+        run: docker build --no-cache ./worker/youtube-dl --tag ${{ secrets.DOCKERHUB_USERNAME }}/youtube-dl-bin:${{ env.gitver }}
       - name: Push youtube-dl image w/version
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/youtube-dl-bin:${{ env.gitver }}
 
@@ -46,31 +46,15 @@ jobs:
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v1.19.3
+          version: v1.24.3
           command: set image --record deploy/chord-be-workers chord-be-workers=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }}
-     
+
       - name: Verify K8S Deployment
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v1.19.3
+          version: v1.24.3
           command: rollout status deploy/chord-be-workers
 
       - name: Cleanup Images
         run: docker image prune -af
-          
-      #- name: Setup GCloud CLI
-      #  uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-      #  with:
-      #    version: '270.0.0'
-      #    service_account_email: ${{ secrets.GKE_EMAIL }}
-      #    service_account_key: ${{ secrets.GKE_KEY }}
-
-      #- name: Deploy to GKE
-      #  continue-on-error: true
-      #  timeout-minutes: 2
-      #  run: |
-      #    gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
-      #    kubectl rollout restart deploy/chord-fe
-      #    kubectl rollout status deploy/chord-fe
-      #    kubectl get services -o wide

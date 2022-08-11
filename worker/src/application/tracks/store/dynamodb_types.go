@@ -1,7 +1,7 @@
 package store
 
 import (
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"

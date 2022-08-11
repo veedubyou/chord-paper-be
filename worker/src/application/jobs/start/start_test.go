@@ -1,17 +1,17 @@
 package start_test
 
 import (
-	"chord-paper-be-workers/src/application/integration_test/dummy"
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/jobs/transfer"
-	"chord-paper-be-workers/src/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
 	"context"
 	"encoding/json"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"chord-paper-be-workers/src/application/jobs/start"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/start"
 )
 
 var _ = Describe("Start", func() {

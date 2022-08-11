@@ -1,14 +1,14 @@
 package job_router
 
 import (
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/jobs/save_stems_to_db"
-	"chord-paper-be-workers/src/application/jobs/split"
-	"chord-paper-be-workers/src/application/jobs/start"
-	"chord-paper-be-workers/src/application/jobs/transfer"
-	"chord-paper-be-workers/src/application/publish"
-	"chord-paper-be-workers/src/application/tracks/entity"
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/save_stems_to_db"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/split"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/start"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/publish"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"context"
 	"encoding/json"
 	"fmt"

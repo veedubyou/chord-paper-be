@@ -1,18 +1,18 @@
 package transfer
 
 import (
-	cloudstorage "chord-paper-be-workers/src/application/cloud_storage/entity"
-	"chord-paper-be-workers/src/application/cloud_storage/store"
-	"chord-paper-be-workers/src/application/jobs/transfer/download"
-	"chord-paper-be-workers/src/application/tracks/entity"
+	cloudstorage "github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/store"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer/download"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/apex/log"
 
-	"chord-paper-be-workers/src/lib/cerr"
-	"chord-paper-be-workers/src/lib/working_dir"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/working_dir"
 	"context"
 	"fmt"
 )

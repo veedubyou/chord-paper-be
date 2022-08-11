@@ -1,9 +1,9 @@
 package start
 
 import (
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/tracks/entity"
-	"chord-paper-be-workers/src/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/lib/cerr"
 	"context"
 	"encoding/json"
 )

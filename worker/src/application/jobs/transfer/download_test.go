@@ -1,15 +1,15 @@
 package transfer_test
 
 import (
-	"chord-paper-be-workers/src/application/cloud_storage/store"
-	"chord-paper-be-workers/src/application/integration_test/dummy"
-	"chord-paper-be-workers/src/application/jobs/job_message"
-	"chord-paper-be-workers/src/application/jobs/transfer"
-	"chord-paper-be-workers/src/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/cloud_storage/store"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/job_message"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/tracks/entity"
 	"context"
 	"fmt"
 
-	"chord-paper-be-workers/src/application/jobs/transfer/download"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/jobs/transfer/download"
 	"encoding/json"
 
 	. "github.com/onsi/gomega"

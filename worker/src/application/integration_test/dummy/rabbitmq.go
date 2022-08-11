@@ -1,8 +1,8 @@
 package dummy
 
 import (
-	"chord-paper-be-workers/src/application/publish"
-	"chord-paper-be-workers/src/application/worker"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/publish"
+	"github.com/veedubyou/chord-paper-be/worker/src/application/worker"
 
 	"github.com/streadway/amqp"
 )
