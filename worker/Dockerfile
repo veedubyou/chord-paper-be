@@ -17,8 +17,8 @@ ENV PATH=$PATH:/usr/local/go/bin
 WORKDIR /chord-paper-be/worker
 
 COPY ./go.mod ./go.sum ./
-COPY ./worker/src/ ./src/
+COPY ./worker/src/ ./worker/src/
 
-RUN go build -o chord-paper-be-workers ./src/worker.go
+RUN go build -o chord-paper-be-workers ./worker/src/worker.go
  
 CMD ["./chord-paper-be-workers"]
