@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'worker/**'
 
 jobs:
   worker-build-and-test:
