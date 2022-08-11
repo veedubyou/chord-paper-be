@@ -17,12 +17,11 @@ jobs:
 
       - name: Build
         working-directory: ./server/src
-        run: go build -v
+        run: go build -v server.go
 
   test:
     name: Test
     runs-on: cluster-runner
-    #runs-on: ubuntu-latest
 
     services:
       dynamodb:

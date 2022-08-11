@@ -1,8 +1,7 @@
-src/.DS_Store
 .DS_Store
 /.idea/
-.k8s/processed-yamls/
-cloudkey.json
+.k8s/server/processed-yamls/
+.k8s/worker/processed-yamls/
 worker/wd/
 
 # Binaries for programs and plugins
