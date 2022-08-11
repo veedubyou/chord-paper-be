@@ -1,7 +1,16 @@
 src/.DS_Store
 .DS_Store
 /.idea/
-.envrc
-.idea/runConfigurations/Run_chord_paper_be.xml
-server/.idea/
 .k8s/processed-yamls/
+cloudkey.json
+wd/
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+*.test
+
