@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/env"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/local"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/region"
@@ -20,7 +21,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	transfer2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	download2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/publish"
 	trackstore "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
@@ -95,8 +95,8 @@ func queueName() string {
 
 }
 
-func newPublisher(conn *amqp091.Connection) publish.RabbitMQPublisher {
-	publisher, err := publish.NewRabbitMQPublisher(conn, queueName())
+func newPublisher(conn *amqp091.Connection) rabbitmq.QueuePublisher {
+	publisher, err := rabbitmq.NewQueuePublisher(conn, queueName())
 	ensureOk(err)
 	return publisher
 }
@@ -129,7 +129,7 @@ func newGoogleFileStore() filestore.GoogleFileStore {
 	return fileStore
 }
 
-func newJobRouter(trackStore trackstore.DynamoDBTrackStore, publisher publish.Publisher) job_router.JobRouter {
+func newJobRouter(trackStore trackstore.DynamoDBTrackStore, publisher rabbitmq.Publisher) job_router.JobRouter {
 	return job_router.NewJobRouter(
 		trackStore,
 		publisher,

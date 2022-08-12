@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/usecase"
@@ -22,6 +21,7 @@ import (
 	userstorage "github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/env"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/local"
 	"github.com/veedubyou/chord-paper-be/src/shared/values/region"
@@ -111,7 +111,7 @@ func main() {
 	e.Logger.Fatal(e.Start(":5000"))
 }
 
-func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
+func makeRabbitMQPublisherForEnv() rabbitmq.QueuePublisher {
 	switch env.Get() {
 	case env.Production:
 		queueName := envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME)
@@ -127,13 +127,13 @@ func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
 	}
 }
 
-func makeRabbitMQPublisher(hostURL string, queueName string) rabbitmq.Publisher {
+func makeRabbitMQPublisher(hostURL string, queueName string) rabbitmq.QueuePublisher {
 	conn, err := amqp091.Dial(hostURL)
 	if err != nil {
 		panic(errors.Wrap(err, "Failed to dial rabbitMQ url"))
 	}
 
-	publisher, err := rabbitmq.NewPublisher(conn, queueName)
+	publisher, err := rabbitmq.NewQueuePublisher(conn, queueName)
 	if err != nil {
 		panic(errors.Wrap(err, "Failed to create rabbitMQ publisher"))
 	}
@@ -172,7 +172,7 @@ func makeSongGateway(songUsecase songusecase.Usecase) songgateway.Gateway {
 	return songgateway.NewGateway(songUsecase)
 }
 
-func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper, songUsecase songusecase.Usecase, publisher rabbitmq.Publisher) trackgateway.Gateway {
+func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) trackgateway.Gateway {
 	trackDB := trackstorage.NewDB(dynamoDB)
 	trackUsecase := trackusecase.NewUsecase(trackDB, songUsecase, publisher)
 	return trackgateway.NewGateway(trackUsecase)

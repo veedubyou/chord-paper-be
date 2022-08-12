@@ -2,8 +2,8 @@ package userusecase
 
 import (
 	"context"
+	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"

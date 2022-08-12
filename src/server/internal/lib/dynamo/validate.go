@@ -2,7 +2,7 @@ package dynamolib
 
 import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/pkg/errors"
+	"github.com/cockroachdb/errors"
 )
 
 func ValidateStringField(dynamoItem map[string]*dynamodb.AttributeValue, key string) error {

@@ -14,7 +14,6 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.20.0
-	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.4.0
 	github.com/veedubyou/direnv-to-dotenv v0.0.0-20220412052816-25c82d9e9ef0
 	golang.org/x/tools v0.1.12
@@ -47,6 +46,7 @@ require (
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect

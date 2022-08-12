@@ -4,24 +4,24 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/apex/log"
+	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/pkg/errors"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/usecase"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 )
 
 type Usecase struct {
 	db          trackstorage.DB
 	songUsecase songusecase.Usecase
-	publisher   rabbitmq.Publisher
+	publisher   rabbitmq.QueuePublisher
 }
 
-func NewUsecase(db trackstorage.DB, songUsecase songusecase.Usecase, publisher rabbitmq.Publisher) Usecase {
+func NewUsecase(db trackstorage.DB, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) Usecase {
 	return Usecase{
 		db:          db,
 		songUsecase: songUsecase,
