@@ -17,10 +17,10 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
-	file_splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
-	transfer2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	download2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	trackstore "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
@@ -143,23 +143,23 @@ func newStartJobHandler(trackStore trackstore.DynamoDBTrackStore) start.JobHandl
 	return start.NewJobHandler(trackStore)
 }
 
-func newDownloadJobHandler() transfer2.JobHandler {
+func newDownloadJobHandler() transfer.JobHandler {
 	youtubeDLBinPath := envvar.MustGet("YOUTUBEDL_BIN_PATH")
 	workingDir := envvar.MustGet("YOUTUBEDL_WORKING_DIR_PATH")
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 
-	youtubedler := download2.NewYoutubeDLer(youtubeDLBinPath, executor.BinaryFileExecutor{})
-	genericdler := download2.NewGenericDLer()
+	youtubedler := download.NewYoutubeDLer(youtubeDLBinPath, executor.BinaryFileExecutor{})
+	genericdler := download.NewGenericDLer()
 
-	selectdler := download2.NewSelectDLer(youtubedler, genericdler)
+	selectdler := download.NewSelectDLer(youtubedler, genericdler)
 
 	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
 	bucketName := envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
-	trackDownloader, err := transfer2.NewTrackTransferrer(selectdler, trackStore, newGoogleFileStore(), bucketName, workingDir)
+	trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, newGoogleFileStore(), bucketName, workingDir)
 	ensureOk(err)
 
-	return transfer2.NewJobHandler(trackDownloader)
+	return transfer.NewJobHandler(trackDownloader)
 }
 
 func newSplitJobHandler() split.JobHandler {
@@ -168,11 +168,11 @@ func newSplitJobHandler() split.JobHandler {
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 
-	localUsecase, err := file_splitter2.NewLocalFileSplitter(workingDir, spleeterBinPath, executor.BinaryFileExecutor{})
+	localUsecase, err := file_splitter.NewLocalFileSplitter(workingDir, spleeterBinPath, executor.BinaryFileExecutor{})
 	ensureOk(err)
 
 	googleFileStore := newGoogleFileStore()
-	remoteUsecase, err := file_splitter2.NewRemoteFileSplitter(workingDir, googleFileStore, localUsecase)
+	remoteUsecase, err := file_splitter.NewRemoteFileSplitter(workingDir, googleFileStore, localUsecase)
 	ensureOk(err)
 
 	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())

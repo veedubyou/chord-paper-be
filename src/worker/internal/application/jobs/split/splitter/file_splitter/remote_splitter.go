@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	cloudstorage "github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/entity"
-	splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/working_dir"
 	"io/ioutil"
@@ -14,7 +14,7 @@ import (
 	"github.com/apex/log"
 )
 
-var _ splitter2.FileSplitter = RemoteFileSplitter{}
+var _ splitter.FileSplitter = RemoteFileSplitter{}
 
 func NewRemoteFileSplitter(workingDirStr string, remoteFileStore cloudstorage.FileStore, localSplitter LocalFileSplitter) (RemoteFileSplitter, error) {
 	workingDir, err := working_dir.NewWorkingDir(workingDirStr)
@@ -35,7 +35,7 @@ type RemoteFileSplitter struct {
 	localSplitter   LocalFileSplitter
 }
 
-func (r RemoteFileSplitter) SplitFile(ctx context.Context, remoteSourcePath string, remoteDestPath string, splitType splitter2.SplitType) (splitter2.StemFilePaths, error) {
+func (r RemoteFileSplitter) SplitFile(ctx context.Context, remoteSourcePath string, remoteDestPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"remoteSourcePath": remoteSourcePath,
 		"remoteDestPath":   remoteDestPath,
@@ -127,9 +127,9 @@ func (r RemoteFileSplitter) uploadStem(ctx context.Context, done chan error, sou
 	return
 }
 
-func (r RemoteFileSplitter) uploadStems(ctx context.Context, remoteStemDir string, localStemFilePaths splitter2.StemFilePaths) (splitter2.StemFilePaths, error) {
+func (r RemoteFileSplitter) uploadStems(ctx context.Context, remoteStemDir string, localStemFilePaths splitter.StemFilePaths) (splitter.StemFilePaths, error) {
 	uploadResultChannels := []chan error{}
-	remoteFilePaths := splitter2.StemFilePaths{}
+	remoteFilePaths := splitter.StemFilePaths{}
 
 	log.Info("Spinning off upload threads")
 

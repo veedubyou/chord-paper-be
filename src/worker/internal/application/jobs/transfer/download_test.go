@@ -7,10 +7,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
-	dummy2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
-	transfer2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	download2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 )
 
@@ -19,11 +19,11 @@ var _ = Describe("Download Job Handler", func() {
 		youtubeDLBinPath string
 		bucketName       string
 
-		dummyTrackStore *dummy2.TrackStore
-		dummyFileStore  *dummy2.FileStore
-		dummyExecutor   *dummy2.YoutubeDLExecutor
+		dummyTrackStore *dummy.TrackStore
+		dummyFileStore  *dummy.FileStore
+		dummyExecutor   *dummy.YoutubeDLExecutor
 
-		handler transfer2.JobHandler
+		handler transfer.JobHandler
 
 		message           []byte
 		originalURL       string
@@ -44,9 +44,9 @@ var _ = Describe("Download Job Handler", func() {
 			originalURL = "https://youtube.com/coolsong.mp3"
 			originalTrackData = []byte("cool_jamz")
 
-			dummyTrackStore = dummy2.NewDummyTrackStore()
-			dummyFileStore = dummy2.NewDummyFileStore()
-			dummyExecutor = dummy2.NewDummyYoutubeDLExecutor()
+			dummyTrackStore = dummy.NewDummyTrackStore()
+			dummyFileStore = dummy.NewDummyFileStore()
+			dummyExecutor = dummy.NewDummyYoutubeDLExecutor()
 		})
 
 		By("Setting up the dummy track store data", func() {
@@ -64,21 +64,21 @@ var _ = Describe("Download Job Handler", func() {
 		})
 
 		By("Instantiating the handler", func() {
-			youtubeDownloader := download2.NewYoutubeDLer(youtubeDLBinPath, dummyExecutor)
-			genericDownloader := download2.NewGenericDLer()
-			selectDownloader := download2.NewSelectDLer(youtubeDownloader, genericDownloader)
+			youtubeDownloader := download.NewYoutubeDLer(youtubeDLBinPath, dummyExecutor)
+			genericDownloader := download.NewGenericDLer()
+			selectDownloader := download.NewSelectDLer(youtubeDownloader, genericDownloader)
 
-			trackDownloader, err := transfer2.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, bucketName, workingDir)
+			trackDownloader, err := transfer.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, bucketName, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
-			handler = transfer2.NewJobHandler(trackDownloader)
+			handler = transfer.NewJobHandler(trackDownloader)
 		})
 	})
 
 	Describe("Well formed message", func() {
-		var job transfer2.JobParams
+		var job transfer.JobParams
 		BeforeEach(func() {
-			job = transfer2.JobParams{
+			job = transfer.JobParams{
 				TrackIdentifier: job_message.TrackIdentifier{
 					TrackListID: tracklistID,
 					TrackID:     trackID,
@@ -93,7 +93,7 @@ var _ = Describe("Download Job Handler", func() {
 		Describe("Happy path", func() {
 			var err error
 			var expectedSavedURL string
-			var jobParams transfer2.JobParams
+			var jobParams transfer.JobParams
 			var savedOriginalURL string
 
 			BeforeEach(func() {
@@ -132,7 +132,7 @@ var _ = Describe("Download Job Handler", func() {
 
 	Describe("Poorly formed message", func() {
 		BeforeEach(func() {
-			job := transfer2.JobParams{
+			job := transfer.JobParams{
 				TrackIdentifier: job_message.TrackIdentifier{
 					TrackListID: tracklistID,
 				},

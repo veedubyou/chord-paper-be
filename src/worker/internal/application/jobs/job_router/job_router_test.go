@@ -7,7 +7,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	dummy2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
@@ -33,8 +33,8 @@ var _ = Describe("JobRouter", func() {
 		splitHandler     *splitfakes.FakeSplitJobHandler
 		saveStemsHandler *save_stems_to_dbfakes.FakeSaveStemsJobHandler
 
-		trackStore *dummy2.TrackStore
-		rabbitMQ   *dummy2.RabbitMQ
+		trackStore *dummy.TrackStore
+		rabbitMQ   *dummy.RabbitMQ
 
 		jobRouter job_router.JobRouter
 
@@ -104,8 +104,8 @@ var _ = Describe("JobRouter", func() {
 			splitHandler = &splitfakes.FakeSplitJobHandler{}
 			saveStemsHandler = &save_stems_to_dbfakes.FakeSaveStemsJobHandler{}
 
-			trackStore = dummy2.NewDummyTrackStore()
-			rabbitMQ = dummy2.NewRabbitMQ()
+			trackStore = dummy.NewDummyTrackStore()
+			rabbitMQ = dummy.NewRabbitMQ()
 
 			jobRouter = job_router.NewJobRouter(trackStore, rabbitMQ, startHandler, transferHandler, splitHandler, saveStemsHandler)
 		})

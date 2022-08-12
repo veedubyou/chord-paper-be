@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
-	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-var postSplitTrackType = map[entity2.TrackType]entity2.TrackType{
-	entity2.SplitTwoStemsType:  entity2.TwoStemsType,
-	entity2.SplitFourStemsType: entity2.FourStemsType,
-	entity2.SplitFiveStemsType: entity2.FiveStemsType,
+var postSplitTrackType = map[entity.TrackType]entity.TrackType{
+	entity.SplitTwoStemsType:  entity.TwoStemsType,
+	entity.SplitFourStemsType: entity.FourStemsType,
+	entity.SplitFiveStemsType: entity.FiveStemsType,
 }
 
 const JobType string = "save_stems_to_db"
@@ -29,14 +29,14 @@ type SaveStemsJobHandler interface {
 	HandleSaveStemsToDBJob(message []byte) error
 }
 
-func NewJobHandler(trackStore entity2.TrackStore) JobHandler {
+func NewJobHandler(trackStore entity.TrackStore) JobHandler {
 	return JobHandler{
 		trackStore: trackStore,
 	}
 }
 
 type JobHandler struct {
-	trackStore entity2.TrackStore
+	trackStore entity.TrackStore
 }
 
 func (s JobHandler) HandleSaveStemsToDBJob(message []byte) error {
@@ -47,20 +47,20 @@ func (s JobHandler) HandleSaveStemsToDBJob(message []byte) error {
 
 	errctx := cerr.Field("job_params", params)
 
-	updater := func(track entity2.Track) (entity2.Track, error) {
-		splitStemTrack, ok := track.(entity2.SplitStemTrack)
+	updater := func(track entity.Track) (entity.Track, error) {
+		splitStemTrack, ok := track.(entity.SplitStemTrack)
 		if !ok {
-			return entity2.BaseTrack{}, errctx.Error("Unexpected - track is not a split request")
+			return entity.BaseTrack{}, errctx.Error("Unexpected - track is not a split request")
 		}
 
 		newTrackType, ok := postSplitTrackType[splitStemTrack.TrackType]
 		if !ok {
-			return entity2.BaseTrack{}, errctx.Field("track", splitStemTrack).
+			return entity.BaseTrack{}, errctx.Field("track", splitStemTrack).
 				Error("No matching entry for setting the new track type")
 		}
 
-		newTrack := entity2.StemTrack{
-			BaseTrack: entity2.BaseTrack{
+		newTrack := entity.StemTrack{
+			BaseTrack: entity.BaseTrack{
 				TrackType: newTrackType,
 			},
 			StemURLs: params.StemURLS,

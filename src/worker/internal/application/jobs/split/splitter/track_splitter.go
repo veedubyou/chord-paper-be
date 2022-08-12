@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
-	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
@@ -15,12 +15,12 @@ var splitDirNames = map[SplitType]string{
 }
 
 type TrackSplitter struct {
-	trackStore entity2.TrackStore
+	trackStore entity.TrackStore
 	splitter   FileSplitter
 	bucketName string
 }
 
-func NewTrackSplitter(splitter FileSplitter, trackStore entity2.TrackStore, bucketName string) TrackSplitter {
+func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, bucketName string) TrackSplitter {
 	return TrackSplitter{
 		trackStore: trackStore,
 		splitter:   splitter,
@@ -40,7 +40,7 @@ func (t TrackSplitter) SplitTrack(ctx context.Context, tracklistID string, track
 		return nil, errctx.Wrap(err).Error("Failed to get track from track store")
 	}
 
-	splitStemTrack, ok := track.(entity2.SplitStemTrack)
+	splitStemTrack, ok := track.(entity.SplitStemTrack)
 	if !ok {
 		return nil, errctx.Error("Unexpected: track is not a split request")
 	}

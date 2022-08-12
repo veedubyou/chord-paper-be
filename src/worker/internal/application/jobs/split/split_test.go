@@ -7,11 +7,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
-	dummy2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
-	splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
-	file_splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 )
 
@@ -19,9 +19,9 @@ var _ = Describe("Split handler", func() {
 	var (
 		bucketName string
 
-		dummyTrackStore *dummy2.TrackStore
-		dummyFileStore  *dummy2.FileStore
-		dummyExecutor   *dummy2.SpleeterExecutor
+		dummyTrackStore *dummy.TrackStore
+		dummyFileStore  *dummy.FileStore
+		dummyExecutor   *dummy.SpleeterExecutor
 
 		handler split.JobHandler
 
@@ -48,9 +48,9 @@ var _ = Describe("Split handler", func() {
 		})
 
 		By("Instantiating all mocks", func() {
-			dummyTrackStore = dummy2.NewDummyTrackStore()
-			dummyFileStore = dummy2.NewDummyFileStore()
-			dummyExecutor = dummy2.NewDummySpleeterExecutor()
+			dummyTrackStore = dummy.NewDummyTrackStore()
+			dummyFileStore = dummy.NewDummyFileStore()
+			dummyExecutor = dummy.NewDummySpleeterExecutor()
 		})
 
 		By("Setting up file on the file store", func() {
@@ -59,13 +59,13 @@ var _ = Describe("Split handler", func() {
 		})
 
 		By("Instantiating the handler", func() {
-			localSplitter, err := file_splitter2.NewLocalFileSplitter(workingDir, "/somewhere/spleeter", dummyExecutor)
+			localSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/somewhere/spleeter", dummyExecutor)
 			Expect(err).NotTo(HaveOccurred())
 
-			remoteSplitter, err := file_splitter2.NewRemoteFileSplitter(workingDir, dummyFileStore, localSplitter)
+			remoteSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, dummyFileStore, localSplitter)
 			Expect(err).NotTo(HaveOccurred())
 
-			trackSplitter := splitter2.NewTrackSplitter(remoteSplitter, dummyTrackStore, bucketName)
+			trackSplitter := splitter.NewTrackSplitter(remoteSplitter, dummyTrackStore, bucketName)
 			handler = split.NewJobHandler(trackSplitter)
 		})
 	})
@@ -111,9 +111,9 @@ var _ = Describe("Split handler", func() {
 			var (
 				err               error
 				returnedJobParams split.JobParams
-				returnedStemUrls  splitter2.StemFilePaths
+				returnedStemUrls  splitter.StemFilePaths
 
-				expectedReturnedStemUrls splitter2.StemFilePaths
+				expectedReturnedStemUrls splitter.StemFilePaths
 				expectedStemFileContent  map[string][]byte
 
 				expectUploadedStemFiles = func() {

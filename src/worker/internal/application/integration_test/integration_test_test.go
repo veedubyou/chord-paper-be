@@ -7,16 +7,16 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/rabbitmq/amqp091-go"
-	dummy2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
-	file_splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
-	transfer2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	download2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 )
@@ -29,11 +29,11 @@ var _ = Describe("IntegrationTest", func() {
 		originalTrackData []byte
 		bucketName        string
 
-		rabbitMQ          *dummy2.RabbitMQ
-		fileStore         *dummy2.FileStore
-		trackStore        *dummy2.TrackStore
-		youtubeDLExecutor *dummy2.YoutubeDLExecutor
-		spleeterExecutor  *dummy2.SpleeterExecutor
+		rabbitMQ          *dummy.RabbitMQ
+		fileStore         *dummy.FileStore
+		trackStore        *dummy.TrackStore
+		youtubeDLExecutor *dummy.YoutubeDLExecutor
+		spleeterExecutor  *dummy.SpleeterExecutor
 
 		queueWorker worker.QueueWorker
 		run         func()
@@ -49,11 +49,11 @@ var _ = Describe("IntegrationTest", func() {
 		})
 
 		By("Instantiating all dummies", func() {
-			rabbitMQ = dummy2.NewRabbitMQ()
-			fileStore = dummy2.NewDummyFileStore()
-			trackStore = dummy2.NewDummyTrackStore()
-			youtubeDLExecutor = dummy2.NewDummyYoutubeDLExecutor()
-			spleeterExecutor = dummy2.NewDummySpleeterExecutor()
+			rabbitMQ = dummy.NewRabbitMQ()
+			fileStore = dummy.NewDummyFileStore()
+			trackStore = dummy.NewDummyTrackStore()
+			youtubeDLExecutor = dummy.NewDummyYoutubeDLExecutor()
+			spleeterExecutor = dummy.NewDummySpleeterExecutor()
 		})
 
 		By("Setting up the track store", func() {
@@ -77,23 +77,23 @@ var _ = Describe("IntegrationTest", func() {
 			startHandler = start.NewJobHandler(trackStore)
 		})
 
-		var transferHandler transfer2.JobHandler
+		var transferHandler transfer.JobHandler
 		By("Creating the download job handler", func() {
-			youtubedler := download2.NewYoutubeDLer("/whatever/youtube-dl", youtubeDLExecutor)
-			genericdler := download2.NewGenericDLer()
-			selectdler := download2.NewSelectDLer(youtubedler, genericdler)
+			youtubedler := download.NewYoutubeDLer("/whatever/youtube-dl", youtubeDLExecutor)
+			genericdler := download.NewGenericDLer()
+			selectdler := download.NewSelectDLer(youtubedler, genericdler)
 
-			trackDownloader, err := transfer2.NewTrackTransferrer(selectdler, trackStore, fileStore, bucketName, workingDir)
+			trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, fileStore, bucketName, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
-			transferHandler = transfer2.NewJobHandler(trackDownloader)
+			transferHandler = transfer.NewJobHandler(trackDownloader)
 		})
 
 		var splitHandler split.JobHandler
 		By("Creating the split job handler", func() {
-			localFileSplitter, err := file_splitter2.NewLocalFileSplitter(workingDir, "/whatever/spleeter", spleeterExecutor)
+			localFileSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/whatever/spleeter", spleeterExecutor)
 			Expect(err).NotTo(HaveOccurred())
-			remoteFileSplitter, err := file_splitter2.NewRemoteFileSplitter(workingDir, fileStore, localFileSplitter)
+			remoteFileSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, fileStore, localFileSplitter)
 			Expect(err).NotTo(HaveOccurred())
 			trackSplitter := splitter.NewTrackSplitter(remoteFileSplitter, trackStore, bucketName)
 			splitHandler = split.NewJobHandler(trackSplitter)

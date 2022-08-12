@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/executor"
-	splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/working_dir"
 	"os"
@@ -14,12 +14,12 @@ import (
 	"github.com/apex/log"
 )
 
-var _ splitter2.FileSplitter = LocalFileSplitter{}
+var _ splitter.FileSplitter = LocalFileSplitter{}
 
-var paramMap = map[splitter2.SplitType]string{
-	splitter2.SplitTwoStemsType:  "spleeter:2stems-16kHz",
-	splitter2.SplitFourStemsType: "spleeter:4stems-16kHz",
-	splitter2.SplitFiveStemsType: "spleeter:5stems-16kHz",
+var paramMap = map[splitter.SplitType]string{
+	splitter.SplitTwoStemsType:  "spleeter:2stems-16kHz",
+	splitter.SplitFourStemsType: "spleeter:4stems-16kHz",
+	splitter.SplitFiveStemsType: "spleeter:5stems-16kHz",
 }
 
 func NewLocalFileSplitter(workingDirStr string, spleeterBinPath string, executor executor.Executor) (LocalFileSplitter, error) {
@@ -40,7 +40,7 @@ type LocalFileSplitter struct {
 	executor        executor.Executor
 }
 
-func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath string, stemsOutputDir string, splitType splitter2.SplitType) (splitter2.StemFilePaths, error) {
+func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath string, stemsOutputDir string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
 	absOriginalTrackFilePath, err := filepath.Abs(originalTrackFilePath)
 	if err != nil {
 		return nil, cerr.Wrap(err).Error("Cannot convert source path to absolute format")
@@ -66,7 +66,7 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 	return collectStemFilePaths(absStemsOutputDir)
 }
 
-func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, splitType splitter2.SplitType) error {
+func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, splitType splitter.SplitType) error {
 	logger := log.WithFields(log.Fields{
 		"sourcePath": sourcePath,
 		"destPath":   destPath,
@@ -101,7 +101,7 @@ func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, split
 	return nil
 }
 
-func collectStemFilePaths(dir string) (splitter2.StemFilePaths, error) {
+func collectStemFilePaths(dir string) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"dir": dir,
 	})
@@ -116,7 +116,7 @@ func collectStemFilePaths(dir string) (splitter2.StemFilePaths, error) {
 		return nil, cerr.Error("No files in output directory")
 	}
 
-	outputs := splitter2.StemFilePaths{}
+	outputs := splitter.StemFilePaths{}
 
 	for _, dirEntry := range dirEntries {
 		if dirEntry.IsDir() {
