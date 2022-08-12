@@ -5,14 +5,7 @@ import (
 	"fmt"
 	entity2 "github.com/veedubyou/chord-paper-be/worker/src/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
-	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/env"
 	"strconv"
-
-	"github.com/aws/aws-sdk-go/aws/credentials"
-
-	"github.com/aws/aws-sdk-go/aws"
-
-	"github.com/aws/aws-sdk-go/aws/session"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
@@ -40,24 +33,7 @@ const (
 
 var _ entity2.TrackStore = DynamoDBTrackStore{}
 
-func NewDynamoDBTrackStore(environment env.Environment) DynamoDBTrackStore {
-	dbSession := session.Must(session.NewSession())
-
-	config := aws.NewConfig().WithCredentials(credentials.NewEnvCredentials())
-
-	switch environment {
-	case env.Production:
-		config = config.WithRegion("us-east-2")
-
-	case env.Development:
-		config = config.WithEndpoint("http://localhost:8000").
-			WithRegion("localhost")
-
-	default:
-		panic("Unrecognized environment")
-	}
-
-	client := dynamodb.New(dbSession, config)
+func NewDynamoDBTrackStore(client *dynamodb.DynamoDB) DynamoDBTrackStore {
 	return DynamoDBTrackStore{
 		dynamoDBClient: client,
 	}

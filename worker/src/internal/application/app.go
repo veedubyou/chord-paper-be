@@ -1,7 +1,14 @@
 package application
 
 import (
-	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/veedubyou/chord-paper-be/shared/lib/env"
+	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
+	"github.com/veedubyou/chord-paper-be/shared/values/local"
+	"github.com/veedubyou/chord-paper-be/shared/values/region"
 	filestore "github.com/veedubyou/chord-paper-be/worker/src/internal/application/cloud_storage/store"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/executor"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_router"
@@ -16,20 +23,10 @@ import (
 	trackstore "github.com/veedubyou/chord-paper-be/worker/src/internal/application/tracks/store"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
-	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/env"
 	"os"
 
 	"github.com/streadway/amqp"
 )
-
-func getEnvOrPanic(key string) string {
-	val := os.Getenv(key)
-	if val == "" {
-		panic(fmt.Sprintf("No env variable found for key %s", key))
-	}
-
-	return val
-}
 
 func ensureOk(err error) {
 	if err != nil {
@@ -64,7 +61,8 @@ func (a *App) Start() error {
 
 func newWorker(consumerConn *amqp.Connection, producerConn *amqp.Connection) worker.QueueWorker {
 	publisher := newPublisher(producerConn)
-	trackStore := trackstore.NewDynamoDBTrackStore(env.Get())
+
+	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
 	queueWorker, err := worker.NewQueueWorkerFromConnection(
 		consumerConn,
 		queueName(),
@@ -76,9 +74,9 @@ func newWorker(consumerConn *amqp.Connection, producerConn *amqp.Connection) wor
 func rabbitURL() string {
 	switch env.Get() {
 	case env.Production:
-		return getEnvOrPanic("RABBITMQ_URL")
+		return envvar.MustGet(envvar.RABBITMQ_URL)
 	case env.Development:
-		return "amqp://localhost:5672"
+		return local.RabbitMQHost
 
 	default:
 		panic("Unrecognized environment")
@@ -88,9 +86,9 @@ func rabbitURL() string {
 func queueName() string {
 	switch env.Get() {
 	case env.Production:
-		return getEnvOrPanic("RABBITMQ_QUEUE_NAME")
+		return envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME)
 	case env.Development:
-		return "chord-paper-tracks-dev"
+		return local.RabbitMQQueueName
 
 	default:
 		panic("Unrecognized environment")
@@ -104,8 +102,28 @@ func newPublisher(conn *amqp.Connection) publish.RabbitMQPublisher {
 	return publisher
 }
 
+func newDynamoDB() *dynamodb.DynamoDB {
+	dbSession := session.Must(session.NewSession())
+
+	config := aws.NewConfig().WithCredentials(credentials.NewEnvCredentials())
+
+	switch env.Get() {
+	case env.Production:
+		config = config.WithRegion(region.Prod)
+
+	case env.Development:
+		config = config.WithEndpoint(local.DynamoDBHost).
+			WithRegion(local.DynamoDBRegion)
+
+	default:
+		panic("Unrecognized environment")
+	}
+
+	return dynamodb.New(dbSession, config)
+}
+
 func newGoogleFileStore() filestore.GoogleFileStore {
-	jsonKey := getEnvOrPanic("GOOGLE_CLOUD_KEY")
+	jsonKey := envvar.MustGet(envvar.GOOGLE_CLOUD_KEY)
 
 	fileStore, err := filestore.NewGoogleFileStore(jsonKey)
 	ensureOk(err)
@@ -127,8 +145,8 @@ func newStartJobHandler(trackStore trackstore.DynamoDBTrackStore) start.JobHandl
 }
 
 func newDownloadJobHandler() transfer2.JobHandler {
-	youtubeDLBinPath := getEnvOrPanic("YOUTUBEDL_BIN_PATH")
-	workingDir := getEnvOrPanic("YOUTUBEDL_WORKING_DIR_PATH")
+	youtubeDLBinPath := envvar.MustGet("YOUTUBEDL_BIN_PATH")
+	workingDir := envvar.MustGet("YOUTUBEDL_WORKING_DIR_PATH")
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 
@@ -137,8 +155,8 @@ func newDownloadJobHandler() transfer2.JobHandler {
 
 	selectdler := download2.NewSelectDLer(youtubedler, genericdler)
 
-	trackStore := trackstore.NewDynamoDBTrackStore(env.Get())
-	bucketName := getEnvOrPanic("GOOGLE_CLOUD_STORAGE_BUCKET_NAME")
+	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
+	bucketName := envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
 	trackDownloader, err := transfer2.NewTrackTransferrer(selectdler, trackStore, newGoogleFileStore(), bucketName, workingDir)
 	ensureOk(err)
 
@@ -146,8 +164,8 @@ func newDownloadJobHandler() transfer2.JobHandler {
 }
 
 func newSplitJobHandler() split.JobHandler {
-	workingDir := getEnvOrPanic("SPLEETER_WORKING_DIR_PATH")
-	spleeterBinPath := getEnvOrPanic("SPLEETER_BIN_PATH")
+	workingDir := envvar.MustGet("SPLEETER_WORKING_DIR_PATH")
+	spleeterBinPath := envvar.MustGet("SPLEETER_BIN_PATH")
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 
@@ -158,7 +176,7 @@ func newSplitJobHandler() split.JobHandler {
 	remoteUsecase, err := file_splitter2.NewRemoteFileSplitter(workingDir, googleFileStore, localUsecase)
 	ensureOk(err)
 
-	trackStore := trackstore.NewDynamoDBTrackStore(env.Get())
+	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
 	songSplitUsecase := splitter.NewTrackSplitter(remoteUsecase, trackStore, "chord-paper-tracks")
 
 	return split.NewJobHandler(songSplitUsecase)

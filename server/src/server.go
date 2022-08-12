@@ -10,7 +10,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/server/src/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/env"
 	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/rabbitmq"
 	songgateway "github.com/veedubyou/chord-paper-be/server/src/internal/song/gateway"
 	songstorage "github.com/veedubyou/chord-paper-be/server/src/internal/song/storage"
@@ -22,7 +21,10 @@ import (
 	"github.com/veedubyou/chord-paper-be/server/src/internal/user/google_id"
 	"github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
-	"os"
+	"github.com/veedubyou/chord-paper-be/shared/lib/env"
+	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
+	"github.com/veedubyou/chord-paper-be/shared/values/local"
+	"github.com/veedubyou/chord-paper-be/shared/values/region"
 	"strings"
 )
 
@@ -112,20 +114,13 @@ func main() {
 func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
 	switch env.Get() {
 	case env.Production:
-		queueName, isSet := os.LookupEnv("RABBITMQ_QUEUE")
-		if !isSet {
-			panic("RABBITMQ_QUEUE is not set")
-		}
-
-		hostURL, isSet := os.LookupEnv("RABBITMQ_URL")
-		if !isSet {
-			panic("RABBITMQ_URL is not set")
-		}
+		queueName := envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME)
+		hostURL := envvar.MustGet(envvar.RABBITMQ_URL)
 
 		return makeRabbitMQPublisher(hostURL, queueName)
 
 	case env.Development:
-		return makeRabbitMQPublisher("amqp://localhost:5672", "chord-paper-tracks-dev")
+		return makeRabbitMQPublisher(local.RabbitMQHost, local.RabbitMQQueueName)
 
 	default:
 		panic("unexpected environment")
@@ -154,11 +149,11 @@ func makeDynamoDB() dynamolib.DynamoDBWrapper {
 
 	switch env.Get() {
 	case env.Production:
-		config = config.WithRegion("us-east-2")
+		config = config.WithRegion(region.Prod)
 
 	case env.Development:
-		config = config.WithEndpoint("http://localhost:8000").
-			WithRegion("localhost")
+		config = config.WithEndpoint(local.DynamoDBHost).
+			WithRegion(local.DynamoDBRegion)
 
 	default:
 		panic("unexpected environment")
@@ -198,11 +193,7 @@ func makeCorsMiddleware() echo.MiddlewareFunc {
 
 	switch env.Get() {
 	case env.Production:
-		commaSeparatedOrigins, ok := os.LookupEnv("ALLOWED_FE_ORIGINS")
-		if !ok {
-			panic("ALLOWED_FE_ORIGINS not set")
-		}
-
+		commaSeparatedOrigins := envvar.MustGet("ALLOWED_FE_ORIGINS")
 		allowedOrigins = strings.Split(commaSeparatedOrigins, ",")
 	case env.Development:
 		allowedOrigins = []string{"*"}
