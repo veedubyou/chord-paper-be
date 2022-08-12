@@ -3,7 +3,7 @@ package testlib
 import (
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/rabbitmq"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"sync"
 )
 
@@ -23,8 +23,8 @@ func AfterSuiteRabbitMQ(conn *amqp091.Connection) {
 	ExpectSuccess(channel.QueueDelete(testQueueName, false, false, false))
 }
 
-func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.Publisher {
-	publisher := ExpectSuccess(rabbitmq.NewPublisher(conn, testQueueName))
+func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.QueuePublisher {
+	publisher := ExpectSuccess(rabbitmq.NewQueuePublisher(conn, testQueueName))
 	return publisher
 }
 

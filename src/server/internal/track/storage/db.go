@@ -3,9 +3,9 @@ package trackstorage
 import (
 	"context"
 	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
-	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/errors/mark"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"

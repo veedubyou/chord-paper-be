@@ -2,11 +2,11 @@ package dummy
 
 import (
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/publish"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 )
 
-var _ publish.Publisher = &RabbitMQ{}
+var _ rabbitmq.Publisher = &RabbitMQ{}
 var _ worker.MessageChannel = &RabbitMQ{}
 var _ amqp091.Acknowledger = RabbitMQAcknowledger{}
 

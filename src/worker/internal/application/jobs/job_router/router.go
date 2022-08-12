@@ -5,19 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/publish"
 	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
 func NewJobRouter(
 	trackStore entity2.TrackStore,
-	publisher publish.Publisher,
+	publisher rabbitmq.Publisher,
 	startHandler start.StartJobHandler,
 	transferHandler transfer.TransferJobHandler,
 	splitHandler split.SplitJobHandler,
@@ -34,7 +34,7 @@ func NewJobRouter(
 }
 
 type JobRouter struct {
-	publisher  publish.Publisher
+	publisher  rabbitmq.Publisher
 	trackStore entity2.TrackStore
 
 	startHandler     start.StartJobHandler

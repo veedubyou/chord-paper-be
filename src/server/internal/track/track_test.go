@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/jsonlib"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/rabbitmq"
 	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/errors"
@@ -21,6 +20,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/usecase"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"net/http"
 	"net/http/httptest"
 )
@@ -29,7 +29,7 @@ var _ = Describe("Track", func() {
 	var (
 		trackGateway trackgateway.Gateway
 		songGateway  songgateway.Gateway
-		publisher    rabbitmq.Publisher
+		publisher    rabbitmq.QueuePublisher
 		validator    TestingValidator
 
 		consumer RabbitMQConsumer

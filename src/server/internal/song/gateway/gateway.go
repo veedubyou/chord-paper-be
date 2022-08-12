@@ -1,8 +1,8 @@
 package songgateway
 
 import (
+	"github.com/cockroachdb/errors"
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/request"
