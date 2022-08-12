@@ -11,12 +11,12 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
 func NewJobRouter(
-	trackStore entity2.TrackStore,
+	trackStore entity.TrackStore,
 	publisher rabbitmq.Publisher,
 	startHandler start.StartJobHandler,
 	transferHandler transfer.TransferJobHandler,
@@ -35,7 +35,7 @@ func NewJobRouter(
 
 type JobRouter struct {
 	publisher  rabbitmq.Publisher
-	trackStore entity2.TrackStore
+	trackStore entity.TrackStore
 
 	startHandler     start.StartJobHandler
 	transferHandler  transfer.TransferJobHandler
@@ -143,10 +143,10 @@ func (j JobRouter) updateProgress(message amqp091.Delivery, statusMessage string
 		return cerr.Wrap(err).Error("Failed to unmarshal job message")
 	}
 
-	updater := func(track entity2.Track) (entity2.Track, error) {
-		splitStemTrack, ok := track.(entity2.SplitStemTrack)
+	updater := func(track entity.Track) (entity.Track, error) {
+		splitStemTrack, ok := track.(entity.SplitStemTrack)
 		if !ok {
-			return entity2.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
+			return entity.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
 		}
 
 		splitStemTrack.JobStatusMessage = statusMessage
@@ -185,13 +185,13 @@ func (j JobRouter) handleError(message amqp091.Delivery, jobError error) error {
 		return cerr.Wrap(err).Error("Failed to report error to track DB")
 	}
 
-	updater := func(track entity2.Track) (entity2.Track, error) {
-		splitStemTrack, ok := track.(entity2.SplitStemTrack)
+	updater := func(track entity.Track) (entity.Track, error) {
+		splitStemTrack, ok := track.(entity.SplitStemTrack)
 		if !ok {
-			return entity2.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
+			return entity.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
 		}
 
-		splitStemTrack.JobStatus = entity2.ErrorStatus
+		splitStemTrack.JobStatus = entity.ErrorStatus
 		splitStemTrack.JobStatusMessage = j.getErrorMessage(message.Type)
 		splitStemTrack.JobStatusDebugLog = jobError.Error()
 

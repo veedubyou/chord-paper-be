@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
-	splitter2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
@@ -20,20 +20,20 @@ type JobParams struct {
 
 //counterfeiter:generate . SplitJobHandler
 type SplitJobHandler interface {
-	HandleSplitJob(message []byte) (JobParams, splitter2.StemFilePaths, error)
+	HandleSplitJob(message []byte) (JobParams, splitter.StemFilePaths, error)
 }
 
-func NewJobHandler(splitter splitter2.TrackSplitter) JobHandler {
+func NewJobHandler(splitter splitter.TrackSplitter) JobHandler {
 	return JobHandler{
 		splitter: splitter,
 	}
 }
 
 type JobHandler struct {
-	splitter splitter2.TrackSplitter
+	splitter splitter.TrackSplitter
 }
 
-func (s JobHandler) HandleSplitJob(message []byte) (JobParams, splitter2.StemFilePaths, error) {
+func (s JobHandler) HandleSplitJob(message []byte) (JobParams, splitter.StemFilePaths, error) {
 	params := JobParams{}
 	err := json.Unmarshal(message, &params)
 	if err != nil {

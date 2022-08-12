@@ -2,29 +2,29 @@ package dummy
 
 import (
 	"context"
-	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"sync"
 )
 
-var _ entity2.TrackStore = &TrackStore{}
+var _ entity.TrackStore = &TrackStore{}
 
 func NewDummyTrackStore() *TrackStore {
 	return &TrackStore{
 		Unavailable: false,
-		State:       make(map[string]map[string]entity2.Track),
+		State:       make(map[string]map[string]entity.Track),
 	}
 }
 
 type TrackStore struct {
 	Unavailable bool
-	State       map[string]map[string]entity2.Track
+	State       map[string]map[string]entity.Track
 	mutex       sync.RWMutex
 }
 
-func (t *TrackStore) GetTrack(_ context.Context, tracklistID string, trackID string) (entity2.Track, error) {
+func (t *TrackStore) GetTrack(_ context.Context, tracklistID string, trackID string) (entity.Track, error) {
 	if t.Unavailable {
-		return entity2.BaseTrack{}, NetworkFailure
+		return entity.BaseTrack{}, NetworkFailure
 	}
 
 	t.mutex.RLock()
@@ -32,18 +32,18 @@ func (t *TrackStore) GetTrack(_ context.Context, tracklistID string, trackID str
 
 	trackMap, ok := t.State[tracklistID]
 	if !ok {
-		return entity2.BaseTrack{}, NotFound
+		return entity.BaseTrack{}, NotFound
 	}
 
 	track, ok := trackMap[trackID]
 	if !ok {
-		return entity2.BaseTrack{}, NotFound
+		return entity.BaseTrack{}, NotFound
 	}
 
 	return track, nil
 }
 
-func (t *TrackStore) SetTrack(_ context.Context, tracklistID string, trackID string, track entity2.Track) error {
+func (t *TrackStore) SetTrack(_ context.Context, tracklistID string, trackID string, track entity.Track) error {
 	if t.Unavailable {
 		return NetworkFailure
 	}
@@ -52,7 +52,7 @@ func (t *TrackStore) SetTrack(_ context.Context, tracklistID string, trackID str
 	defer t.mutex.Unlock()
 
 	if t.State[tracklistID] == nil {
-		t.State[tracklistID] = make(map[string]entity2.Track)
+		t.State[tracklistID] = make(map[string]entity.Track)
 	}
 
 	t.State[tracklistID][trackID] = track
@@ -60,7 +60,7 @@ func (t *TrackStore) SetTrack(_ context.Context, tracklistID string, trackID str
 	return nil
 }
 
-func (t *TrackStore) UpdateTrack(ctx context.Context, trackListID string, trackID string, updater entity2.TrackUpdater) error {
+func (t *TrackStore) UpdateTrack(ctx context.Context, trackListID string, trackID string, updater entity.TrackUpdater) error {
 	if t.Unavailable {
 		return NetworkFailure
 	}

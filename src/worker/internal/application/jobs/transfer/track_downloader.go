@@ -4,7 +4,7 @@ import (
 	cloudstorage "github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
-	entity2 "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/working_dir"
 	"io/ioutil"
@@ -17,7 +17,7 @@ import (
 	"fmt"
 )
 
-func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity2.TrackStore, fileStore cloudstorage.FileStore, bucketName string, workingDirStr string) (TrackTransferrer, error) {
+func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity.TrackStore, fileStore cloudstorage.FileStore, bucketName string, workingDirStr string) (TrackTransferrer, error) {
 	workingDir, err := working_dir.NewWorkingDir(workingDirStr)
 	if err != nil {
 		return TrackTransferrer{}, cerr.Field("working_dir_str", workingDirStr).Wrap(err).Error("Failed to create working dir")
@@ -34,7 +34,7 @@ func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity2.Trac
 
 type TrackTransferrer struct {
 	fileStore  cloudstorage.FileStore
-	trackStore entity2.TrackStore
+	trackStore entity.TrackStore
 	downloader download.SelectDLer
 	bucketName string
 	workingDir working_dir.WorkingDir
@@ -47,7 +47,7 @@ func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, 
 		return "", errctx.Wrap(err).Error("Failed to GetTrack")
 	}
 
-	splitStemTrack, ok := track.(entity2.SplitStemTrack)
+	splitStemTrack, ok := track.(entity.SplitStemTrack)
 	if !ok {
 		return "", errctx.Wrap(err).Error("Unexpected - track is not a split request")
 	}

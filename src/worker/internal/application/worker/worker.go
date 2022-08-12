@@ -4,7 +4,7 @@ import (
 	"github.com/apex/log"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
-	cerr2 "github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
 type MessageChannel interface {
@@ -30,7 +30,7 @@ func NewQueueWorkerFromConnection(conn *amqp091.Connection, queueName string, jo
 	rabbitChannel, err := conn.Channel()
 	if err != nil {
 		_ = conn.Close()
-		return QueueWorker{}, cerr2.Wrap(err).Error("Failed to get channel")
+		return QueueWorker{}, cerr.Wrap(err).Error("Failed to get channel")
 	}
 
 	queue, err := rabbitChannel.QueueDeclare(
@@ -44,7 +44,7 @@ func NewQueueWorkerFromConnection(conn *amqp091.Connection, queueName string, jo
 
 	if err != nil {
 		_ = rabbitChannel.Close()
-		return QueueWorker{}, cerr2.Wrap(err).Error("Failed to declare queue")
+		return QueueWorker{}, cerr.Wrap(err).Error("Failed to declare queue")
 	}
 
 	return NewQueueWorker(rabbitChannel, queue.Name, jobRouter), nil
@@ -66,7 +66,7 @@ func (q *QueueWorker) Start() error {
 	)
 
 	if err != nil {
-		return cerr2.Field("queue_name", q.queueName).
+		return cerr.Field("queue_name", q.queueName).
 			Wrap(err).Error("Failed to start consuming from channel")
 	}
 
@@ -75,10 +75,10 @@ func (q *QueueWorker) Start() error {
 		logger.Info("Handling message")
 		err := q.jobRouter.HandleMessage(message)
 		if err != nil {
-			err = cerr2.Field("message_type", message.Type).
+			err = cerr.Field("message_type", message.Type).
 				Wrap(err).Error("Failed to process message")
 
-			cerr2.Log(err)
+			cerr.Log(err)
 
 			if err = message.Nack(false, false); err != nil {
 				logger.Error("Failed to nack message")
