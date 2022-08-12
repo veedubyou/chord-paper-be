@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'worker/**'
+      - 'shared/**'
 
 jobs:
   worker-build-and-test:

@@ -1,6 +1,8 @@
 package env
 
-import "os"
+import (
+	"github.com/veedubyou/chord-paper-be/shared/values/envvars"
+)
 
 type Environment string
 
@@ -11,10 +13,7 @@ const (
 )
 
 func Get() Environment {
-	environment, ok := os.LookupEnv("ENVIRONMENT")
-	if environment == "" || !ok {
-		panic("No environment var is set")
-	}
+	environment := envvars.MustGet("ENVIRONMENT")
 
 	switch environment {
 	case "production":

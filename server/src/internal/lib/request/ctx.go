@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/server/src/internal/errors/auth"
-	"github.com/veedubyou/chord-paper-be/server/src/internal/lib/env"
+	"github.com/veedubyou/chord-paper-be/shared/lib/env"
 )
 
 func Context(c echo.Context) context.Context {
