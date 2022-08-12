@@ -1,3 +1,8 @@
+.PHONY : server-build server-test server-docker worker-build worker-test worker-docker check-all
+
+server-build:
+	go build -o /dev/null -v ./src/server/server.go
+
 server-run:
 	go run -v ./src/server/server.go
 
@@ -6,6 +11,9 @@ server-test:
 
 server-docker:
 	docker build . --file ./docker/server/Dockerfile
+
+worker-build:
+	go build -o /dev/null -v ./src/worker/worker.go
 
 worker-run:
 	go run -v ./src/worker/worker.go
@@ -16,8 +24,7 @@ worker-test:
 worker-docker:
 	docker build . --file ./docker/worker/Dockerfile
 
-test-all:
-	go test -v ./src/...
+check-all: server-build server-test worker-build worker-test server-docker worker-docker
 
 backup-db:
 	python3 ./local_db/scripts/dynamodump.py -m backup -s "*" --host localhost --port 8000 --accessKey local --secretKey local --region local --dumpPath ./local_db/db_dump
