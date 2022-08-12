@@ -2,14 +2,13 @@ package worker
 
 import (
 	"github.com/apex/log"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_router"
 	cerr2 "github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
-
-	"github.com/streadway/amqp"
 )
 
 type MessageChannel interface {
-	Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args amqp.Table) (<-chan amqp.Delivery, error)
+	Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args amqp091.Table) (<-chan amqp091.Delivery, error)
 	Close() error
 }
 
@@ -27,7 +26,7 @@ func NewQueueWorker(channel MessageChannel, queueName string, jobRouter job_rout
 	}
 }
 
-func NewQueueWorkerFromConnection(conn *amqp.Connection, queueName string, jobRouter job_router.JobRouter) (QueueWorker, error) {
+func NewQueueWorkerFromConnection(conn *amqp091.Connection, queueName string, jobRouter job_router.JobRouter) (QueueWorker, error) {
 	rabbitChannel, err := conn.Channel()
 	if err != nil {
 		_ = conn.Close()

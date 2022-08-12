@@ -1,21 +1,20 @@
 package dummy
 
 import (
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/publish"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/worker"
-
-	"github.com/streadway/amqp"
 )
 
 var _ publish.Publisher = &RabbitMQ{}
 var _ worker.MessageChannel = &RabbitMQ{}
-var _ amqp.Acknowledger = RabbitMQAcknowledger{}
+var _ amqp091.Acknowledger = RabbitMQAcknowledger{}
 
 type RabbitMQ struct {
 	AckCounter     int
 	NackCounter    int
 	Unavailable    bool
-	MessageChannel chan amqp.Delivery
+	MessageChannel chan amqp091.Delivery
 }
 
 type RabbitMQAcknowledger struct {
@@ -26,11 +25,11 @@ type RabbitMQAcknowledger struct {
 func NewRabbitMQ() *RabbitMQ {
 	return &RabbitMQ{
 		Unavailable:    false,
-		MessageChannel: make(chan amqp.Delivery, 100),
+		MessageChannel: make(chan amqp091.Delivery, 100),
 	}
 }
 
-func (r *RabbitMQ) Publish(msg amqp.Publishing) error {
+func (r *RabbitMQ) Publish(msg amqp091.Publishing) error {
 	if r.Unavailable {
 		return NetworkFailure
 	}
@@ -44,7 +43,7 @@ func (r *RabbitMQ) Publish(msg amqp.Publishing) error {
 		},
 	}
 
-	r.MessageChannel <- amqp.Delivery{
+	r.MessageChannel <- amqp091.Delivery{
 		Acknowledger:    acknowledger,
 		ContentType:     msg.ContentType,
 		ContentEncoding: msg.ContentEncoding,
@@ -56,7 +55,7 @@ func (r *RabbitMQ) Publish(msg amqp.Publishing) error {
 	return nil
 }
 
-func (r *RabbitMQ) Consume(_ string, _ string, _ bool, _ bool, _ bool, _ bool, _ amqp.Table) (<-chan amqp.Delivery, error) {
+func (r *RabbitMQ) Consume(_ string, _ string, _ bool, _ bool, _ bool, _ bool, _ amqp091.Table) (<-chan amqp091.Delivery, error) {
 	if r.Unavailable {
 		return nil, NetworkFailure
 	}

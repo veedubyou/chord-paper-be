@@ -1,7 +1,7 @@
 package publish
 
 import (
-	"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
 )
 
@@ -11,10 +11,10 @@ var _ Publisher = RabbitMQPublisher{}
 
 //counterfeiter:generate . Publisher
 type Publisher interface {
-	Publish(msg amqp.Publishing) error
+	Publish(msg amqp091.Publishing) error
 }
 
-func NewRabbitMQPublisher(conn *amqp.Connection, queueName string) (RabbitMQPublisher, error) {
+func NewRabbitMQPublisher(conn *amqp091.Connection, queueName string) (RabbitMQPublisher, error) {
 	channel, err := conn.Channel()
 	if err != nil {
 		return RabbitMQPublisher{}, cerr.Wrap(err).Error("Failed to create rabbit channel")
@@ -27,12 +27,12 @@ func NewRabbitMQPublisher(conn *amqp.Connection, queueName string) (RabbitMQPubl
 }
 
 type RabbitMQPublisher struct {
-	channel   *amqp.Channel
+	channel   *amqp091.Channel
 	queueName string
 }
 
-func (r RabbitMQPublisher) Publish(msg amqp.Publishing) error {
+func (r RabbitMQPublisher) Publish(msg amqp091.Publishing) error {
 	msg.ContentType = "application/json"
-	msg.DeliveryMode = amqp.Persistent
+	msg.DeliveryMode = amqp091.Persistent
 	return r.channel.Publish("", r.queueName, true, false, msg)
 }
