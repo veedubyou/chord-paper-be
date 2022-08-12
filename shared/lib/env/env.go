@@ -1,9 +1,5 @@
 package env
 
-import (
-	"github.com/veedubyou/chord-paper-be/shared/values/envvars"
-)
-
 type Environment string
 
 const (
@@ -13,7 +9,7 @@ const (
 )
 
 func Get() Environment {
-	environment := envvars.MustGet("ENVIRONMENT")
+	environment := envvar.MustGet("ENVIRONMENT")
 
 	switch environment {
 	case "production":

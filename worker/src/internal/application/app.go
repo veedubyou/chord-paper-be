@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/veedubyou/chord-paper-be/shared/lib/env"
-	"github.com/veedubyou/chord-paper-be/shared/values/envvars"
+	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/shared/values/local"
 	"github.com/veedubyou/chord-paper-be/shared/values/region"
 	filestore "github.com/veedubyou/chord-paper-be/worker/src/internal/application/cloud_storage/store"
@@ -74,7 +74,7 @@ func newWorker(consumerConn *amqp.Connection, producerConn *amqp.Connection) wor
 func rabbitURL() string {
 	switch env.Get() {
 	case env.Production:
-		return envvars.MustGet(envvars.RABBITMQ_URL)
+		return envvar.MustGet(envvar.RABBITMQ_URL)
 	case env.Development:
 		return local.RabbitMQHost
 
@@ -86,7 +86,7 @@ func rabbitURL() string {
 func queueName() string {
 	switch env.Get() {
 	case env.Production:
-		return envvars.MustGet(envvars.RABBITMQ_QUEUE_NAME)
+		return envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME)
 	case env.Development:
 		return local.RabbitMQQueueName
 
@@ -123,7 +123,7 @@ func newDynamoDB() *dynamodb.DynamoDB {
 }
 
 func newGoogleFileStore() filestore.GoogleFileStore {
-	jsonKey := envvars.MustGet(envvars.GOOGLE_CLOUD_KEY)
+	jsonKey := envvar.MustGet(envvar.GOOGLE_CLOUD_KEY)
 
 	fileStore, err := filestore.NewGoogleFileStore(jsonKey)
 	ensureOk(err)
@@ -145,8 +145,8 @@ func newStartJobHandler(trackStore trackstore.DynamoDBTrackStore) start.JobHandl
 }
 
 func newDownloadJobHandler() transfer2.JobHandler {
-	youtubeDLBinPath := envvars.MustGet("YOUTUBEDL_BIN_PATH")
-	workingDir := envvars.MustGet("YOUTUBEDL_WORKING_DIR_PATH")
+	youtubeDLBinPath := envvar.MustGet("YOUTUBEDL_BIN_PATH")
+	workingDir := envvar.MustGet("YOUTUBEDL_WORKING_DIR_PATH")
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 
@@ -156,7 +156,7 @@ func newDownloadJobHandler() transfer2.JobHandler {
 	selectdler := download2.NewSelectDLer(youtubedler, genericdler)
 
 	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
-	bucketName := envvars.MustGet(envvars.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
+	bucketName := envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
 	trackDownloader, err := transfer2.NewTrackTransferrer(selectdler, trackStore, newGoogleFileStore(), bucketName, workingDir)
 	ensureOk(err)
 
@@ -164,8 +164,8 @@ func newDownloadJobHandler() transfer2.JobHandler {
 }
 
 func newSplitJobHandler() split.JobHandler {
-	workingDir := envvars.MustGet("SPLEETER_WORKING_DIR_PATH")
-	spleeterBinPath := envvars.MustGet("SPLEETER_BIN_PATH")
+	workingDir := envvar.MustGet("SPLEETER_WORKING_DIR_PATH")
+	spleeterBinPath := envvar.MustGet("SPLEETER_BIN_PATH")
 	err := os.MkdirAll(workingDir, os.ModePerm)
 	ensureOk(err)
 

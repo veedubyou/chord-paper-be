@@ -22,7 +22,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
 	"github.com/veedubyou/chord-paper-be/shared/lib/env"
-	"github.com/veedubyou/chord-paper-be/shared/values/envvars"
 	"github.com/veedubyou/chord-paper-be/shared/values/local"
 	"github.com/veedubyou/chord-paper-be/shared/values/region"
 	"strings"
@@ -114,8 +113,8 @@ func main() {
 func makeRabbitMQPublisherForEnv() rabbitmq.Publisher {
 	switch env.Get() {
 	case env.Production:
-		queueName := envvars.MustGet(envvars.RABBITMQ_QUEUE_NAME)
-		hostURL := envvars.MustGet(envvars.RABBITMQ_URL)
+		queueName := envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME)
+		hostURL := envvar.MustGet(envvar.RABBITMQ_URL)
 
 		return makeRabbitMQPublisher(hostURL, queueName)
 
@@ -193,7 +192,7 @@ func makeCorsMiddleware() echo.MiddlewareFunc {
 
 	switch env.Get() {
 	case env.Production:
-		commaSeparatedOrigins := envvars.MustGet("ALLOWED_FE_ORIGINS")
+		commaSeparatedOrigins := envvar.MustGet("ALLOWED_FE_ORIGINS")
 		allowedOrigins = strings.Split(commaSeparatedOrigins, ",")
 	case env.Development:
 		allowedOrigins = []string{"*"}

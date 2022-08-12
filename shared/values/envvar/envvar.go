@@ -1,4 +1,4 @@
-package envvars
+package envvar
 
 import (
 	"fmt"
@@ -16,6 +16,10 @@ func MustGet(key string) string {
 	val, isSet := os.LookupEnv(key)
 	if !isSet {
 		panic(fmt.Sprintf("No env variable found for key %s", key))
+	}
+
+	if val == "" {
+		panic(fmt.Sprintf("Env variable is empty for key %s", key))
 	}
 
 	return val

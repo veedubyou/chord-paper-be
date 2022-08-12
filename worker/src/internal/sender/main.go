@@ -2,19 +2,13 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/veedubyou/chord-paper-be/shared/values/envvars"
+	"github.com/streadway/amqp"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/start"
-	"os"
-
-	"github.com/streadway/amqp"
 )
 
 func main() {
-	rabbitURL := os.Getenv(envvars.RABBITMQ_URL)
-	if rabbitURL == "" {
-		panic("Can't get rabbitmq url")
-	}
+	rabbitURL := envvar.MustGet(envvar.RABBITMQ_URL)
 
 	conn, err := amqp.Dial(rabbitURL)
 	if err != nil {
