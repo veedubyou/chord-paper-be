@@ -16,7 +16,7 @@ jobs:
           go-version: 1.18
 
       - name: Build
-        working-directory: ./server/src
+        working-directory: ./src/server
         run: go build -v server.go
 
   test:
@@ -43,6 +43,6 @@ jobs:
           go-version: 1.18
 
       - name: Test
-        working-directory: ./server/src
+        working-directory: ./src/server
         run: go test -v ./...
         

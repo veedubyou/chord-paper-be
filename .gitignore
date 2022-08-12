@@ -2,7 +2,7 @@
 /.idea/
 .k8s/server/processed-yamls/
 .k8s/worker/processed-yamls/
-worker/wd/
+src/worker/wd/
 
 # Binaries for programs and plugins
 *.exe

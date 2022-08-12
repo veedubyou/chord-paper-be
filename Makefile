@@ -1,14 +1,23 @@
-run-server:
-	go run -v ./server/src/server.go
+server-run:
+	go run -v ./src/server/server.go
 
-test-server:
-	go test -v ./server/src/...
+server-test:
+	go test -v ./src/server/...
 
-run-worker:
-	go run -v ./worker/src/worker.go
+server-docker:
+	docker build . --file ./docker/server/Dockerfile
 
-test-worker:
-	go test -v ./worker/src/...
+worker-run:
+	go run -v ./src/worker/worker.go
+
+worker-test:
+	go test -v ./src/worker/...
+
+worker-docker:
+	docker build . --file ./docker/worker/Dockerfile
+
+test-all:
+	go test -v ./src/...
 
 backup-db:
 	python3 ./local_db/scripts/dynamodump.py -m backup -s "*" --host localhost --port 8000 --accessKey local --secretKey local --region local --dumpPath ./local_db/db_dump
