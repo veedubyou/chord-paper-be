@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/streadway/amqp"
+	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/start"
 )

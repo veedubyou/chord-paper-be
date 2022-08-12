@@ -1,5 +1,7 @@
 package env
 
+import "github.com/veedubyou/chord-paper-be/shared/values/envvar"
+
 type Environment string
 
 const (
