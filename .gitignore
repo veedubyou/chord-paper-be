@@ -3,6 +3,7 @@
 .k8s/server/processed-yamls/
 .k8s/worker/processed-yamls/
 src/worker/wd/
+local.envrc
 
 # Binaries for programs and plugins
 *.exe
