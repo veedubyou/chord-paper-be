@@ -5,8 +5,8 @@ on:
     branches:
       - master
     paths:
-      - 'server/**'
-      - 'shared/**'
+      - 'src/server/**'
+      - 'src/shared/**'
 
 jobs:
   server-build-and-test:
@@ -31,7 +31,7 @@ jobs:
       - name: Login to DockerHub
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Build Image w/version
-        run: docker build . --file ./server/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
+        run: docker build . --file ./docker/server/Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
       - name: Push image w/version
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
 
