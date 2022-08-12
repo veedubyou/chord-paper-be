@@ -22,6 +22,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/server/src/internal/user/storage"
 	userusecase "github.com/veedubyou/chord-paper-be/server/src/internal/user/usecase"
 	"github.com/veedubyou/chord-paper-be/shared/lib/env"
+	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/shared/values/local"
 	"github.com/veedubyou/chord-paper-be/shared/values/region"
 	"strings"
