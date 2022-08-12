@@ -4,6 +4,7 @@ WORKDIR /chord-paper-be/server
 
 COPY ./go.mod ./go.sum ./
 COPY ./server/src/ ./server/src/
+COPY ./shared/ ./shared/
 
 RUN go build -o chord-paper-be ./server/src/server.go
 

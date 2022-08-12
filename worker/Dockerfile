@@ -18,6 +18,7 @@ WORKDIR /chord-paper-be/worker
 
 COPY ./go.mod ./go.sum ./
 COPY ./worker/src/ ./worker/src/
+COPY ./shared/ ./shared/
 
 RUN go build -o chord-paper-be-workers ./worker/src/worker.go
  
