@@ -16,7 +16,6 @@ require (
 	github.com/onsi/gomega v1.20.0
 	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.4.0
-	github.com/streadway/amqp v1.0.0
 	github.com/veedubyou/direnv-to-dotenv v0.0.0-20220412052816-25c82d9e9ef0
 	golang.org/x/tools v0.1.12
 	google.golang.org/api v0.92.0

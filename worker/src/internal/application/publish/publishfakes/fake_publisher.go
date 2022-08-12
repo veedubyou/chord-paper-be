@@ -5,14 +5,14 @@ import (
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/publish"
 	"sync"
 
-	"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 )
 
 type FakePublisher struct {
-	PublishStub        func(amqp.Publishing) error
+	PublishStub        func(amqp091.Publishing) error
 	publishMutex       sync.RWMutex
 	publishArgsForCall []struct {
-		arg1 amqp.Publishing
+		arg1 amqp091.Publishing
 	}
 	publishReturns struct {
 		result1 error
@@ -24,11 +24,11 @@ type FakePublisher struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakePublisher) Publish(arg1 amqp.Publishing) error {
+func (fake *FakePublisher) Publish(arg1 amqp091.Publishing) error {
 	fake.publishMutex.Lock()
 	ret, specificReturn := fake.publishReturnsOnCall[len(fake.publishArgsForCall)]
 	fake.publishArgsForCall = append(fake.publishArgsForCall, struct {
-		arg1 amqp.Publishing
+		arg1 amqp091.Publishing
 	}{arg1})
 	stub := fake.PublishStub
 	fakeReturns := fake.publishReturns
@@ -49,13 +49,13 @@ func (fake *FakePublisher) PublishCallCount() int {
 	return len(fake.publishArgsForCall)
 }
 
-func (fake *FakePublisher) PublishCalls(stub func(amqp.Publishing) error) {
+func (fake *FakePublisher) PublishCalls(stub func(amqp091.Publishing) error) {
 	fake.publishMutex.Lock()
 	defer fake.publishMutex.Unlock()
 	fake.PublishStub = stub
 }
 
-func (fake *FakePublisher) PublishArgsForCall(i int) amqp.Publishing {
+func (fake *FakePublisher) PublishArgsForCall(i int) amqp091.Publishing {
 	fake.publishMutex.RLock()
 	defer fake.publishMutex.RUnlock()
 	argsForCall := fake.publishArgsForCall[i]

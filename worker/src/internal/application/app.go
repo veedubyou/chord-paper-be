@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/shared/lib/env"
 	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/shared/values/local"
@@ -24,8 +25,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
 	"os"
-
-	"github.com/streadway/amqp"
 )
 
 func ensureOk(err error) {
@@ -40,9 +39,9 @@ type App struct {
 
 func NewApp() App {
 	rabbitMQURL := rabbitURL()
-	consumerConn, err := amqp.Dial(rabbitMQURL)
+	consumerConn, err := amqp091.Dial(rabbitMQURL)
 	ensureOk(err)
-	producerConn, err := amqp.Dial(rabbitMQURL)
+	producerConn, err := amqp091.Dial(rabbitMQURL)
 	ensureOk(err)
 
 	return App{
@@ -59,7 +58,7 @@ func (a *App) Start() error {
 	return nil
 }
 
-func newWorker(consumerConn *amqp.Connection, producerConn *amqp.Connection) worker.QueueWorker {
+func newWorker(consumerConn *amqp091.Connection, producerConn *amqp091.Connection) worker.QueueWorker {
 	publisher := newPublisher(producerConn)
 
 	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB())
@@ -96,7 +95,7 @@ func queueName() string {
 
 }
 
-func newPublisher(conn *amqp.Connection) publish.RabbitMQPublisher {
+func newPublisher(conn *amqp091.Connection) publish.RabbitMQPublisher {
 	publisher, err := publish.NewRabbitMQPublisher(conn, queueName())
 	ensureOk(err)
 	return publisher

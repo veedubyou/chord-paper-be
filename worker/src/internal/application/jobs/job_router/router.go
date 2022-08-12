@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/save_stems_to_db"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/split"
@@ -12,8 +13,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/publish"
 	entity2 "github.com/veedubyou/chord-paper-be/worker/src/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/lib/cerr"
-
-	"github.com/streadway/amqp"
 )
 
 func NewJobRouter(
@@ -44,7 +43,7 @@ type JobRouter struct {
 	saveStemsHandler save_stems_to_db.SaveStemsJobHandler
 }
 
-func (j JobRouter) HandleMessage(message amqp.Delivery) error {
+func (j JobRouter) HandleMessage(message amqp091.Delivery) error {
 	err := j.handleMessageWithoutErrorHandling(message)
 	if err != nil {
 		j.handleError(message, err)
@@ -54,8 +53,8 @@ func (j JobRouter) HandleMessage(message amqp.Delivery) error {
 	return nil
 }
 
-func (j JobRouter) handleMessageWithoutErrorHandling(message amqp.Delivery) error {
-	var nextJobMsg amqp.Publishing
+func (j JobRouter) handleMessageWithoutErrorHandling(message amqp091.Delivery) error {
+	var nextJobMsg amqp091.Publishing
 	var nextJobMessage string
 	var nextJobProgress int
 	wasLastJob := false
@@ -137,7 +136,7 @@ func (j JobRouter) handleMessageWithoutErrorHandling(message amqp.Delivery) erro
 	return nil
 }
 
-func (j JobRouter) updateProgress(message amqp.Delivery, statusMessage string, progress int) error {
+func (j JobRouter) updateProgress(message amqp091.Delivery, statusMessage string, progress int) error {
 	var trackParams job_message.TrackIdentifier
 	err := json.Unmarshal(message.Body, &trackParams)
 	if err != nil {
@@ -179,7 +178,7 @@ func (j JobRouter) getErrorMessage(jobType string) string {
 	}
 }
 
-func (j JobRouter) handleError(message amqp.Delivery, jobError error) error {
+func (j JobRouter) handleError(message amqp091.Delivery, jobError error) error {
 	var trackParams job_message.TrackIdentifier
 	err := json.Unmarshal(message.Body, &trackParams)
 	if err != nil {
@@ -207,7 +206,7 @@ func (j JobRouter) handleError(message amqp.Delivery, jobError error) error {
 	return nil
 }
 
-func createTransferJobMessage(tracklistID string, trackID string) (amqp.Publishing, error) {
+func createTransferJobMessage(tracklistID string, trackID string) (amqp091.Publishing, error) {
 	job := transfer.JobParams{
 		job_message.TrackIdentifier{
 			TrackListID: tracklistID,
@@ -218,7 +217,7 @@ func createTransferJobMessage(tracklistID string, trackID string) (amqp.Publishi
 	return createJobMessage(transfer.JobType, job)
 }
 
-func createSplitJobMessage(tracklistID string, trackID string, savedOriginalURL string) (amqp.Publishing, error) {
+func createSplitJobMessage(tracklistID string, trackID string, savedOriginalURL string) (amqp091.Publishing, error) {
 	job := split.JobParams{
 		TrackIdentifier: job_message.TrackIdentifier{
 			TrackListID: tracklistID,
@@ -230,7 +229,7 @@ func createSplitJobMessage(tracklistID string, trackID string, savedOriginalURL 
 	return createJobMessage(split.JobType, job)
 }
 
-func createSaveStemsToDBJobMessage(tracklistID string, trackID string, stemURLs map[string]string) (amqp.Publishing, error) {
+func createSaveStemsToDBJobMessage(tracklistID string, trackID string, stemURLs map[string]string) (amqp091.Publishing, error) {
 	job := save_stems_to_db.JobParams{
 		TrackIdentifier: job_message.TrackIdentifier{
 			TrackListID: tracklistID,
@@ -242,13 +241,13 @@ func createSaveStemsToDBJobMessage(tracklistID string, trackID string, stemURLs 
 	return createJobMessage(save_stems_to_db.JobType, job)
 }
 
-func createJobMessage(jobType string, message interface{}) (amqp.Publishing, error) {
+func createJobMessage(jobType string, message interface{}) (amqp091.Publishing, error) {
 	jsonBytes, err := json.Marshal(message)
 	if err != nil {
-		return amqp.Publishing{}, cerr.Wrap(err).Error("Failed to marshal job params")
+		return amqp091.Publishing{}, cerr.Wrap(err).Error("Failed to marshal job params")
 	}
 
-	return amqp.Publishing{
+	return amqp091.Publishing{
 		Type: jobType,
 		Body: jsonBytes,
 	}, nil

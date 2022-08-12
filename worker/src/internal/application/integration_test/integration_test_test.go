@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/rabbitmq/amqp091-go"
 	dummy2 "github.com/veedubyou/chord-paper-be/worker/src/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_router"
@@ -16,8 +17,6 @@ import (
 	download2 "github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/worker"
-
-	"github.com/streadway/amqp"
 
 	. "github.com/onsi/gomega"
 
@@ -136,7 +135,7 @@ var _ = Describe("IntegrationTest", func() {
 				jsonBytes, err := json.Marshal(startJobParams)
 				Expect(err).NotTo(HaveOccurred())
 
-				message := amqp.Publishing{
+				message := amqp091.Publishing{
 					Type: start.JobType,
 					Body: jsonBytes,
 				}
