@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/shared/values/envvar"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/start"
@@ -11,7 +11,7 @@ import (
 func main() {
 	rabbitURL := envvar.MustGet(envvar.RABBITMQ_URL)
 
-	conn, err := amqp.Dial(rabbitURL)
+	conn, err := amqp091.Dial(rabbitURL)
 	if err != nil {
 		panic(err)
 	}
@@ -49,9 +49,9 @@ func main() {
 		panic(err)
 	}
 
-	job := amqp.Publishing{Type: start.JobType, Body: jobBody}
+	job := amqp091.Publishing{Type: start.JobType, Body: jobBody}
 
-	job.DeliveryMode = amqp.Persistent
+	job.DeliveryMode = amqp091.Persistent
 	job.ContentType = "application/json"
 
 	err = rabbitChannel.Publish("", queue.Name, true, false, job)

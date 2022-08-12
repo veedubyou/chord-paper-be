@@ -3,7 +3,7 @@ package job_router_test
 import (
 	"context"
 	"encoding/json"
-	"github.com/streadway/amqp"
+	"github.com/rabbitmq/amqp091-go"
 	dummy2 "github.com/veedubyou/chord-paper-be/worker/src/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/worker/src/internal/application/jobs/job_router"
@@ -39,7 +39,7 @@ var _ = Describe("JobRouter", func() {
 
 		jobRouter job_router.JobRouter
 
-		message     amqp.Delivery
+		message     amqp091.Delivery
 		messageJson []byte
 
 		// reusable tests
@@ -90,7 +90,7 @@ var _ = Describe("JobRouter", func() {
 	BeforeEach(func() {
 		tracklistID = "tracklist-id"
 		trackID = "track-id"
-		message = amqp.Delivery{}
+		message = amqp091.Delivery{}
 
 		var err error
 		messageJson, err = json.Marshal(job_message.TrackIdentifier{
@@ -129,7 +129,7 @@ var _ = Describe("JobRouter", func() {
 
 	Describe("Start job", func() {
 		BeforeEach(func() {
-			message = amqp.Delivery{
+			message = amqp091.Delivery{
 				Type: start.JobType,
 				Body: messageJson,
 			}
@@ -174,7 +174,7 @@ var _ = Describe("JobRouter", func() {
 
 	Describe("Transfer job", func() {
 		BeforeEach(func() {
-			message = amqp.Delivery{
+			message = amqp091.Delivery{
 				Type: transfer.JobType,
 				Body: messageJson,
 			}
@@ -223,7 +223,7 @@ var _ = Describe("JobRouter", func() {
 
 	Describe("Split job", func() {
 		BeforeEach(func() {
-			message = amqp.Delivery{
+			message = amqp091.Delivery{
 				Type: split.JobType,
 				Body: messageJson,
 			}
@@ -279,7 +279,7 @@ var _ = Describe("JobRouter", func() {
 
 	Describe("Save stem tracks job", func() {
 		BeforeEach(func() {
-			message = amqp.Delivery{
+			message = amqp091.Delivery{
 				Type: save_stems_to_db.JobType,
 				Body: messageJson,
 			}
