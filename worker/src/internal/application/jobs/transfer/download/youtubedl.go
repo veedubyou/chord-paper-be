@@ -23,8 +23,18 @@ type YoutubeDLer struct {
 }
 
 func (y YoutubeDLer) Download(sourceURL string, outFilePath string) error {
-	y.clearCache()
+	err := y.download(sourceURL, outFilePath)
+	// error may be fixable by clearing the cache dir
+	// so try again in case that's the issue
+	if err != nil {
+		y.clearCache()
+		return y.download(sourceURL, outFilePath)
+	}
 
+	return nil
+}
+
+func (y YoutubeDLer) download(sourceURL string, outFilePath string) error {
 	log.Info("Running youtube-dl")
 
 	cmd := y.commandExecutor.Command(y.youtubedlBinPath, "-o", outFilePath, "-x", "--audio-format", "mp3", "--audio-quality", "0", sourceURL)
