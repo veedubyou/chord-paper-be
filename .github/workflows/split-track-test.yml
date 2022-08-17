@@ -38,4 +38,7 @@ jobs:
 
       - name: Test
         working-directory: ./src/shared/integration_test
+        env:
+          SPLEETER_BIN_PATH: /usr/local/bin/spleeter
+          YOUTUBEDL_BIN_PATH: /not-a-real-path-because-this-wont-be-used
         run: go test -v ./...
