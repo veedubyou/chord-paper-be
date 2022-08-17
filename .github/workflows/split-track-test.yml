@@ -1,0 +1,38 @@
+name: Split Track Integration Test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Test
+    runs-on: cluster-runner
+
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        ports:
+          - 8000:8000
+
+      rabbitmq:
+        image: rabbitmq:3.10
+        ports:
+          - 5672:5672
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install ffmpeg
+        run: apt install -y ffmpeg
+
+      - name: Install Spleeter
+        run: pip install --no-cache-dir spleeter==2.3.0
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+
+      - name: Test
+        working-directory: ./src/shared/integration_test
+        run: go test -v ./...
