@@ -45,6 +45,4 @@ jobs:
 
       - name: Test
         working-directory: ./src/shared/integration_test
-        env:
-          GITHUB_REPOSITORY: deezer/spleeter
         run: go test -v ./...

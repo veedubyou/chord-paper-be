@@ -6,6 +6,7 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
 	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
+	"os"
 	"testing"
 )
 
@@ -20,17 +21,28 @@ func TestTrackSplit(t *testing.T) {
 }
 
 var (
-	db           dynamolib.DynamoDBWrapper
-	rabbitMQConn *amqp091.Connection
+	db               dynamolib.DynamoDBWrapper
+	rabbitMQConn     *amqp091.Connection
+	githubRepository string
 )
 
 var _ = BeforeSuite(func() {
 	SetTestEnv()
 	db = BeforeSuiteDB(region)
 	rabbitMQConn = MakeRabbitMQConnection()
+
+	repo, isSet := os.LookupEnv("GITHUB_REPOSITORY")
+	if isSet {
+		githubRepository = repo
+		os.Unsetenv("GITHUB_REPOSITORY")
+	}
 })
 
 var _ = AfterSuite(func() {
 	AfterSuiteDB(db)
 	AfterSuiteRabbitMQ(rabbitMQConn)
+
+	if githubRepository != "" {
+		os.Setenv("GITHUB_REPOSITORY", githubRepository)
+	}
 })
