@@ -22,17 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Update apt
-        run: sudo apt-get update
-
-      - name: Install ffmpeg
-        run: sudo apt install -y ffmpeg
-
       - name: Install Spleeter
-        run: pip install --no-cache-dir spleeter==2.3.0
+        run: |
+          sudo apt-get update
+          sudo apt install -y ffmpeg
+          pip install --no-cache-dir spleeter==2.3.0
 
-      - name: Show spleeter path
-        run: which spleeter
+      - name: Set Spleeter bin environment variable
+        run: echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -41,6 +38,4 @@ jobs:
 
       - name: Test
         working-directory: ./src/shared/integration_test
-        env:
-          SPLEETER_BIN_PATH: /usr/local/bin/spleeter
         run: go test -v ./...
