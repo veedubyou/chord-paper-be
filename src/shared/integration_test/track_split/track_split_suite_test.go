@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	region     = "track_split_integration_test"
-	bucketName = "chord-paper-tracks-test"
+	region            = "track_split_integration_test"
+	bucketName        = "chord-paper-tracks-test"
+	GITHUB_REPOSITORY = "GITHUB_REPOSITORY"
 )
 
 func TestTrackSplit(t *testing.T) {
@@ -26,23 +27,38 @@ var (
 	githubRepository string
 )
 
+// JFC this is some awful stuff
+// https://github.com/deezer/spleeter/blob/0d64981fb8e46fdc05d1aca450a2a5c2499b116b/spleeter/model/provider/github.py#L89
+// spleeter will look at the GITHUB_REPOSITORY env var as a pointer to where to download the model files
+// however Github workflows will also set this same env var to the current repo (i.e. chord-paper-be)
+// so then spleeter will try to download the models from my repo
+// there's no way to toggle this in spleeter and Github workflows don't allow overriding the GITHUB_REPOSITORY env var
+// so the only way is to do it in code
+func clearGithubRepoEnvVar() {
+	repo, isSet := os.LookupEnv(GITHUB_REPOSITORY)
+	if isSet {
+		githubRepository = repo
+		os.Unsetenv(GITHUB_REPOSITORY)
+	}
+}
+
+func restoreGithubRepoEnvVar() {
+	if githubRepository != "" {
+		os.Setenv(GITHUB_REPOSITORY, githubRepository)
+	}
+}
+
 var _ = BeforeSuite(func() {
 	SetTestEnv()
 	db = BeforeSuiteDB(region)
 	rabbitMQConn = MakeRabbitMQConnection()
 
-	repo, isSet := os.LookupEnv("GITHUB_REPOSITORY")
-	if isSet {
-		githubRepository = repo
-		os.Unsetenv("GITHUB_REPOSITORY")
-	}
+	clearGithubRepoEnvVar()
 })
 
 var _ = AfterSuite(func() {
 	AfterSuiteDB(db)
 	AfterSuiteRabbitMQ(rabbitMQConn)
 
-	if githubRepository != "" {
-		os.Setenv("GITHUB_REPOSITORY", githubRepository)
-	}
+	restoreGithubRepoEnvVar()
 })
