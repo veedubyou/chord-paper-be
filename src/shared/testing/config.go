@@ -28,7 +28,7 @@ func WorkerConfig(dbRegion string, cloudStorageConfig config.LocalCloudStorage) 
 		CloudStorageConfig:      cloudStorageConfig,
 		RabbitMQURL:             RabbitMQHost,
 		RabbitMQQueueName:       RabbitMQQueueName,
-		YoutubeDLBinPath:        envvar.MustGet(envvar.YOUTUBEDL_BIN_PATH),
+		YoutubeDLBinPath:        "/not-a-real-path-until-we-need-one",
 		YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
 		SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 		SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
