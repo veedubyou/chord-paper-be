@@ -22,18 +22,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Update pip
+        run: sudo pip install --upgrade pip
+
       - name: Install Spleeter dependencies
         run: |
           sudo apt-get update
           sudo apt install -y ffmpeg
 
       - name: Install Spleeter
-        # these dependencies need to be locked otherwise a runtime error will occur
-        # https://github.com/deezer/spleeter/issues/770
-        # https://stackoverflow.com/questions/58479556/notimplementederror-cannot-convert-a-symbolic-tensor-2nd-target0-to-a-numpy
-        # lolpython ¯\_(ツ)_/¯
         run:
-          pip install --no-cache-dir "numpy==1.19.5" "protobuf==3.20.1" "numba==0.53.0" spleeter==2.3.0
+          pip install --no-cache-dir spleeter==2.3.0
 
       - name: Set Spleeter bin environment variable
         run: echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
