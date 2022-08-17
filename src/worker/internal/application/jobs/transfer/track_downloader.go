@@ -5,6 +5,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/working_dir"
 	"io/ioutil"
 	"os"
@@ -13,32 +14,29 @@ import (
 	"github.com/apex/log"
 
 	"context"
-	"fmt"
 )
 
-func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity.TrackStore, fileStore cloudstorage.FileStore, storageHost string, bucketName string, workingDirStr string) (TrackTransferrer, error) {
+func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity.TrackStore, fileStore cloudstorage.FileStore, pathGenerator storagepath.Generator, workingDirStr string) (TrackTransferrer, error) {
 	workingDir, err := working_dir.NewWorkingDir(workingDirStr)
 	if err != nil {
 		return TrackTransferrer{}, cerr.Field("working_dir_str", workingDirStr).Wrap(err).Error("Failed to create working dir")
 	}
 
 	return TrackTransferrer{
-		fileStore:   fileStore,
-		trackStore:  trackStore,
-		downloader:  downloader,
-		storageHost: storageHost,
-		bucketName:  bucketName,
-		workingDir:  workingDir,
+		fileStore:     fileStore,
+		trackStore:    trackStore,
+		downloader:    downloader,
+		pathGenerator: pathGenerator,
+		workingDir:    workingDir,
 	}, nil
 }
 
 type TrackTransferrer struct {
-	fileStore   cloudstorage.FileStore
-	trackStore  entity.TrackStore
-	downloader  download.SelectDLer
-	storageHost string
-	bucketName  string
-	workingDir  working_dir.WorkingDir
+	fileStore     cloudstorage.FileStore
+	trackStore    entity.TrackStore
+	downloader    download.SelectDLer
+	pathGenerator storagepath.Generator
+	workingDir    working_dir.WorkingDir
 }
 
 func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, error) {
@@ -72,7 +70,7 @@ func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, 
 		return "", errctx.Wrap(err).Error("Failed to read outputed youtubedl mp3")
 	}
 
-	destinationURL := t.generatePath(tracklistID, trackID)
+	destinationURL := t.pathGenerator.GeneratePath(tracklistID, trackID, "original/original.mp3")
 
 	log.Info("Writing file to remote file store")
 	err = t.fileStore.WriteFile(context.Background(), destinationURL, fileContent)
@@ -81,10 +79,6 @@ func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, 
 	}
 
 	return destinationURL, nil
-}
-
-func (t TrackTransferrer) generatePath(tracklistID string, trackID string) string {
-	return fmt.Sprintf("%s/%s/%s/%s/original/original.mp3", t.storageHost, t.bucketName, tracklistID, trackID)
 }
 
 func (t TrackTransferrer) makeTempOutFilePath() (string, func(), error) {

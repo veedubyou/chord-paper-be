@@ -2,9 +2,9 @@ package splitter
 
 import (
 	"context"
-	"fmt"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
 var splitDirNames = map[SplitType]string{
@@ -14,18 +14,16 @@ var splitDirNames = map[SplitType]string{
 }
 
 type TrackSplitter struct {
-	trackStore  entity.TrackStore
-	splitter    FileSplitter
-	storageHost string
-	bucketName  string
+	trackStore    entity.TrackStore
+	splitter      FileSplitter
+	pathGenerator storagepath.Generator
 }
 
-func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, storageHost string, bucketName string) TrackSplitter {
+func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, pathGenerator storagepath.Generator) TrackSplitter {
 	return TrackSplitter{
-		storageHost: storageHost,
-		trackStore:  trackStore,
-		splitter:    splitter,
-		bucketName:  bucketName,
+		trackStore:    trackStore,
+		splitter:      splitter,
+		pathGenerator: pathGenerator,
 	}
 }
 
@@ -68,5 +66,5 @@ func (t TrackSplitter) generatePath(tracklistID string, trackID string, splitTyp
 		return "", cerr.Error("Invalid split type provided")
 	}
 
-	return fmt.Sprintf("%s/%s/%s/%s/%s", t.storageHost, t.bucketName, tracklistID, trackID, splitDir), nil
+	return t.pathGenerator.GeneratePath(tracklistID, trackID, splitDir), nil
 }

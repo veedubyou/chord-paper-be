@@ -20,6 +20,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
 var _ = Describe("IntegrationTest", func() {
@@ -78,13 +79,18 @@ var _ = Describe("IntegrationTest", func() {
 			startHandler = start.NewJobHandler(trackStore)
 		})
 
+		pathGenerator := storagepath.Generator{
+			Host:   prod.GOOGLE_STORAGE_HOST,
+			Bucket: bucketName,
+		}
+
 		var transferHandler transfer.JobHandler
 		By("Creating the download job handler", func() {
 			youtubedler := download.NewYoutubeDLer("/whatever/youtube-dl", youtubeDLExecutor)
 			genericdler := download.NewGenericDLer()
 			selectdler := download.NewSelectDLer(youtubedler, genericdler)
 
-			trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, fileStore, prod.GOOGLE_STORAGE_HOST, bucketName, workingDir)
+			trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, fileStore, pathGenerator, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
 			transferHandler = transfer.NewJobHandler(trackDownloader)
@@ -96,7 +102,7 @@ var _ = Describe("IntegrationTest", func() {
 			Expect(err).NotTo(HaveOccurred())
 			remoteFileSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, fileStore, localFileSplitter)
 			Expect(err).NotTo(HaveOccurred())
-			trackSplitter := splitter.NewTrackSplitter(remoteFileSplitter, trackStore, prod.GOOGLE_STORAGE_HOST, bucketName)
+			trackSplitter := splitter.NewTrackSplitter(remoteFileSplitter, trackStore, pathGenerator)
 			splitHandler = split.NewJobHandler(trackSplitter)
 		})
 

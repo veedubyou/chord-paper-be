@@ -12,6 +12,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
 var _ = Describe("Download Job Handler", func() {
@@ -68,7 +69,11 @@ var _ = Describe("Download Job Handler", func() {
 			genericDownloader := download.NewGenericDLer()
 			selectDownloader := download.NewSelectDLer(youtubeDownloader, genericDownloader)
 
-			trackDownloader, err := transfer.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, prod.GOOGLE_STORAGE_HOST, bucketName, workingDir)
+			pathGenerator := storagepath.Generator{
+				Host:   prod.GOOGLE_STORAGE_HOST,
+				Bucket: bucketName,
+			}
+			trackDownloader, err := transfer.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, pathGenerator, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
 			handler = transfer.NewJobHandler(trackDownloader)

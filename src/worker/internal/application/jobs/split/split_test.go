@@ -13,6 +13,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
 var _ = Describe("Split handler", func() {
@@ -65,7 +66,11 @@ var _ = Describe("Split handler", func() {
 			remoteSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, dummyFileStore, localSplitter)
 			Expect(err).NotTo(HaveOccurred())
 
-			trackSplitter := splitter.NewTrackSplitter(remoteSplitter, dummyTrackStore, prod.GOOGLE_STORAGE_HOST, bucketName)
+			pathGenerator := storagepath.Generator{
+				Host:   prod.GOOGLE_STORAGE_HOST,
+				Bucket: bucketName,
+			}
+			trackSplitter := splitter.NewTrackSplitter(remoteSplitter, dummyTrackStore, pathGenerator)
 			handler = split.NewJobHandler(trackSplitter)
 		})
 	})

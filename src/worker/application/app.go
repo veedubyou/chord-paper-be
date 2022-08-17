@@ -21,6 +21,7 @@ import (
 	trackstore "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
+	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 	"google.golang.org/api/option"
 	"os"
 )
@@ -141,12 +142,17 @@ func newGoogleFileStore(cloudStorageConfig config.CloudStorage) filestore.Google
 }
 
 func newJobRouter(config Config, trackStore trackstore.DynamoDBTrackStore, publisher rabbitmq.Publisher) job_router.JobRouter {
+	pathGenerator := storagepath.Generator{
+		Host:   config.CloudStorageConfig.GetStorageHost(),
+		Bucket: config.CloudStorageConfig.GetBucket(),
+	}
+
 	return job_router.NewJobRouter(
 		trackStore,
 		publisher,
 		newStartJobHandler(trackStore),
-		newDownloadJobHandler(config),
-		newSplitJobHandler(config),
+		newDownloadJobHandler(config, pathGenerator),
+		newSplitJobHandler(config, pathGenerator),
 		newSaveToDBJobHandler(trackStore))
 }
 
@@ -154,7 +160,7 @@ func newStartJobHandler(trackStore trackstore.DynamoDBTrackStore) start.JobHandl
 	return start.NewJobHandler(trackStore)
 }
 
-func newDownloadJobHandler(config Config) transfer.JobHandler {
+func newDownloadJobHandler(config Config, pathGenerator storagepath.Generator) transfer.JobHandler {
 	if err := os.MkdirAll(config.YoutubeDLWorkingDirPath, os.ModePerm); err != nil {
 		panic(err)
 	}
@@ -169,15 +175,14 @@ func newDownloadJobHandler(config Config) transfer.JobHandler {
 		selectdler,
 		trackStore,
 		newGoogleFileStore(config.CloudStorageConfig),
-		config.CloudStorageConfig.GetStorageHost(),
-		config.CloudStorageConfig.GetBucket(),
+		pathGenerator,
 		config.YoutubeDLWorkingDirPath,
 	))
 
 	return transfer.NewJobHandler(trackDownloader)
 }
 
-func newSplitJobHandler(config Config) split.JobHandler {
+func newSplitJobHandler(config Config, pathGenerator storagepath.Generator) split.JobHandler {
 	if err := os.MkdirAll(config.SpleeterWorkingDirPath, os.ModePerm); err != nil {
 		panic(err)
 	}
@@ -200,8 +205,7 @@ func newSplitJobHandler(config Config) split.JobHandler {
 	songSplitUsecase := splitter.NewTrackSplitter(
 		remoteUsecase,
 		trackStore,
-		config.CloudStorageConfig.GetStorageHost(),
-		config.CloudStorageConfig.GetBucket(),
+		pathGenerator,
 	)
 
 	return split.NewJobHandler(songSplitUsecase)
