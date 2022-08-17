@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
@@ -83,7 +84,7 @@ var _ = Describe("IntegrationTest", func() {
 			genericdler := download.NewGenericDLer()
 			selectdler := download.NewSelectDLer(youtubedler, genericdler)
 
-			trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, fileStore, bucketName, workingDir)
+			trackDownloader, err := transfer.NewTrackTransferrer(selectdler, trackStore, fileStore, prod.GOOGLE_STORAGE_HOST, bucketName, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
 			transferHandler = transfer.NewJobHandler(trackDownloader)
@@ -95,7 +96,7 @@ var _ = Describe("IntegrationTest", func() {
 			Expect(err).NotTo(HaveOccurred())
 			remoteFileSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, fileStore, localFileSplitter)
 			Expect(err).NotTo(HaveOccurred())
-			trackSplitter := splitter.NewTrackSplitter(remoteFileSplitter, trackStore, bucketName)
+			trackSplitter := splitter.NewTrackSplitter(remoteFileSplitter, trackStore, prod.GOOGLE_STORAGE_HOST, bucketName)
 			splitHandler = split.NewJobHandler(trackSplitter)
 		})
 

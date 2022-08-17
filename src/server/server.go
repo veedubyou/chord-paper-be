@@ -4,10 +4,10 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/server/application"
 	"github.com/veedubyou/chord-paper-be/src/server/google_id"
 	"github.com/veedubyou/chord-paper-be/src/shared/config"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/dev"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/envvar"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/env"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/dev"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/prod"
 	"strings"
 )
 

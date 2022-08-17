@@ -6,7 +6,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
@@ -42,7 +42,7 @@ var _ = Describe("Split handler", func() {
 			trackType = entity.InvalidType
 			bucketName = "bucket-head"
 
-			remoteURLBase = fmt.Sprintf("%s/%s/%s/%s", store.GOOGLE_STORAGE_HOST, bucketName, tracklistID, trackID)
+			remoteURLBase = fmt.Sprintf("%s/%s/%s/%s", prod.GOOGLE_STORAGE_HOST, bucketName, tracklistID, trackID)
 			savedOriginalURL = fmt.Sprintf("%s/original/original.mp3", remoteURLBase)
 			originalTrackData = []byte("cool_jamz")
 		})
@@ -65,7 +65,7 @@ var _ = Describe("Split handler", func() {
 			remoteSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, dummyFileStore, localSplitter)
 			Expect(err).NotTo(HaveOccurred())
 
-			trackSplitter := splitter.NewTrackSplitter(remoteSplitter, dummyTrackStore, bucketName)
+			trackSplitter := splitter.NewTrackSplitter(remoteSplitter, dummyTrackStore, prod.GOOGLE_STORAGE_HOST, bucketName)
 			handler = split.NewJobHandler(trackSplitter)
 		})
 	})

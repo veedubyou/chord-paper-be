@@ -1,7 +1,5 @@
 package config
 
-const GOOGLE_STORAGE_HOST = "https://storage.googleapis.com"
-
 type CloudStorage interface {
 	GetStorageHost() string
 	GetBucket() string

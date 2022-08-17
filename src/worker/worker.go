@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/veedubyou/chord-paper-be/src/shared/config"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/dev"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/envvar"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/local"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/env"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/dev"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/local"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/prod"
 	"github.com/veedubyou/chord-paper-be/src/worker/application"
 	"path"
 )
@@ -23,32 +23,32 @@ func main() {
 				Region:          prod.DynamoDBRegion,
 			},
 			CloudStorageConfig: config.ProdCloudStorage{
-				StorageHost: config.GOOGLE_STORAGE_HOST,
+				StorageHost: prod.GOOGLE_STORAGE_HOST,
 				SecretKey:   envvar.MustGet(envvar.GOOGLE_CLOUD_KEY),
 				BucketName:  envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME),
 			},
 			RabbitMQURL:             envvar.MustGet(envvar.RABBITMQ_URL),
 			RabbitMQQueueName:       envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME),
-			YoutubeDLBinPath:        envvar.MustGet("YOUTUBEDL_BIN_PATH"),
-			YoutubeDLWorkingDirPath: envvar.MustGet("YOUTUBEDL_WORKING_DIR_PATH"),
-			SpleeterBinPath:         envvar.MustGet("SPLEETER_BIN_PATH"),
-			SpleeterWorkingDirPath:  envvar.MustGet("SPLEETER_WORKING_DIR_PATH"),
+			YoutubeDLBinPath:        envvar.MustGet(envvar.YOUTUBEDL_BIN_PATH),
+			YoutubeDLWorkingDirPath: envvar.MustGet(envvar.YOUTUBEDL_WORKING_DIR_PATH),
+			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
+			SpleeterWorkingDirPath:  envvar.MustGet(envvar.SPLEETER_WORKING_DIR_PATH),
 		}
 
 	case env.Development:
 		appConfig = application.Config{
 			DynamoConfig: dev.DynamoConfig,
-			CloudStorageConfig: config.LocalCloudStorage{
-				//TODO
-				StorageHost:  "",
-				HostEndpoint: "",
-				BucketName:   envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME),
+			// using prod for now because the local fake GCS doesn't persist
+			CloudStorageConfig: config.ProdCloudStorage{
+				StorageHost: prod.GOOGLE_STORAGE_HOST,
+				SecretKey:   envvar.MustGet(envvar.GOOGLE_CLOUD_KEY),
+				BucketName:  envvar.MustGet(envvar.GOOGLE_CLOUD_STORAGE_BUCKET_NAME),
 			},
 			RabbitMQURL:             dev.RabbitMQHost,
 			RabbitMQQueueName:       dev.RabbitMQQueueName,
-			YoutubeDLBinPath:        envvar.MustGet("YOUTUBEDL_BIN_PATH"),
+			YoutubeDLBinPath:        envvar.MustGet(envvar.YOUTUBEDL_BIN_PATH),
 			YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
-			SpleeterBinPath:         envvar.MustGet("SPLEETER_BIN_PATH"),
+			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 			SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
 		}
 	default:

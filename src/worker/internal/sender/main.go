@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/envvar"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 )

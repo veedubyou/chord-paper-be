@@ -7,10 +7,8 @@ import (
 	"sync"
 )
 
-const RabbitMQQueueName = "chord-paper-tracks-test"
-
 func MakeRabbitMQConnection() *amqp091.Connection {
-	return ExpectSuccess(amqp091.Dial("amqp://localhost:5672"))
+	return ExpectSuccess(amqp091.Dial(RabbitMQHost))
 }
 
 func ResetRabbitMQ(conn *amqp091.Connection) {

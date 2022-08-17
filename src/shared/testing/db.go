@@ -34,8 +34,8 @@ func MakeTestDB(testRegion string) dynamolib.DynamoDBWrapper {
 	dbSession := session.Must(session.NewSession())
 
 	config := aws.NewConfig().
-		WithCredentials(credentials.NewStaticCredentials("local", "local", "")).
-		WithEndpoint("http://localhost:8000").
+		WithCredentials(credentials.NewStaticCredentials(DynamoAccessKeyID, DynamoSecretAccessKey, "")).
+		WithEndpoint(DynamoDBHost).
 		WithRegion(testRegion)
 
 	db := dynamo.New(dbSession, config)

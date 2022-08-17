@@ -6,7 +6,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
@@ -68,7 +68,7 @@ var _ = Describe("Download Job Handler", func() {
 			genericDownloader := download.NewGenericDLer()
 			selectDownloader := download.NewSelectDLer(youtubeDownloader, genericDownloader)
 
-			trackDownloader, err := transfer.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, bucketName, workingDir)
+			trackDownloader, err := transfer.NewTrackTransferrer(selectDownloader, dummyTrackStore, dummyFileStore, prod.GOOGLE_STORAGE_HOST, bucketName, workingDir)
 			Expect(err).NotTo(HaveOccurred())
 
 			handler = transfer.NewJobHandler(trackDownloader)
@@ -98,7 +98,7 @@ var _ = Describe("Download Job Handler", func() {
 
 			BeforeEach(func() {
 				jobParams, savedOriginalURL, err = handler.HandleTransferJob(message)
-				expectedSavedURL = fmt.Sprintf("%s/%s/%s/%s/original/original.mp3", store.GOOGLE_STORAGE_HOST, bucketName, tracklistID, trackID)
+				expectedSavedURL = fmt.Sprintf("%s/%s/%s/%s/original/original.mp3", prod.GOOGLE_STORAGE_HOST, bucketName, tracklistID, trackID)
 			})
 
 			It("doesn't return an error", func() {

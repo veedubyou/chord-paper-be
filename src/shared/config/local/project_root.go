@@ -13,7 +13,7 @@ func ProjectRoot() string {
 		panic("Failed to call runtime.Caller")
 	}
 
-	if !strings.HasSuffix(filePath, "/src/shared/values/local/project_root.go") {
+	if !strings.HasSuffix(filePath, "/src/shared/config/local/project_root.go") {
 		panic("")
 	}
 

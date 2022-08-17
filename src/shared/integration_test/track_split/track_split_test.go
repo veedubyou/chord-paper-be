@@ -53,14 +53,10 @@ var _ = Describe("TrackSplit", func() {
 		Expect(bodyBytes).NotTo(BeEmpty())
 	}
 
-	GetServerURL := func(path string) string {
-		return fmt.Sprintf("http://localhost%s%s", ServerPort, path)
-	}
-
 	GetTrackList := func(songID string) map[string]interface{} {
 		factory := RequestFactory{
 			Method: "GET",
-			Target: GetServerURL(fmt.Sprintf("/songs/%s/tracklist", songID)),
+			Target: ServerEndpoint(fmt.Sprintf("/songs/%s/tracklist", songID)),
 		}
 
 		response := ExpectSuccess(factory.Do())
@@ -77,7 +73,7 @@ var _ = Describe("TrackSplit", func() {
 	PutTrackList := func(songID string, tracklist map[string]interface{}) {
 		putTracklistResponse := ExpectSuccess(RequestFactory{
 			Method:  "PUT",
-			Target:  GetServerURL(fmt.Sprintf("/songs/%s/tracklist", songID)),
+			Target:  ServerEndpoint(fmt.Sprintf("/songs/%s/tracklist", songID)),
 			JSONObj: tracklist,
 			Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
 		}.Do())
