@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install ffmpeg
-        run: apt install -y ffmpeg
+        run: sudo apt install -y ffmpeg
 
       - name: Install Spleeter
         run: pip install --no-cache-dir spleeter==2.3.0
