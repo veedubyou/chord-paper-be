@@ -2,7 +2,6 @@ package transfer
 
 import (
 	cloudstorage "github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/entity"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
@@ -17,27 +16,29 @@ import (
 	"fmt"
 )
 
-func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity.TrackStore, fileStore cloudstorage.FileStore, bucketName string, workingDirStr string) (TrackTransferrer, error) {
+func NewTrackTransferrer(downloader download.SelectDLer, trackStore entity.TrackStore, fileStore cloudstorage.FileStore, storageHost string, bucketName string, workingDirStr string) (TrackTransferrer, error) {
 	workingDir, err := working_dir.NewWorkingDir(workingDirStr)
 	if err != nil {
 		return TrackTransferrer{}, cerr.Field("working_dir_str", workingDirStr).Wrap(err).Error("Failed to create working dir")
 	}
 
 	return TrackTransferrer{
-		fileStore:  fileStore,
-		trackStore: trackStore,
-		downloader: downloader,
-		bucketName: bucketName,
-		workingDir: workingDir,
+		fileStore:   fileStore,
+		trackStore:  trackStore,
+		downloader:  downloader,
+		storageHost: storageHost,
+		bucketName:  bucketName,
+		workingDir:  workingDir,
 	}, nil
 }
 
 type TrackTransferrer struct {
-	fileStore  cloudstorage.FileStore
-	trackStore entity.TrackStore
-	downloader download.SelectDLer
-	bucketName string
-	workingDir working_dir.WorkingDir
+	fileStore   cloudstorage.FileStore
+	trackStore  entity.TrackStore
+	downloader  download.SelectDLer
+	storageHost string
+	bucketName  string
+	workingDir  working_dir.WorkingDir
 }
 
 func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, error) {
@@ -83,7 +84,7 @@ func (t TrackTransferrer) Download(tracklistID string, trackID string) (string, 
 }
 
 func (t TrackTransferrer) generatePath(tracklistID string, trackID string) string {
-	return fmt.Sprintf("%s/%s/%s/%s/original/original.mp3", store.GOOGLE_STORAGE_HOST, t.bucketName, tracklistID, trackID)
+	return fmt.Sprintf("%s/%s/%s/%s/original/original.mp3", t.storageHost, t.bucketName, tracklistID, trackID)
 }
 
 func (t TrackTransferrer) makeTempOutFilePath() (string, func(), error) {

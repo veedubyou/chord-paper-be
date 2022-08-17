@@ -1,11 +1,10 @@
-package testlib
+package testing
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/labstack/echo/v4"
-	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/gateway"
+	"github.com/onsi/gomega"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -34,23 +33,23 @@ func WithUserCred(user User) RequestModifier {
 
 type RequestFactory struct {
 	Method  string
-	Path    string
+	Target  string
 	JSONObj interface{}
 	Mods    RequestModifiers
 }
 
-func (r RequestFactory) Make() *http.Request {
+func (r RequestFactory) make(reqMaker func(string, string, io.Reader) *http.Request) *http.Request {
 	var body io.Reader
 
 	if r.JSONObj != nil {
 		buf := &bytes.Buffer{}
 		err := json.NewEncoder(buf).Encode(r.JSONObj)
-		ExpectWithOffset(1, err).NotTo(HaveOccurred())
+		gomega.ExpectWithOffset(1, err).NotTo(gomega.HaveOccurred())
 
 		body = buf
 	}
 
-	request := httptest.NewRequest(r.Method, r.Path, body)
+	request := reqMaker(r.Method, r.Target, body)
 
 	isJSONBody := body != nil
 	if isJSONBody {
@@ -64,19 +63,15 @@ func (r RequestFactory) Make() *http.Request {
 	return request
 }
 
-func PrepareEchoContext(request *http.Request, response http.ResponseWriter) echo.Context {
-	e := echo.New()
-	return e.NewContext(request, response)
+func (r RequestFactory) MakeFake() *http.Request {
+	return r.make(httptest.NewRequest)
 }
 
-func DecodeJSON[T any](response *httptest.ResponseRecorder) T {
-	t := new(T)
-	err := json.NewDecoder(response.Body).Decode(t)
-	ExpectWithOffset(1, err).NotTo(HaveOccurred())
+func (r RequestFactory) Do() (*http.Response, error) {
+	makeRealRequest := func(method string, target string, body io.Reader) *http.Request {
+		return ExpectSuccess(http.NewRequest(method, target, body))
+	}
 
-	return *t
-}
-
-func DecodeJSONError(response *httptest.ResponseRecorder) gateway.JSONAPIError {
-	return DecodeJSON[gateway.JSONAPIError](response)
+	req := r.make(makeRealRequest)
+	return http.DefaultClient.Do(req)
 }

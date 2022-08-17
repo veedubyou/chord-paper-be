@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
+	google_id2 "github.com/veedubyou/chord-paper-be/src/server/google_id"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/google_id"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"strings"
 	"sync"
@@ -19,10 +19,10 @@ const (
 
 type Usecase struct {
 	db              userstorage.DB
-	googleValidator google_id.Validator
+	googleValidator google_id2.Validator
 }
 
-func NewUsecase(db userstorage.DB, googleValidator google_id.Validator) Usecase {
+func NewUsecase(db userstorage.DB, googleValidator google_id2.Validator) Usecase {
 	return Usecase{
 		db:              db,
 		googleValidator: googleValidator,
@@ -30,7 +30,7 @@ func NewUsecase(db userstorage.DB, googleValidator google_id.Validator) Usecase 
 }
 
 func (u Usecase) VerifyOwner(ctx context.Context, authHeader string, ownerID string) *api.Error {
-	var userFromGoogle userentity.User
+	var userFromGoogle google_id2.User
 	var validateHeaderErr *api.Error
 	var getOwnerErr *api.Error
 
@@ -60,8 +60,8 @@ func (u Usecase) VerifyOwner(ctx context.Context, authHeader string, ownerID str
 		return api.WrapError(validateHeaderErr, "Failed to validate auth header")
 	}
 
-	if userFromGoogle.ID != ownerID {
-		if _, apiErr := u.getUser(ctx, userFromGoogle.ID); apiErr != nil {
+	if userFromGoogle.GoogleID != ownerID {
+		if _, apiErr := u.getUser(ctx, userFromGoogle.GoogleID); apiErr != nil {
 			return api.WrapError(apiErr, "Failed to find user account")
 		}
 
@@ -84,7 +84,7 @@ func (u Usecase) Login(ctx context.Context, authHeader string) (userentity.User,
 		return userentity.User{}, api.WrapError(apiErr, "Failed to validate auth header")
 	}
 
-	userFromDB, apiErr := u.getUser(ctx, userFromGoogle.ID)
+	userFromDB, apiErr := u.getUser(ctx, userFromGoogle.GoogleID)
 	if apiErr != nil {
 		return userentity.User{}, api.WrapError(apiErr, "Failed to fetch user")
 	}
@@ -113,9 +113,9 @@ func (u Usecase) getUser(ctx context.Context, userID string) (userentity.User, *
 	return userFromDB, nil
 }
 
-func (u Usecase) validateHeader(ctx context.Context, header string) (userentity.User, *api.Error) {
+func (u Usecase) validateHeader(ctx context.Context, header string) (google_id2.User, *api.Error) {
 	if !strings.HasPrefix(header, bearerPrefix) {
-		return userentity.User{}, api.CommitError(
+		return google_id2.User{}, api.CommitError(
 			errors.New("Auth header doesn't have the bearer prefix"),
 			auth.BadAuthorizationHeaderCode,
 			"Authorization header has unexpected shape")
@@ -126,15 +126,15 @@ func (u Usecase) validateHeader(ctx context.Context, header string) (userentity.
 	if err != nil {
 		err = errors.Wrap(err, "Failed to validate Google ID token")
 		switch {
-		case markers.Is(err, google_id.NotValidatedMark):
-			return userentity.User{}, api.CommitError(err,
+		case markers.Is(err, google_id2.NotValidatedMark):
+			return google_id2.User{}, api.CommitError(err,
 				auth.NotGoogleAuthorizedCode,
 				"Your Google login doesn't seem to be valid. Please try again")
 
-		case markers.Is(err, google_id.MalformedClaimsMark):
+		case markers.Is(err, google_id2.MalformedClaimsMark):
 			fallthrough
 		default:
-			return userentity.User{}, api.CommitError(err,
+			return google_id2.User{}, api.CommitError(err,
 				api.DefaultErrorCode,
 				"Unknown error: Couldn't verify your Google login status")
 		}

@@ -3,7 +3,6 @@ package splitter
 import (
 	"context"
 	"fmt"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
@@ -15,16 +14,18 @@ var splitDirNames = map[SplitType]string{
 }
 
 type TrackSplitter struct {
-	trackStore entity.TrackStore
-	splitter   FileSplitter
-	bucketName string
+	trackStore  entity.TrackStore
+	splitter    FileSplitter
+	storageHost string
+	bucketName  string
 }
 
-func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, bucketName string) TrackSplitter {
+func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, storageHost string, bucketName string) TrackSplitter {
 	return TrackSplitter{
-		trackStore: trackStore,
-		splitter:   splitter,
-		bucketName: bucketName,
+		storageHost: storageHost,
+		trackStore:  trackStore,
+		splitter:    splitter,
+		bucketName:  bucketName,
 	}
 }
 
@@ -67,5 +68,5 @@ func (t TrackSplitter) generatePath(tracklistID string, trackID string, splitTyp
 		return "", cerr.Error("Invalid split type provided")
 	}
 
-	return fmt.Sprintf("%s/%s/%s/%s/%s", store.GOOGLE_STORAGE_HOST, t.bucketName, tracklistID, trackID, splitDir), nil
+	return fmt.Sprintf("%s/%s/%s/%s/%s", t.storageHost, t.bucketName, tracklistID, trackID, splitDir), nil
 }

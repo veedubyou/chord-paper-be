@@ -1,14 +1,12 @@
-package testlib
+package testing
 
 import (
 	"context"
 	"fmt"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/errors/mark"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/google_id"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
+	google_id "github.com/veedubyou/chord-paper-be/src/server/google_id"
+	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/errors/mark"
 )
 
 var (
@@ -45,24 +43,24 @@ func TokenForUserID(userID string) string {
 	return fmt.Sprintf("%s-token", userID)
 }
 
-var _ google_id.Validator = TestingValidator{}
+var _ google_id.Validator = Validator{}
 
-type TestingValidator struct{}
+type Validator struct{}
 
-func (t TestingValidator) ValidateToken(ctx context.Context, requestToken string) (userentity.User, error) {
+func (t Validator) ValidateToken(ctx context.Context, requestToken string) (google_id.User, error) {
 	validatedUsers := []User{PrimaryUser, OtherUser, NoAccountUser}
 
 	for _, validatedUser := range validatedUsers {
 		if requestToken == TokenForUserID(validatedUser.ID) {
-			return userentity.User{
-				ID:    validatedUser.ID,
-				Name:  validatedUser.Name,
-				Email: validatedUser.Email,
+			return google_id.User{
+				GoogleID: validatedUser.ID,
+				Name:     validatedUser.Name,
+				Email:    validatedUser.Email,
 			}, nil
 		}
 	}
 
-	return userentity.User{}, mark.Message(google_id.NotValidatedMark, "User is not validated")
+	return google_id.User{}, mark.Message(google_id.NotValidatedMark, "User is not validated")
 }
 
 func EnsureUsers(db dynamolib.DynamoDBWrapper) {
@@ -71,6 +69,6 @@ func EnsureUsers(db dynamolib.DynamoDBWrapper) {
 }
 
 func EnsureUser(db dynamolib.DynamoDBWrapper, u User) {
-	err := db.Table(userstorage.UsersTable).Table.Put(u).Run()
+	err := db.Table(UsersTable).Table.Put(u).Run()
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 }

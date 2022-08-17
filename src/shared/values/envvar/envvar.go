@@ -6,6 +6,8 @@ import (
 )
 
 const (
+	AWS_ACCESS_KEY_ID                = "AWS_ACCESS_KEY_ID"
+	AWS_SECRET_ACCESS_KEY            = "AWS_SECRET_ACCESS_KEY"
 	RABBITMQ_URL                     = "RABBITMQ_URL"
 	RABBITMQ_QUEUE_NAME              = "RABBITMQ_QUEUE_NAME"
 	GOOGLE_CLOUD_KEY                 = "GOOGLE_CLOUD_KEY"

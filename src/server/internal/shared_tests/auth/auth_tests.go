@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/auth"
-	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
+	"github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"net/http"
 	"net/http/httptest"
 )
@@ -26,13 +26,13 @@ func ItRejectsWrongOwnerRequests(method string, path string) {
 	Describe("Unauthenticated requests", func() {
 		var (
 			response       *httptest.ResponseRecorder
-			requestFactory RequestFactory
+			requestFactory testing.RequestFactory
 		)
 
 		BeforeEach(func() {
-			requestFactory = RequestFactory{
+			requestFactory = testing.RequestFactory{
 				Method:  method,
-				Path:    path,
+				Target:  path,
 				JSONObj: JSONBody,
 			}
 		})
@@ -47,9 +47,9 @@ func ItRejectsWrongOwnerRequests(method string, path string) {
 		})
 
 		JustBeforeEach(func() {
-			request := requestFactory.Make()
+			request := requestFactory.MakeFake()
 			response = httptest.NewRecorder()
-			c := PrepareEchoContext(request, response)
+			c := testing.PrepareEchoContext(request, response)
 
 			Expect(Endpoint).NotTo(BeNil())
 			err := Endpoint(c)
@@ -58,11 +58,11 @@ func ItRejectsWrongOwnerRequests(method string, path string) {
 
 		Describe("For a user that's not the owner of the resources", func() {
 			BeforeEach(func() {
-				requestFactory.Mods.Add(WithUserCred(OtherUser))
+				requestFactory.Mods.Add(testing.WithUserCred(testing.OtherUser))
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(auth.WrongOwnerCode))
 			})
 
@@ -77,13 +77,13 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 	Describe("Unauthorized requests", func() {
 		var (
 			response       *httptest.ResponseRecorder
-			requestFactory RequestFactory
+			requestFactory testing.RequestFactory
 		)
 
 		BeforeEach(func() {
-			requestFactory = RequestFactory{
+			requestFactory = testing.RequestFactory{
 				Method:  method,
-				Path:    path,
+				Target:  path,
 				JSONObj: JSONBody,
 			}
 		})
@@ -98,9 +98,9 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 		})
 
 		JustBeforeEach(func() {
-			request := requestFactory.Make()
+			request := requestFactory.MakeFake()
 			response = httptest.NewRecorder()
-			c := PrepareEchoContext(request, response)
+			c := testing.PrepareEchoContext(request, response)
 
 			Expect(Endpoint).NotTo(BeNil())
 			err := Endpoint(c)
@@ -109,7 +109,7 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 
 		Describe("With no auth header", func() {
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(auth.BadAuthorizationHeaderCode))
 			})
 
@@ -120,12 +120,12 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 
 		Describe("With a malformed token", func() {
 			BeforeEach(func() {
-				token := TokenForUserID(PrimaryUser.ID)
-				requestFactory.Mods.Add(WithAuthHeader(token))
+				token := testing.TokenForUserID(testing.PrimaryUser.ID)
+				requestFactory.Mods.Add(testing.WithAuthHeader(token))
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(auth.BadAuthorizationHeaderCode))
 			})
 
@@ -136,11 +136,11 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 
 		Describe("With a Google unauthorized token", func() {
 			BeforeEach(func() {
-				requestFactory.Mods.Add(WithUserCred(GoogleUnauthorizedUser))
+				requestFactory.Mods.Add(testing.WithUserCred(testing.GoogleUnauthorizedUser))
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(auth.NotGoogleAuthorizedCode))
 			})
 
@@ -151,11 +151,11 @@ func ItRejectsUnauthorizedRequests(method string, path string) {
 
 		Describe("For a user that's not in the DB", func() {
 			BeforeEach(func() {
-				requestFactory.Mods.Add(WithUserCred(NoAccountUser))
+				requestFactory.Mods.Add(testing.WithUserCred(testing.NoAccountUser))
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(auth.NoAccountCode))
 			})
 

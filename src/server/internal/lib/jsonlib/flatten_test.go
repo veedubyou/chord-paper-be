@@ -5,7 +5,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/jsonlib"
-	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
+	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
 )
 
 type user struct {

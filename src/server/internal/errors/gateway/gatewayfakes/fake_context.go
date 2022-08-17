@@ -2285,7 +2285,7 @@ func (fake *FakeContext) Path() string {
 	}{})
 	stub := fake.PathStub
 	fakeReturns := fake.pathReturns
-	fake.recordInvocation("Path", []interface{}{})
+	fake.recordInvocation("Target", []interface{}{})
 	fake.pathMutex.Unlock()
 	if stub != nil {
 		return stub()

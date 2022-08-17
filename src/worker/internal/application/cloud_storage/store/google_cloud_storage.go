@@ -13,20 +13,20 @@ import (
 
 var _ entity.FileStore = GoogleFileStore{}
 
-const GOOGLE_STORAGE_HOST = "https://storage.googleapis.com"
-
 type GoogleFileStore struct {
 	storageClient *storage.Client
+	storageHost   string
 }
 
-func NewGoogleFileStore(jsonKey string) (GoogleFileStore, error) {
-	googleStorageClient, err := storage.NewClient(context.Background(), option.WithCredentialsJSON([]byte(jsonKey)))
+func NewGoogleFileStore(storageHost string, options ...option.ClientOption) (GoogleFileStore, error) {
+	googleStorageClient, err := storage.NewClient(context.Background(), options...)
 
 	if err != nil {
 		return GoogleFileStore{}, cerr.Wrap(err).Error("Failed to create Google Cloud Storage client")
 	}
 
 	return GoogleFileStore{
+		storageHost:   storageHost,
 		storageClient: googleStorageClient,
 	}, nil
 }
@@ -79,11 +79,11 @@ func (g GoogleFileStore) WriteFile(ctx context.Context, fileURL string, fileCont
 
 func (g GoogleFileStore) bucketAndPathFromURL(fileURL string) (string, string, error) {
 	errctx := cerr.Field("file_url", fileURL)
-	if !strings.HasPrefix(fileURL, GOOGLE_STORAGE_HOST+"/") {
+	if !strings.HasPrefix(fileURL, g.storageHost+"/") {
 		return "", "", errctx.Error("File path given not in the Google cloud storage format")
 	}
 
-	bucketAndPath := strings.TrimPrefix(fileURL, GOOGLE_STORAGE_HOST+"/")
+	bucketAndPath := strings.TrimPrefix(fileURL, g.storageHost+"/")
 
 	chunks := strings.SplitN(bucketAndPath, "/", 2)
 	if len(chunks) != 2 {

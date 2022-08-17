@@ -3,11 +3,11 @@ package user_test
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
+	"github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"net/http"
 	"net/http/httptest"
 )
@@ -15,18 +15,18 @@ import (
 var _ = Describe("User", func() {
 	var (
 		userGateway usergateway.Gateway
-		validator   TestingValidator
+		validator   testing.Validator
 	)
 
 	BeforeEach(func() {
-		validator = TestingValidator{}
+		validator = testing.Validator{}
 		userStorage := userstorage.NewDB(db)
 		userUsecase := userusecase.NewUsecase(userStorage, validator)
 		userGateway = usergateway.NewGateway(userUsecase)
 	})
 
 	BeforeEach(func() {
-		ResetDB(db)
+		testing.ResetDB(db)
 	})
 
 	Describe("Login", func() {
@@ -44,15 +44,15 @@ var _ = Describe("User", func() {
 			)
 
 			BeforeEach(func() {
-				request := RequestFactory{
+				request := testing.RequestFactory{
 					Method:  "POST",
-					Path:    "/login",
+					Target:  "/login",
 					JSONObj: nil,
-					Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
-				}.Make()
+					Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
+				}.MakeFake()
 				response = httptest.NewRecorder()
 
-				c := PrepareEchoContext(request, response)
+				c := testing.PrepareEchoContext(request, response)
 				err := userGateway.Login(c)
 				Expect(err).NotTo(HaveOccurred())
 			})
@@ -62,8 +62,8 @@ var _ = Describe("User", func() {
 			})
 
 			It("returns the correct user", func() {
-				userResponse := DecodeJSON[usergateway.UserJSON](response)
-				Expect(userResponse).To(BeEquivalentTo(PrimaryUser))
+				userResponse := testing.DecodeJSON[usergateway.UserJSON](response.Body)
+				Expect(userResponse).To(BeEquivalentTo(testing.PrimaryUser))
 			})
 		})
 	})
