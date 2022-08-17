@@ -31,6 +31,9 @@ jobs:
       - name: Install Spleeter
         run: pip install --no-cache-dir spleeter==2.3.0
 
+      - name: Show spleeter path
+        run: which spleeter
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
