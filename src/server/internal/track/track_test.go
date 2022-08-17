@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/jsonlib"
-	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/gateway"
@@ -21,6 +20,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
+	"github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"net/http"
 	"net/http/httptest"
 )
@@ -30,15 +30,15 @@ var _ = Describe("Track", func() {
 		trackGateway trackgateway.Gateway
 		songGateway  songgateway.Gateway
 		publisher    rabbitmq.QueuePublisher
-		validator    TestingValidator
+		validator    testing.Validator
 
-		consumer RabbitMQConsumer
+		consumer testing.RabbitMQConsumer
 	)
 
 	BeforeEach(func() {
-		validator = TestingValidator{}
-		publisher = MakeRabbitMQPublisher(publisherConn)
-		consumer = NewRabbitMQConsumer(consumerConn)
+		validator = testing.Validator{}
+		publisher = testing.MakeRabbitMQPublisher(publisherConn)
+		consumer = testing.NewRabbitMQConsumer(consumerConn)
 
 		userStorage := userstorage.NewDB(db)
 		userUsecase := userusecase.NewUsecase(userStorage, validator)
@@ -53,8 +53,8 @@ var _ = Describe("Track", func() {
 	})
 
 	BeforeEach(func() {
-		ResetDB(db)
-		ResetRabbitMQ(publisherConn)
+		testing.ResetDB(db)
+		testing.ResetRabbitMQ(publisherConn)
 	})
 
 	BeforeEach(func() {
@@ -66,18 +66,18 @@ var _ = Describe("Track", func() {
 	})
 
 	var getTracklist = func(tracklistID string) map[string]interface{} {
-		getRequest := RequestFactory{
+		getRequest := testing.RequestFactory{
 			Method:  "GET",
-			Path:    fmt.Sprintf("/songs/%s/tracklist", tracklistID),
+			Target:  fmt.Sprintf("/songs/%s/tracklist", tracklistID),
 			JSONObj: nil,
-		}.Make()
+		}.MakeFake()
 
 		getResponse := httptest.NewRecorder()
-		c := PrepareEchoContext(getRequest, getResponse)
+		c := testing.PrepareEchoContext(getRequest, getResponse)
 		err := trackGateway.GetTrackList(c, tracklistID)
 		Expect(err).NotTo(HaveOccurred())
 
-		return DecodeJSON[map[string]interface{}](getResponse)
+		return testing.DecodeJSON[map[string]interface{}](getResponse.Body)
 	}
 
 	var getTrackSliceFromResponse = func(responseBody map[string]interface{}) []map[string]interface{} {
@@ -85,10 +85,10 @@ var _ = Describe("Track", func() {
 			return nil
 		}
 
-		tracks := ExpectType[[]interface{}](responseBody["tracks"])
+		tracks := testing.ExpectType[[]interface{}](responseBody["tracks"])
 		trackObjs := []map[string]interface{}{}
 		for _, item := range tracks {
-			track := ExpectType[map[string]interface{}](item)
+			track := testing.ExpectType[map[string]interface{}](item)
 			trackObjs = append(trackObjs, track)
 		}
 
@@ -98,22 +98,22 @@ var _ = Describe("Track", func() {
 	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
 		By("First creating a song")
 
-		request := RequestFactory{
+		request := testing.RequestFactory{
 			Method:  "POST",
-			Path:    "/songs",
+			Target:  "/songs",
 			JSONObj: songPayload,
-			Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
-		}.Make()
+			Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
+		}.MakeFake()
 		response := httptest.NewRecorder()
-		c := PrepareEchoContext(request, response)
+		c := testing.PrepareEchoContext(request, response)
 
 		err := songGateway.CreateSong(c)
 		Expect(err).NotTo(HaveOccurred())
 
 		By("Extracting the ID from the created song")
-		song := DecodeJSON[map[string]interface{}](response)
+		song := testing.DecodeJSON[map[string]interface{}](response.Body)
 
-		songID := ExpectType[string](song["id"])
+		songID := testing.ExpectType[string](song["id"])
 		Expect(songID).NotTo(BeEmpty())
 		return songID, song
 	}
@@ -141,7 +141,7 @@ var _ = Describe("Track", func() {
 			)
 
 			BeforeEach(func() {
-				createSongPayload := LoadDemoSong()
+				createSongPayload := testing.LoadDemoSong()
 				songID, _ = createSong(createSongPayload)
 
 				tracklist.Defined.SongID = songID
@@ -149,7 +149,7 @@ var _ = Describe("Track", func() {
 
 			Describe("Unpermitted requests", func() {
 				BeforeEach(func() {
-					jsonBody := ExpectSuccess(tracklist.ToMap())
+					jsonBody := testing.ExpectSuccess(tracklist.ToMap())
 
 					authtest.Endpoint = func(c echo.Context) error {
 						return trackGateway.SetTrackList(c, songID)
@@ -163,22 +163,22 @@ var _ = Describe("Track", func() {
 			Describe("Authorized", func() {
 				var (
 					response       *httptest.ResponseRecorder
-					requestFactory RequestFactory
+					requestFactory testing.RequestFactory
 				)
 
 				BeforeEach(func() {
-					requestFactory = RequestFactory{
+					requestFactory = testing.RequestFactory{
 						Method:  "POST",
-						Path:    "/songs/:id/tracklist",
+						Target:  "/songs/:id/tracklist",
 						JSONObj: nil,
 					}
 				})
 
 				var setTracklist = func() {
-					requestFactory.JSONObj = ExpectSuccess(tracklist.ToMap())
-					request := requestFactory.Make()
+					requestFactory.JSONObj = testing.ExpectSuccess(tracklist.ToMap())
+					request := requestFactory.MakeFake()
 					response = httptest.NewRecorder()
-					c := PrepareEchoContext(request, response)
+					c := testing.PrepareEchoContext(request, response)
 
 					err := trackGateway.SetTrackList(c, songID)
 					Expect(err).NotTo(HaveOccurred())
@@ -190,7 +190,7 @@ var _ = Describe("Track", func() {
 
 				Describe("For an authorized owner", func() {
 					BeforeEach(func() {
-						requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+						requestFactory.Mods.Add(testing.WithUserCred(testing.PrimaryUser))
 					})
 
 					var ItSavesSuccessfully = func() {
@@ -199,7 +199,7 @@ var _ = Describe("Track", func() {
 						})
 
 						It("returns the same tracklist that was sent", func() {
-							responseBody := DecodeJSON[map[string]interface{}](response)
+							responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
 							responseTracks := getTrackSliceFromResponse(responseBody)
 							Expect(tracklist.Defined.Tracks).To(HaveLen(len(responseTracks)))
 
@@ -211,25 +211,25 @@ var _ = Describe("Track", func() {
 								}
 
 								actualTrack := responseTracks[i]
-								expectedTrack.Defined.ID = ExpectType[string](actualTrack["id"])
+								expectedTrack.Defined.ID = testing.ExpectType[string](actualTrack["id"])
 							}
 
-							expectedTracklist := ExpectSuccess(tracklist.ToMap())
+							expectedTracklist := testing.ExpectSuccess(tracklist.ToMap())
 							Expect(responseBody).To(Equal(expectedTracklist))
 						})
 
 						It("returns tracks that all have IDs", func() {
-							responseBody := DecodeJSON[map[string]interface{}](response)
+							responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
 							tracks := getTrackSliceFromResponse(responseBody)
 
 							for _, track := range tracks {
-								trackID := ExpectType[string](track["id"])
+								trackID := testing.ExpectType[string](track["id"])
 								Expect(trackID).NotTo(BeZero())
 							}
 						})
 
 						It("persists and can be retrieved after", func() {
-							setResponseBody := DecodeJSON[map[string]interface{}](response)
+							setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
 
 							getResponseBody := getTracklist(songID)
 							Expect(getResponseBody).To(Equal(setResponseBody))
@@ -252,7 +252,7 @@ var _ = Describe("Track", func() {
 						})
 
 						It("fails with the right error code", func() {
-							resErr := DecodeJSONError(response)
+							resErr := testing.DecodeJSONError(response.Body)
 							Expect(resErr.Code).To(BeEquivalentTo(trackerrors.TrackListSizeExceeded))
 						})
 
@@ -318,10 +318,10 @@ var _ = Describe("Track", func() {
 
 							It("doesn't include the overwritten track anymore", func() {
 								updatedTrackList := getTracklist(songID)
-								updatedTracks := ExpectType[[]interface{}](updatedTrackList["tracks"])
-								updatedTrack1 := ExpectType[map[string]interface{}](updatedTracks[1])
+								updatedTracks := testing.ExpectType[[]interface{}](updatedTrackList["tracks"])
+								updatedTrack1 := testing.ExpectType[map[string]interface{}](updatedTracks[1])
 
-								originalTrack1 := ExpectSuccess(track1.ToMap())
+								originalTrack1 := testing.ExpectSuccess(track1.ToMap())
 								Expect(updatedTrack1).NotTo(Equal(originalTrack1))
 							})
 						})
@@ -345,17 +345,17 @@ var _ = Describe("Track", func() {
 							ItSavesSuccessfully()
 
 							It("queues a start job message", func() {
-								setResponseBody := DecodeJSON[map[string]interface{}](response)
+								setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
 								tracks := getTrackSliceFromResponse(setResponseBody)
 								Expect(tracks).To(HaveLen(4))
-								splitRequestID := ExpectType[string](tracks[3]["id"])
+								splitRequestID := testing.ExpectType[string](tracks[3]["id"])
 
 								expectedMessage := map[string]interface{}{
 									"tracklist_id": songID,
 									"track_id":     splitRequestID,
 								}
 
-								Eventually(consumer.Unload).Should(Equal([]ReceivedMessage{
+								Eventually(consumer.Unload).Should(Equal([]testing.ReceivedMessage{
 									{
 										Type:    "start_job",
 										Message: expectedMessage,
@@ -374,7 +374,7 @@ var _ = Describe("Track", func() {
 									Eventually(consumer.Unload).Should(HaveLen(1))
 
 									By("changing the split request job")
-									setResponseBody := DecodeJSON[map[string]interface{}](response)
+									setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
 									tracks := getTrackSliceFromResponse(setResponseBody)
 									tracks[3]["retry_times"] = 5
 									tracklist = trackentity.TrackList{}
@@ -399,24 +399,24 @@ var _ = Describe("Track", func() {
 			BeforeEach(func() {
 				tracklist.Defined.SongID = uuid.New().String()
 
-				requestFactory := RequestFactory{
+				requestFactory := testing.RequestFactory{
 					Method:  "POST",
-					Path:    "/songs/:id/tracklist",
-					JSONObj: ExpectSuccess(tracklist.ToMap()),
+					Target:  "/songs/:id/tracklist",
+					JSONObj: testing.ExpectSuccess(tracklist.ToMap()),
 				}
 
-				requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+				requestFactory.Mods.Add(testing.WithUserCred(testing.PrimaryUser))
 
-				request := requestFactory.Make()
+				request := requestFactory.MakeFake()
 				response = httptest.NewRecorder()
-				c := PrepareEchoContext(request, response)
+				c := testing.PrepareEchoContext(request, response)
 
 				err := trackGateway.SetTrackList(c, tracklist.Defined.SongID)
 				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
 			})
 
@@ -434,7 +434,7 @@ var _ = Describe("Track", func() {
 
 			BeforeEach(func() {
 				By("making a deliberately wrongly typed tracks field")
-				jsonObj := ExpectSuccess(jsonlib.StructToMap(struct {
+				jsonObj := testing.ExpectSuccess(jsonlib.StructToMap(struct {
 					SongID string   `json:"song_id"`
 					Tracks []string `json:"tracks"`
 				}{
@@ -442,24 +442,24 @@ var _ = Describe("Track", func() {
 					Tracks: []string{"track1", "track2"},
 				}))
 
-				requestFactory := RequestFactory{
+				requestFactory := testing.RequestFactory{
 					Method:  "POST",
-					Path:    "/songs/:id/tracklist",
+					Target:  "/songs/:id/tracklist",
 					JSONObj: jsonObj,
 				}
 
-				requestFactory.Mods.Add(WithUserCred(PrimaryUser))
+				requestFactory.Mods.Add(testing.WithUserCred(testing.PrimaryUser))
 
-				request := requestFactory.Make()
+				request := requestFactory.MakeFake()
 				response = httptest.NewRecorder()
-				c := PrepareEchoContext(request, response)
+				c := testing.PrepareEchoContext(request, response)
 
 				err := trackGateway.SetTrackList(c, uuid.New().String())
 				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("fails with the right error code", func() {
-				resErr := DecodeJSONError(response)
+				resErr := testing.DecodeJSONError(response.Body)
 				Expect(resErr.Code).To(BeEquivalentTo(trackerrors.BadTracklistDataCode))
 			})
 

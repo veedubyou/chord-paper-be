@@ -1,4 +1,4 @@
-package testlib
+package testing
 
 import . "github.com/onsi/gomega"
 

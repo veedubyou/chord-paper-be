@@ -1,4 +1,4 @@
-package testlib
+package testing
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
@@ -6,10 +6,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/guregu/dynamo"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/song/storage"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+)
+
+const (
+	SongsTable      = "Songs"
+	UsersTable      = "Users"
+	TrackListsTable = "TrackLists"
 )
 
 type song struct {
@@ -31,8 +34,8 @@ func MakeTestDB(testRegion string) dynamolib.DynamoDBWrapper {
 	dbSession := session.Must(session.NewSession())
 
 	config := aws.NewConfig().
-		WithCredentials(credentials.NewStaticCredentials("local", "local", "")).
-		WithEndpoint("http://localhost:8000").
+		WithCredentials(credentials.NewStaticCredentials(DynamoAccessKeyID, DynamoSecretAccessKey, "")).
+		WithEndpoint(DynamoDBHost).
 		WithRegion(testRegion)
 
 	db := dynamo.New(dbSession, config)
@@ -56,13 +59,13 @@ func AfterSuiteDB(db dynamolib.DynamoDBWrapper) {
 }
 
 func CreateAllTables(db dynamolib.DynamoDBWrapper) {
-	err := db.CreateTable(songstorage.SongsTable, song{}).Run()
+	err := db.CreateTable(SongsTable, song{}).Run()
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
-	err = db.CreateTable(userstorage.UsersTable, User{}).Run()
+	err = db.CreateTable(UsersTable, User{}).Run()
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 
-	err = db.CreateTable(trackstorage.TracklistsTable, tracklist{}).Run()
+	err = db.CreateTable(TrackListsTable, tracklist{}).Run()
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 }
 

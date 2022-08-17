@@ -1,4 +1,4 @@
-package testlib
+package testing
 
 import (
 	"encoding/json"
@@ -7,24 +7,22 @@ import (
 	"sync"
 )
 
-const testQueueName = "chord-paper-tracks-test"
-
 func MakeRabbitMQConnection() *amqp091.Connection {
-	return ExpectSuccess(amqp091.Dial("amqp://localhost:5672"))
+	return ExpectSuccess(amqp091.Dial(RabbitMQHost))
 }
 
 func ResetRabbitMQ(conn *amqp091.Connection) {
 	channel := ExpectSuccess(conn.Channel())
-	ExpectSuccess(channel.QueuePurge(testQueueName, false))
+	ExpectSuccess(channel.QueuePurge(RabbitMQQueueName, false))
 }
 
 func AfterSuiteRabbitMQ(conn *amqp091.Connection) {
 	channel := ExpectSuccess(conn.Channel())
-	ExpectSuccess(channel.QueueDelete(testQueueName, false, false, false))
+	ExpectSuccess(channel.QueueDelete(RabbitMQQueueName, false, false, false))
 }
 
 func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.QueuePublisher {
-	publisher := ExpectSuccess(rabbitmq.NewQueuePublisher(conn, testQueueName))
+	publisher := ExpectSuccess(rabbitmq.NewQueuePublisher(conn, RabbitMQQueueName))
 	return publisher
 }
 
@@ -47,7 +45,7 @@ func NewRabbitMQConsumer(conn *amqp091.Connection) RabbitMQConsumer {
 	return RabbitMQConsumer{
 		channel:          channel,
 		channelLock:      sync.Mutex{},
-		queueName:        testQueueName,
+		queueName:        RabbitMQQueueName,
 		receivedMessages: nil,
 		err:              nil,
 	}

@@ -2,7 +2,7 @@ package gateway_test
 
 import (
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
-	. "github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
+	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"go/constant"
 	"go/types"
 	"golang.org/x/tools/go/packages"

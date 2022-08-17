@@ -5,45 +5,52 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/domains"
 	"github.com/cockroachdb/errors/markers"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/errors/mark"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/errors/mark"
 	"google.golang.org/api/idtoken"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . Validator
 type Validator interface {
-	ValidateToken(ctx context.Context, requestToken string) (userentity.User, error)
+	ValidateToken(ctx context.Context, requestToken string) (User, error)
 }
+
+type User struct {
+	GoogleID string
+	Name     string
+	Email    string
+}
+
+var _ Validator = GoogleValidator{}
 
 type GoogleValidator struct {
 	ClientID string
 }
 
-func (g GoogleValidator) ValidateToken(ctx context.Context, requestToken string) (userentity.User, error) {
+func (g GoogleValidator) ValidateToken(ctx context.Context, requestToken string) (User, error) {
 	validationResult, err := idtoken.Validate(ctx, requestToken, g.ClientID)
 	if err != nil {
-		return userentity.User{}, mark.Wrap(err, NotValidatedMark, "Token could not be validated")
+		return User{}, mark.Wrap(err, NotValidatedMark, "Token could not be validated")
 	}
 
 	sub, err := getStringField(validationResult.Claims, "sub")
 	if err != nil {
-		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "sub field on claims is malformed")
+		return User{}, mark.Wrap(err, MalformedClaimsMark, "sub field on claims is malformed")
 	}
 
 	name, err := getStringField(validationResult.Claims, "name")
 	if err != nil && !markers.Is(err, keyNotFound) {
-		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "name field on claims is malformed")
+		return User{}, mark.Wrap(err, MalformedClaimsMark, "name field on claims is malformed")
 	}
 
 	email, err := getStringField(validationResult.Claims, "email")
 	if err != nil && !markers.Is(err, keyNotFound) {
-		return userentity.User{}, mark.Wrap(err, MalformedClaimsMark, "email field on claims is malformed")
+		return User{}, mark.Wrap(err, MalformedClaimsMark, "email field on claims is malformed")
 	}
 
-	return userentity.User{
-		ID:    sub,
-		Name:  name,
-		Email: email,
+	return User{
+		GoogleID: sub,
+		Name:     name,
+		Email:    email,
 	}, nil
 }
 

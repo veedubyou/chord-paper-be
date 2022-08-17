@@ -3,6 +3,7 @@ package gateway
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/veedubyou/chord-paper-be/src/server/api_error"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/errors"
@@ -24,12 +25,6 @@ var httpStatusCodeMap = map[api.ErrorCode]int{
 	trackerrors.BadTracklistDataCode:  http.StatusBadRequest,
 }
 
-type JSONAPIError struct {
-	Code         string `json:"code"`
-	Msg          string `json:"msg"`
-	ErrorDetails string `json:"error_details"`
-}
-
 func ErrorResponse(c echo.Context, err *api.Error) error {
 	statusCode, ok := httpStatusCodeMap[err.ErrorCode]
 	if !ok {
@@ -37,7 +32,7 @@ func ErrorResponse(c echo.Context, err *api.Error) error {
 		panic(msg)
 	}
 
-	return c.JSON(statusCode, JSONAPIError{
+	return c.JSON(statusCode, api_error.JSONAPIError{
 		Code:         string(err.ErrorCode),
 		Msg:          err.UserMessage,
 		ErrorDetails: err.Error(),

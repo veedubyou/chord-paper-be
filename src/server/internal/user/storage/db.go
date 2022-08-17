@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cockroachdb/errors/markers"
 	"github.com/guregu/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/errors/mark"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/errors/mark"
 )
 
 const (
@@ -27,6 +27,7 @@ func (d DB) GetUser(ctx context.Context, userID string) (userentity.User, error)
 	value := dbUser{}
 	err := d.dynamoDB.Table(UsersTable).
 		Get(idKey, userID).
+		Consistent(true).
 		OneWithContext(ctx, &value)
 
 	if err != nil {

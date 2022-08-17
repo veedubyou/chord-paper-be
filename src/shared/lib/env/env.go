@@ -1,7 +1,7 @@
 package env
 
 import (
-	"github.com/veedubyou/chord-paper-be/src/shared/values/envvar"
+	"github.com/veedubyou/chord-paper-be/src/shared/config/envvar"
 )
 
 type Environment string

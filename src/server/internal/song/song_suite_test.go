@@ -1,8 +1,8 @@
 package song_test
 
 import (
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
+	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+	testing2 "github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -19,10 +19,10 @@ func TestSong(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	testlib.SetTestEnv()
-	db = testlib.BeforeSuiteDB("song_integration_test")
+	testing2.SetTestEnv()
+	db = testing2.BeforeSuiteDB("song_integration_test")
 })
 
 var _ = AfterSuite(func() {
-	testlib.AfterSuiteDB(db)
+	testing2.AfterSuiteDB(db)
 })

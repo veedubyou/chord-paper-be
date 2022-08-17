@@ -2,8 +2,8 @@ package track_test
 
 import (
 	"github.com/rabbitmq/amqp091-go"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/testing"
+	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -22,13 +22,13 @@ func TestTrack(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	testlib.SetTestEnv()
-	db = testlib.BeforeSuiteDB("track_integration_test")
-	publisherConn = testlib.MakeRabbitMQConnection()
-	consumerConn = testlib.MakeRabbitMQConnection()
+	SetTestEnv()
+	db = BeforeSuiteDB("track_integration_test")
+	publisherConn = MakeRabbitMQConnection()
+	consumerConn = MakeRabbitMQConnection()
 })
 
 var _ = AfterSuite(func() {
-	testlib.AfterSuiteDB(db)
-	testlib.AfterSuiteRabbitMQ(publisherConn)
+	AfterSuiteDB(db)
+	AfterSuiteRabbitMQ(publisherConn)
 })

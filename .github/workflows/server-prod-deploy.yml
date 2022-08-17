@@ -13,9 +13,13 @@ jobs:
     name: Server Gates
     uses: ./.github/workflows/server-build-and-test.yml
 
+  split-track-test:
+    name: Split Track Integration Test
+    uses: ./.github/workflows/split-track-test.yml
+
   deploy:
     name: Build Image and Deploy
-    needs: server-build-and-test
+    needs: [server-build-and-test, split-track-test]
     runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)

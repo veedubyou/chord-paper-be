@@ -12,3 +12,7 @@ jobs:
   worker-build-and-test:
     name: Worker Gates
     uses: ./.github/workflows/worker-build-and-test.yml
+
+  split-track-test:
+    name: Split Track Integration Test
+    uses: ./.github/workflows/split-track-test.yml

@@ -3,8 +3,8 @@ package songstorage
 import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/guregu/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/dynamo"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/errors/mark"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/errors/mark"
 )
 
 const (
