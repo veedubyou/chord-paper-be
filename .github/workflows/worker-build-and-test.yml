@@ -1,4 +1,4 @@
-name: Server Build/Test
+name: Worker Build/Test
 
 on:
   workflow_call:
@@ -17,8 +17,8 @@ jobs:
           cache: true
 
       - name: Build
-        working-directory: ./src/server
-        run: go build -v server.go
+        working-directory: ./src/worker
+        run: go build -v worker.go
 
   test:
     name: Test
@@ -45,6 +45,6 @@ jobs:
           cache: true
 
       - name: Test
-        working-directory: ./src/server
+        working-directory: ./src/worker
         run: go test -v ./...
         

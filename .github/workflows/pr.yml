@@ -1,0 +1,18 @@
+name: PR Gate
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  server-build-and-test:
+    name: Server Gates
+    uses: ./.github/workflows/server-build-and-test.yml
+
+  worker-build-and-test:
+    name: Worker Gates
+    uses: ./.github/workflows/worker-build-and-test.yml
+
+  split-track-test:
+    name: Split Track Integration Test
+    uses: ./.github/workflows/split-track-test.yml
