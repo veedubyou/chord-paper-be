@@ -96,19 +96,21 @@ var _ = Describe("Track", func() {
 	}
 
 	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
-		By("First creating a song")
-
-		request := testing.RequestFactory{
-			Method:  "POST",
-			Target:  "/songs",
-			JSONObj: songPayload,
-			Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
-		}.MakeFake()
 		response := httptest.NewRecorder()
-		c := testing.PrepareEchoContext(request, response)
 
-		err := songGateway.CreateSong(c)
-		Expect(err).NotTo(HaveOccurred())
+		By("First creating a song", func() {
+			request := testing.RequestFactory{
+				Method:  "POST",
+				Target:  "/songs",
+				JSONObj: songPayload,
+				Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
+			}.MakeFake()
+
+			c := testing.PrepareEchoContext(request, response)
+
+			err := songGateway.CreateSong(c)
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		By("Extracting the ID from the created song")
 		song := testing.DecodeJSON[map[string]interface{}](response.Body)
@@ -203,16 +205,17 @@ var _ = Describe("Track", func() {
 							responseTracks := getTrackSliceFromResponse(responseBody)
 							Expect(tracklist.Defined.Tracks).To(HaveLen(len(responseTracks)))
 
-							By("copying over the new IDs")
-							for i := range tracklist.Defined.Tracks {
-								expectedTrack := &tracklist.Defined.Tracks[i]
-								if expectedTrack.Defined.ID != "" {
-									continue
-								}
+							By("copying over the new IDs", func() {
+								for i := range tracklist.Defined.Tracks {
+									expectedTrack := &tracklist.Defined.Tracks[i]
+									if expectedTrack.Defined.ID != "" {
+										continue
+									}
 
-								actualTrack := responseTracks[i]
-								expectedTrack.Defined.ID = testing.ExpectType[string](actualTrack["id"])
-							}
+									actualTrack := responseTracks[i]
+									expectedTrack.Defined.ID = testing.ExpectType[string](actualTrack["id"])
+								}
+							})
 
 							expectedTracklist := testing.ExpectSuccess(tracklist.ToMap())
 							Expect(responseBody).To(Equal(expectedTracklist))
@@ -301,16 +304,17 @@ var _ = Describe("Track", func() {
 							)
 
 							BeforeEach(func() {
-								By("Setting the tracklist the first time")
-								setTracklist()
+								By("Setting the tracklist the first time", func() {
+									setTracklist()
 
-								newTrack = trackentity.Track{}
-								newTrack.Defined.TrackType = "new-type"
-								newTrack.Extra = map[string]interface{}{
-									"amuro": "ray.mp4",
-								}
+									newTrack = trackentity.Track{}
+									newTrack.Defined.TrackType = "new-type"
+									newTrack.Extra = map[string]interface{}{
+										"amuro": "ray.mp4",
+									}
 
-								tracklist.Defined.Tracks[1] = newTrack
+									tracklist.Defined.Tracks[1] = newTrack
+								})
 							})
 
 							ItSavesSuccessfully()
@@ -367,19 +371,22 @@ var _ = Describe("Track", func() {
 
 							Describe("Updating a second time with an existing split request", func() {
 								BeforeEach(func() {
-									By("first setting the tracklist")
-									setTracklist()
+									By("first setting the tracklist", func() {
+										setTracklist()
+									})
 
-									By("unloading any existing job messages")
-									Eventually(consumer.Unload).Should(HaveLen(1))
+									By("unloading any existing job messages", func() {
+										Eventually(consumer.Unload).Should(HaveLen(1))
+									})
 
-									By("changing the split request job")
-									setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
-									tracks := getTrackSliceFromResponse(setResponseBody)
-									tracks[3]["retry_times"] = 5
-									tracklist = trackentity.TrackList{}
-									err := tracklist.FromMap(setResponseBody)
-									Expect(err).NotTo(HaveOccurred())
+									By("changing the split request job", func() {
+										setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+										tracks := getTrackSliceFromResponse(setResponseBody)
+										tracks[3]["retry_times"] = 5
+										tracklist = trackentity.TrackList{}
+										err := tracklist.FromMap(setResponseBody)
+										Expect(err).NotTo(HaveOccurred())
+									})
 								})
 
 								ItSavesSuccessfully()

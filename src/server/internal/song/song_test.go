@@ -53,23 +53,25 @@ var _ = Describe("Song", func() {
 	}
 
 	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
-		By("First creating a song")
-
-		request := testing.RequestFactory{
-			Method:  "POST",
-			Target:  "/songs",
-			JSONObj: songPayload,
-			Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
-		}.MakeFake()
 		response := httptest.NewRecorder()
-		c := testing.PrepareEchoContext(request, response)
 
-		err := songGateway.CreateSong(c)
-		Expect(err).NotTo(HaveOccurred())
+		By("First creating a song", func() {
+			request := testing.RequestFactory{
+				Method:  "POST",
+				Target:  "/songs",
+				JSONObj: songPayload,
+				Mods:    testing.RequestModifiers{testing.WithUserCred(testing.PrimaryUser)},
+			}.MakeFake()
+
+			c := testing.PrepareEchoContext(request, response)
+
+			err := songGateway.CreateSong(c)
+			Expect(err).NotTo(HaveOccurred())
+		})
 
 		By("Extracting the ID from the created song")
-		song := testing.DecodeJSON[map[string]interface{}](response.Body)
 
+		song := testing.DecodeJSON[map[string]interface{}](response.Body)
 		songID := testing.ExpectType[string](song["id"])
 		Expect(songID).NotTo(BeEmpty())
 		return songID, song
@@ -715,21 +717,25 @@ var _ = Describe("Song", func() {
 				})
 
 				It("removes the song and can't be retrieved after", func() {
-					By("Making a request to Get Song")
-					getRequest := testing.RequestFactory{
-						Method:  "GET",
-						Target:  fmt.Sprintf("/songs/%s", songID),
-						JSONObj: nil,
-					}.MakeFake()
 					getResponse := httptest.NewRecorder()
-					c := testing.PrepareEchoContext(getRequest, getResponse)
-					err := songGateway.GetSong(c, songID)
-					Expect(err).NotTo(HaveOccurred())
 
-					By("Inspecting the error from Get Song")
-					Expect(getResponse.Code).To(Equal(http.StatusNotFound))
-					getResponseError := testing.DecodeJSON[api_error.JSONAPIError](getResponse.Body)
-					Expect(getResponseError.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+					By("Making a request to Get Song", func() {
+						getRequest := testing.RequestFactory{
+							Method:  "GET",
+							Target:  fmt.Sprintf("/songs/%s", songID),
+							JSONObj: nil,
+						}.MakeFake()
+
+						c := testing.PrepareEchoContext(getRequest, getResponse)
+						err := songGateway.GetSong(c, songID)
+						Expect(err).NotTo(HaveOccurred())
+					})
+
+					By("Inspecting the error from Get Song", func() {
+						Expect(getResponse.Code).To(Equal(http.StatusNotFound))
+						getResponseError := testing.DecodeJSON[api_error.JSONAPIError](getResponse.Body)
+						Expect(getResponseError.Code).To(BeEquivalentTo(songerrors.SongNotFoundCode))
+					})
 				})
 			})
 		})

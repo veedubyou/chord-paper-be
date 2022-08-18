@@ -91,38 +91,40 @@ var _ = Describe("TrackSplit", func() {
 		songFileName := "original.mp3"
 		textFileName := "text.mp3"
 
-		By("Initializing Fake Cloud Storage Server")
-		cloudStorage = ExpectSuccess(fakestorage.NewServerWithOptions(fakestorage.Options{
-			Scheme:     "http",
-			PublicHost: "localhost:4443",
-			Host:       "localhost",
-			Port:       4443,
-			InitialObjects: []fakestorage.Object{
-				{
-					ObjectAttrs: fakestorage.ObjectAttrs{
-						BucketName: userBucket,
-						Name:       songFileName,
+		By("Initializing Fake Cloud Storage Server", func() {
+			cloudStorage = ExpectSuccess(fakestorage.NewServerWithOptions(fakestorage.Options{
+				Scheme:     "http",
+				PublicHost: "localhost:4443",
+				Host:       "localhost",
+				Port:       4443,
+				InitialObjects: []fakestorage.Object{
+					{
+						ObjectAttrs: fakestorage.ObjectAttrs{
+							BucketName: userBucket,
+							Name:       songFileName,
+						},
+						Content: ExpectSuccess(originalSongMP3.ReadFile("original_song.mp3")),
 					},
-					Content: ExpectSuccess(originalSongMP3.ReadFile("original_song.mp3")),
-				},
-				{
-					ObjectAttrs: fakestorage.ObjectAttrs{
-						BucketName: userBucket,
-						Name:       textFileName,
+					{
+						ObjectAttrs: fakestorage.ObjectAttrs{
+							BucketName: userBucket,
+							Name:       textFileName,
+						},
+						Content: []byte("some stuff in here"),
 					},
-					Content: []byte("some stuff in here"),
 				},
-			},
-		}))
+			}))
 
-		cloudStorage.CreateBucket(bucketName)
+			cloudStorage.CreateBucket(bucketName)
+		})
 
-		By("Checking that the original song is in the bucket")
-		originalSongURL = GetFileURL(userBucket, songFileName)
-		ExpectFileExists(originalSongURL)
+		By("Checking that the original song is in the bucket", func() {
+			originalSongURL = GetFileURL(userBucket, songFileName)
+			ExpectFileExists(originalSongURL)
 
-		notSongURL = GetFileURL(userBucket, textFileName)
-		ExpectFileExists(notSongURL)
+			notSongURL = GetFileURL(userBucket, textFileName)
+			ExpectFileExists(notSongURL)
+		})
 	})
 
 	AfterEach(func() {
@@ -130,21 +132,22 @@ var _ = Describe("TrackSplit", func() {
 	})
 
 	BeforeEach(func() {
-		By("Initializing Worker")
-		worker = worker_app.NewApp(
-			WorkerConfig(region, config.LocalCloudStorage{
-				StorageHost:  cloudStorage.PublicURL(),
-				HostEndpoint: fmt.Sprintf("%s/storage/v1", cloudStorage.PublicURL()),
-				BucketName:   bucketName,
-			}),
-		)
+		By("Initializing Worker", func() {
+			worker = worker_app.NewApp(
+				WorkerConfig(region, config.LocalCloudStorage{
+					StorageHost:  cloudStorage.PublicURL(),
+					HostEndpoint: fmt.Sprintf("%s/storage/v1", cloudStorage.PublicURL()),
+					BucketName:   bucketName,
+				}),
+			)
 
-		go func() {
-			defer GinkgoRecover()
+			go func() {
+				defer GinkgoRecover()
 
-			err := worker.Start()
-			Expect(err).NotTo(HaveOccurred())
-		}()
+				err := worker.Start()
+				Expect(err).NotTo(HaveOccurred())
+			}()
+		})
 	})
 
 	AfterEach(func() {
@@ -152,17 +155,18 @@ var _ = Describe("TrackSplit", func() {
 	})
 
 	BeforeEach(func() {
-		By("Initializing Server")
-		server = server_app.NewApp(ServerConfig(region))
+		By("Initializing Server", func() {
+			server = server_app.NewApp(ServerConfig(region))
 
-		go func() {
-			defer GinkgoRecover()
+			go func() {
+				defer GinkgoRecover()
 
-			err := server.Start()
-			Expect(err).NotTo(HaveOccurred())
-		}()
+				err := server.Start()
+				Expect(err).NotTo(HaveOccurred())
+			}()
 
-		Eventually(ServerHealthCheck).Should(Equal(http.StatusOK))
+			Eventually(ServerHealthCheck).Should(Equal(http.StatusOK))
+		})
 	})
 
 	AfterEach(func() {
@@ -194,20 +198,21 @@ var _ = Describe("TrackSplit", func() {
 		}
 
 		BeforeEach(func() {
-			By("first creating a song")
-			demoSong := LoadDemoSong()
+			By("first creating a song", func() {
+				demoSong := LoadDemoSong()
 
-			response := ExpectSuccess(RequestFactory{
-				Method:  "POST",
-				Target:  ServerEndpoint("/songs"),
-				JSONObj: demoSong,
-				Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
-			}.Do())
+				response := ExpectSuccess(RequestFactory{
+					Method:  "POST",
+					Target:  ServerEndpoint("/songs"),
+					JSONObj: demoSong,
+					Mods:    RequestModifiers{WithUserCred(PrimaryUser)},
+				}.Do())
 
-			Expect(response.StatusCode).To(Equal(http.StatusOK))
-			song := DecodeJSON[map[string]interface{}](response.Body)
-			songID = ExpectType[string](song["id"])
-			Expect(songID).NotTo(BeEmpty())
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+				song := DecodeJSON[map[string]interface{}](response.Body)
+				songID = ExpectType[string](song["id"])
+				Expect(songID).NotTo(BeEmpty())
+			})
 		})
 
 		for requestType, expected := range stemTests {
@@ -216,19 +221,20 @@ var _ = Describe("TrackSplit", func() {
 
 			Describe(fmt.Sprintf("A valid split request for %s tyoe", requestType), func() {
 				BeforeEach(func() {
-					By("Putting a tracklist with a split request")
-					splitTracklist := map[string]interface{}{
-						"song_id": songID,
-						"tracks": []map[string]interface{}{
-							{
-								"id":           "",
-								"track_type":   requestType,
-								"label":        "test split",
-								"original_url": originalSongURL,
+					By("Putting a tracklist with a split request", func() {
+						splitTracklist := map[string]interface{}{
+							"song_id": songID,
+							"tracks": []map[string]interface{}{
+								{
+									"id":           "",
+									"track_type":   requestType,
+									"label":        "test split",
+									"original_url": originalSongURL,
+								},
 							},
-						},
-					}
-					PutTrackList(songID, splitTracklist)
+						}
+						PutTrackList(songID, splitTracklist)
+					})
 				})
 
 				It("splits the track", func() {
@@ -247,39 +253,45 @@ var _ = Describe("TrackSplit", func() {
 						return ExpectType[string](firstTrack["track_type"])
 					}
 
-					By("detecting that the track type is changed")
-					Eventually(GetFirstTrackType, time.Minute).Should(Equal(expected.CompletedType))
+					By("detecting that the track type is changed", func() {
+						Eventually(GetFirstTrackType, time.Minute).Should(Equal(expected.CompletedType))
+					})
 
-					By("checking the amount of stems")
 					tracklist := GetTrackList(songID)
 					firstTrack := GetFirstTrack(tracklist)
 					stemUrls := ExpectType[map[string]interface{}](firstTrack["stem_urls"])
-					Expect(stemUrls).To(HaveLen(expected.NumberOfStems))
 
-					By("verifying each stem URL points to a file")
-					for _, urlIface := range stemUrls {
-						url := ExpectType[string](urlIface)
-						ExpectFileExists(url)
-					}
+					By("checking the amount of stems", func() {
+						Expect(stemUrls).To(HaveLen(expected.NumberOfStems))
+					})
+
+					By("verifying each stem URL points to a file", func() {
+						for _, urlIface := range stemUrls {
+							url := ExpectType[string](urlIface)
+							ExpectFileExists(url)
+						}
+					})
+
 				})
 			})
 
 			Describe(fmt.Sprintf("An absent original URL split request for %s tyoe", requestType), func() {
 				BeforeEach(func() {
-					By("Putting a tracklist with a split request")
-					splitTracklist := map[string]interface{}{
-						"song_id": songID,
-						"tracks": []map[string]interface{}{
-							{
-								"id":           "",
-								"track_type":   requestType,
-								"label":        "test split",
-								"original_url": GetFileURL(bucketName, "no.mp3"),
+					By("Putting a tracklist with a split request", func() {
+						splitTracklist := map[string]interface{}{
+							"song_id": songID,
+							"tracks": []map[string]interface{}{
+								{
+									"id":           "",
+									"track_type":   requestType,
+									"label":        "test split",
+									"original_url": GetFileURL(bucketName, "no.mp3"),
+								},
 							},
-						},
-					}
+						}
 
-					PutTrackList(songID, splitTracklist)
+						PutTrackList(songID, splitTracklist)
+					})
 				})
 
 				It("sets an error", func() {
@@ -296,20 +308,21 @@ var _ = Describe("TrackSplit", func() {
 
 			Describe(fmt.Sprintf("A not mp3 file for split request for %s tyoe", requestType), func() {
 				BeforeEach(func() {
-					By("Putting a tracklist with a split request")
-					splitTracklist := map[string]interface{}{
-						"song_id": songID,
-						"tracks": []map[string]interface{}{
-							{
-								"id":           "",
-								"track_type":   requestType,
-								"label":        "test split",
-								"original_url": notSongURL,
+					By("Putting a tracklist with a split request", func() {
+						splitTracklist := map[string]interface{}{
+							"song_id": songID,
+							"tracks": []map[string]interface{}{
+								{
+									"id":           "",
+									"track_type":   requestType,
+									"label":        "test split",
+									"original_url": notSongURL,
+								},
 							},
-						},
-					}
+						}
 
-					PutTrackList(songID, splitTracklist)
+						PutTrackList(songID, splitTracklist)
+					})
 				})
 
 				It("sets an error", func() {
