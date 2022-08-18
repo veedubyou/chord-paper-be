@@ -44,7 +44,7 @@ spec:
             secretKeyRef:
               name: rabbitmq
               key: rabbitmq_url
-        - name: RABBITMQ_QUEUE
+        - name: RABBITMQ_QUEUE_NAME
           valueFrom:
             secretKeyRef:
               name: rabbitmq
