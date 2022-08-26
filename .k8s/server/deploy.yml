@@ -21,35 +21,25 @@ spec:
       containers:
       - name: chord-be
         image: pw1124/chord-be:${LATEST_IMAGE}
-        env:
-        - name: ENVIRONMENT
-          value: "production"
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: aws-dynamodb
-              key: access_key_id
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: aws-dynamodb
-              key: secret_access_key
-        - name: ALLOWED_FE_ORIGINS
-          valueFrom:
-            secretKeyRef:
-              name: cors-origin
-              key: url
-        - name: RABBITMQ_URL
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: rabbitmq_url
-        - name: RABBITMQ_QUEUE_NAME
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: rabbitmq_queue
+        envFrom:
+        - configMapRef:
+            name: chord-be-common-cm
+        - configMapRef:
+            name: chord-be-cm
+        - secretRef:
+            name: chord-be-common-secrets
+        - secretRef:
+            name: chord-be-secrets
         ports:
         - containerPort: 5000
       imagePullSecrets:
       - name: regcred
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chord-be-cm
+data:
+  # currently nothing here yet
