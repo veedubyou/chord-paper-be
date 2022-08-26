@@ -13,4 +13,5 @@ local.envrc
 *.dylib
 *.out
 *.test
-
+# ignore nano swap files
+*.swp

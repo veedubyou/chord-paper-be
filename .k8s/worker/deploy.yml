@@ -18,48 +18,22 @@ spec:
     spec:
       containers:
       - name: chord-be-workers
-        image: pw1124/chord-be-workers:latest
-        env:
-        - name: ENVIRONMENT
-          value: production
-        - name: SPLEETER_BIN_PATH
-          value: /usr/local/bin/spleeter
-        - name: SPLEETER_WORKING_DIR_PATH
-          value: /spleeter-scratch
-        - name: YOUTUBEDL_BIN_PATH
-          value: /shared/youtube-dl
-        - name: YOUTUBEDL_WORKING_DIR_PATH
-          value: /youtubedl-scratch
-        - name: GOOGLE_CLOUD_STORAGE_BUCKET_NAME
-          value: chord-paper-tracks
-        - name: RABBITMQ_QUEUE_NAME
-          value: chord-paper-tracks
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: aws-dynamodb
-              key: access_key_id
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: aws-dynamodb
-              key: secret_access_key
-        - name: RABBITMQ_URL
-          valueFrom:
-            secretKeyRef:
-              name: rabbitmq
-              key: rabbitmq_url
-        - name: GOOGLE_CLOUD_KEY
-          valueFrom:
-            secretKeyRef:
-              name: google-cloud-key
-              key: key
+        image: pw1124/chord-be-workers:${LATEST_WORKERS_IMAGE}
+        envFrom:
+        - configMapRef:
+            name: chord-be-common-cm
+        - configMapRef:
+            name: chord-be-workers-cm
+        - secretRef:
+            name: chord-be-common-secrets
+        - secretRef:
+            name: chord-be-workers-secrets
         volumeMounts:
         - mountPath: /shared
           name: cache-volume
       initContainers:
       - name: youtube-dl-bin
-        image: pw1124/youtube-dl-bin:latest
+        image: pw1124/youtube-dl-bin:${LATEST_YOUTUBE_IMAGE}
        # tty: true
         volumeMounts:
         - mountPath: /youtube-dl
@@ -81,3 +55,17 @@ spec:
 #
 # you can then inspect it by: `kubectl get secret regcred \
 #                                --output="jsonpath={.data.\.dockerconfigjson}" | base64 –decode
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chord-be-workers-cm
+data:
+  SPLEETER_BIN_PATH: /usr/local/bin/spleeter
+  SPLEETER_WORKING_DIR_PATH: /spleeter-scratch
+  YOUTUBEDL_BIN_PATH: /shared/youtube-dl
+  YOUTUBEDL_WORKING_DIR_PATH: /youtubedl-scratch
+  GOOGLE_CLOUD_STORAGE_BUCKET_NAME: chord-paper-tracks
+  RABBITMQ_QUEUE_NAME: chord-paper-tracks
