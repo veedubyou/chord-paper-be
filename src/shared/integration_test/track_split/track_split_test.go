@@ -53,7 +53,7 @@ var _ = Describe("TrackSplit", func() {
 		Expect(bodyBytes).NotTo(BeEmpty())
 	}
 
-	GetTrackList := func(songID string) map[string]interface{} {
+	GetTrackList := func(songID string) map[string]any {
 		factory := RequestFactory{
 			Method: "GET",
 			Target: ServerEndpoint(fmt.Sprintf("/songs/%s/tracklist", songID)),
@@ -61,16 +61,16 @@ var _ = Describe("TrackSplit", func() {
 
 		response := ExpectSuccess(factory.Do())
 		Expect(response.StatusCode).To(Equal(http.StatusOK))
-		return DecodeJSON[map[string]interface{}](response.Body)
+		return DecodeJSON[map[string]any](response.Body)
 	}
 
-	GetFirstTrack := func(tracklist map[string]interface{}) map[string]interface{} {
-		tracks := ExpectType[[]interface{}](tracklist["tracks"])
+	GetFirstTrack := func(tracklist map[string]any) map[string]any {
+		tracks := ExpectType[[]any](tracklist["tracks"])
 		Expect(tracks).NotTo(BeEmpty())
-		return ExpectType[map[string]interface{}](tracks[0])
+		return ExpectType[map[string]any](tracks[0])
 	}
 
-	PutTrackList := func(songID string, tracklist map[string]interface{}) {
+	PutTrackList := func(songID string, tracklist map[string]any) {
 		putTracklistResponse := ExpectSuccess(RequestFactory{
 			Method:  "PUT",
 			Target:  ServerEndpoint(fmt.Sprintf("/songs/%s/tracklist", songID)),
@@ -209,7 +209,7 @@ var _ = Describe("TrackSplit", func() {
 				}.Do())
 
 				Expect(response.StatusCode).To(Equal(http.StatusOK))
-				song := DecodeJSON[map[string]interface{}](response.Body)
+				song := DecodeJSON[map[string]any](response.Body)
 				songID = ExpectType[string](song["id"])
 				Expect(songID).NotTo(BeEmpty())
 			})
@@ -222,9 +222,9 @@ var _ = Describe("TrackSplit", func() {
 			Describe(fmt.Sprintf("A valid split request for %s tyoe", requestType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
-						splitTracklist := map[string]interface{}{
+						splitTracklist := map[string]any{
 							"song_id": songID,
-							"tracks": []map[string]interface{}{
+							"tracks": []map[string]any{
 								{
 									"id":           "",
 									"track_type":   requestType,
@@ -259,7 +259,7 @@ var _ = Describe("TrackSplit", func() {
 
 					tracklist := GetTrackList(songID)
 					firstTrack := GetFirstTrack(tracklist)
-					stemUrls := ExpectType[map[string]interface{}](firstTrack["stem_urls"])
+					stemUrls := ExpectType[map[string]any](firstTrack["stem_urls"])
 
 					By("checking the amount of stems", func() {
 						Expect(stemUrls).To(HaveLen(expected.NumberOfStems))
@@ -275,12 +275,12 @@ var _ = Describe("TrackSplit", func() {
 				})
 			})
 
-			Describe(fmt.Sprintf("An absent original URL split request for %s tyoe", requestType), func() {
+			Describe(fmt.Sprintf("An absent original URL split request for %s type", requestType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
-						splitTracklist := map[string]interface{}{
+						splitTracklist := map[string]any{
 							"song_id": songID,
-							"tracks": []map[string]interface{}{
+							"tracks": []map[string]any{
 								{
 									"id":           "",
 									"track_type":   requestType,
@@ -295,7 +295,7 @@ var _ = Describe("TrackSplit", func() {
 				})
 
 				It("sets an error", func() {
-					GetFirstTrackStatus := func() interface{} {
+					GetFirstTrackStatus := func() any {
 						tracklist := GetTrackList(songID)
 						firstTrack := GetFirstTrack(tracklist)
 
@@ -309,9 +309,9 @@ var _ = Describe("TrackSplit", func() {
 			Describe(fmt.Sprintf("A not mp3 file for split request for %s tyoe", requestType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
-						splitTracklist := map[string]interface{}{
+						splitTracklist := map[string]any{
 							"song_id": songID,
-							"tracks": []map[string]interface{}{
+							"tracks": []map[string]any{
 								{
 									"id":           "",
 									"track_type":   requestType,
@@ -326,7 +326,7 @@ var _ = Describe("TrackSplit", func() {
 				})
 
 				It("sets an error", func() {
-					GetFirstTrackStatus := func() interface{} {
+					GetFirstTrackStatus := func() any {
 						tracklist := GetTrackList(songID)
 						firstTrack := GetFirstTrack(tracklist)
 

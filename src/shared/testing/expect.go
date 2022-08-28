@@ -7,7 +7,7 @@ func ExpectSuccess[T any](t T, err error) T {
 	return t
 }
 
-func ExpectType[T any](thing interface{}) T {
+func ExpectType[T any](thing any) T {
 	ExpectWithOffset(1, thing).NotTo(BeNil())
 	realThing, ok := thing.(T)
 	ExpectWithOffset(1, ok).To(BeTrue())

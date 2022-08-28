@@ -17,6 +17,12 @@ const (
 )
 
 func TestTrackSplit(t *testing.T) {
+	// this test takes a lot of setup in the CI
+	// so this env var helps toggle it so that these test runs can be separated
+	if _, isSet := os.LookupEnv("SKIP_SPLIT_TRACK_TEST"); isSet {
+		t.Skip("Skipping split track integration test")
+	}
+
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "TrackSplit Suite")
 }

@@ -6,21 +6,21 @@ import (
 	"github.com/labstack/echo/v4"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/jsonlib"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/usecase"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/gateway"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/usecase"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
+	"github.com/veedubyou/chord-paper-be/src/shared/lib/jsonlib"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
 	"github.com/veedubyou/chord-paper-be/src/shared/testing"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/entity"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/storage"
 	"net/http"
 	"net/http/httptest"
 )
@@ -65,7 +65,7 @@ var _ = Describe("Track", func() {
 		consumer.Stop()
 	})
 
-	var getTracklist = func(tracklistID string) map[string]interface{} {
+	var getTracklist = func(tracklistID string) map[string]any {
 		getRequest := testing.RequestFactory{
 			Method:  "GET",
 			Target:  fmt.Sprintf("/songs/%s/tracklist", tracklistID),
@@ -77,25 +77,25 @@ var _ = Describe("Track", func() {
 		err := trackGateway.GetTrackList(c, tracklistID)
 		Expect(err).NotTo(HaveOccurred())
 
-		return testing.DecodeJSON[map[string]interface{}](getResponse.Body)
+		return testing.DecodeJSON[map[string]any](getResponse.Body)
 	}
 
-	var getTrackSliceFromResponse = func(responseBody map[string]interface{}) []map[string]interface{} {
+	var getTrackSliceFromResponse = func(responseBody map[string]any) []map[string]any {
 		if responseBody["tracks"] == nil {
 			return nil
 		}
 
-		tracks := testing.ExpectType[[]interface{}](responseBody["tracks"])
-		trackObjs := []map[string]interface{}{}
+		tracks := testing.ExpectType[[]any](responseBody["tracks"])
+		trackObjs := []map[string]any{}
 		for _, item := range tracks {
-			track := testing.ExpectType[map[string]interface{}](item)
+			track := testing.ExpectType[map[string]any](item)
 			trackObjs = append(trackObjs, track)
 		}
 
 		return trackObjs
 	}
 
-	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
+	var createSong = func(songPayload map[string]any) (string, map[string]any) {
 		response := httptest.NewRecorder()
 
 		By("First creating a song", func() {
@@ -113,7 +113,7 @@ var _ = Describe("Track", func() {
 		})
 
 		By("Extracting the ID from the created song")
-		song := testing.DecodeJSON[map[string]interface{}](response.Body)
+		song := testing.DecodeJSON[map[string]any](response.Body)
 
 		songID := testing.ExpectType[string](song["id"])
 		Expect(songID).NotTo(BeEmpty())
@@ -201,19 +201,29 @@ var _ = Describe("Track", func() {
 						})
 
 						It("returns the same tracklist that was sent", func() {
-							responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+							responseBody := testing.DecodeJSON[map[string]any](response.Body)
 							responseTracks := getTrackSliceFromResponse(responseBody)
 							Expect(tracklist.Defined.Tracks).To(HaveLen(len(responseTracks)))
 
 							By("copying over the new IDs", func() {
-								for i := range tracklist.Defined.Tracks {
-									expectedTrack := &tracklist.Defined.Tracks[i]
-									if expectedTrack.Defined.ID != "" {
+								for i, expectedTrack := range tracklist.Defined.Tracks {
+									if expectedTrack.GetID() != "" {
 										continue
 									}
 
 									actualTrack := responseTracks[i]
-									expectedTrack.Defined.ID = testing.ExpectType[string](actualTrack["id"])
+									actualTrackID := testing.ExpectType[string](actualTrack["id"])
+
+									switch t := expectedTrack.(type) {
+									case *trackentity.GenericTrack:
+										t.Defined.ID = actualTrackID
+									case *trackentity.SplitRequestTrack:
+										t.ID = actualTrackID
+									case *trackentity.StemTrack:
+										t.ID = actualTrackID
+									default:
+										panic("Unrecognized track type")
+									}
 								}
 							})
 
@@ -222,7 +232,7 @@ var _ = Describe("Track", func() {
 						})
 
 						It("returns tracks that all have IDs", func() {
-							responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+							responseBody := testing.DecodeJSON[map[string]any](response.Body)
 							tracks := getTrackSliceFromResponse(responseBody)
 
 							for _, track := range tracks {
@@ -232,7 +242,7 @@ var _ = Describe("Track", func() {
 						})
 
 						It("persists and can be retrieved after", func() {
-							setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+							setResponseBody := testing.DecodeJSON[map[string]any](response.Body)
 
 							getResponseBody := getTracklist(songID)
 							Expect(getResponseBody).To(Equal(setResponseBody))
@@ -246,11 +256,11 @@ var _ = Describe("Track", func() {
 
 					Describe("Too many tracks in the tracklist", func() {
 						BeforeEach(func() {
-							track := trackentity.Track{}
-							track.Defined.TrackType = "4stems"
+							track := trackentity.StemTrack{}
+							track.TrackType = "4stems"
 
 							for i := 0; i < 11; i++ {
-								tracklist.Defined.Tracks = append(tracklist.Defined.Tracks, track)
+								tracklist.Defined.Tracks = append(tracklist.Defined.Tracks, &track)
 							}
 						})
 
@@ -268,30 +278,29 @@ var _ = Describe("Track", func() {
 
 					Describe("A tracklist with tracks", func() {
 						var (
-							track0 trackentity.Track
-							track1 trackentity.Track
-							track2 trackentity.Track
+							track0 trackentity.StemTrack
+							track1 trackentity.GenericTrack
+							track2 trackentity.GenericTrack
 						)
 
 						BeforeEach(func() {
-							track0 = trackentity.Track{}
-							track0.Defined.TrackType = "4stems"
-							track0.Extra = map[string]interface{}{}
+							track0 = trackentity.StemTrack{}
+							track0.TrackType = "4stems"
 
-							track1 = trackentity.Track{}
+							track1 = trackentity.GenericTrack{}
 							track1.Defined.TrackType = "accompaniment"
-							track1.Extra = map[string]interface{}{
+							track1.Extra = map[string]any{
 								"accompaniment_url": "accompaniment.mp3",
 							}
 
-							track2 = trackentity.Track{}
+							track2 = trackentity.GenericTrack{}
 							track2.Defined.TrackType = "original"
-							track2.Extra = map[string]interface{}{
+							track2.Extra = map[string]any{
 								"url": "song.mp3",
 							}
 
 							tracklist.Defined.Tracks = []trackentity.Track{
-								track0, track1, track2,
+								&track0, &track1, &track2,
 							}
 						})
 
@@ -300,20 +309,20 @@ var _ = Describe("Track", func() {
 
 						Describe("Updating a second time", func() {
 							var (
-								newTrack trackentity.Track
+								newTrack trackentity.GenericTrack
 							)
 
 							BeforeEach(func() {
 								By("Setting the tracklist the first time", func() {
 									setTracklist()
 
-									newTrack = trackentity.Track{}
+									newTrack = trackentity.GenericTrack{}
 									newTrack.Defined.TrackType = "new-type"
-									newTrack.Extra = map[string]interface{}{
+									newTrack.Extra = map[string]any{
 										"amuro": "ray.mp4",
 									}
 
-									tracklist.Defined.Tracks[1] = newTrack
+									tracklist.Defined.Tracks[1] = &newTrack
 								})
 							})
 
@@ -322,8 +331,8 @@ var _ = Describe("Track", func() {
 
 							It("doesn't include the overwritten track anymore", func() {
 								updatedTrackList := getTracklist(songID)
-								updatedTracks := testing.ExpectType[[]interface{}](updatedTrackList["tracks"])
-								updatedTrack1 := testing.ExpectType[map[string]interface{}](updatedTracks[1])
+								updatedTracks := testing.ExpectType[[]any](updatedTrackList["tracks"])
+								updatedTrack1 := testing.ExpectType[map[string]any](updatedTracks[1])
 
 								originalTrack1 := testing.ExpectSuccess(track1.ToMap())
 								Expect(updatedTrack1).NotTo(Equal(originalTrack1))
@@ -332,29 +341,27 @@ var _ = Describe("Track", func() {
 
 						Describe("With split requests", func() {
 							var (
-								splitRequestTrack trackentity.Track
+								splitRequestTrack trackentity.SplitRequestTrack
 							)
 
 							BeforeEach(func() {
-								splitRequestTrack = trackentity.Track{}
-								splitRequestTrack.Defined.TrackType = "split_4stems"
-								splitRequestTrack.Extra = map[string]interface{}{
-									"original_url": "thisplace.com/song.mp3",
-								}
-								splitRequestTrack.InitializeSplitJob()
+								splitRequestTrack = trackentity.SplitRequestTrack{}
+								splitRequestTrack.TrackType = "split_4stems"
+								splitRequestTrack.OriginalURL = "thisplace.com/song.mp3"
+								splitRequestTrack.InitializeRequest()
 
-								tracklist.Defined.Tracks = append(tracklist.Defined.Tracks, splitRequestTrack)
+								tracklist.Defined.Tracks = append(tracklist.Defined.Tracks, &splitRequestTrack)
 							})
 
 							ItSavesSuccessfully()
 
 							It("queues a start job message", func() {
-								setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+								setResponseBody := testing.DecodeJSON[map[string]any](response.Body)
 								tracks := getTrackSliceFromResponse(setResponseBody)
 								Expect(tracks).To(HaveLen(4))
 								splitRequestID := testing.ExpectType[string](tracks[3]["id"])
 
-								expectedMessage := map[string]interface{}{
+								expectedMessage := map[string]any{
 									"tracklist_id": songID,
 									"track_id":     splitRequestID,
 								}
@@ -380,7 +387,7 @@ var _ = Describe("Track", func() {
 									})
 
 									By("changing the split request job", func() {
-										setResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+										setResponseBody := testing.DecodeJSON[map[string]any](response.Body)
 										tracks := getTrackSliceFromResponse(setResponseBody)
 										tracks[3]["retry_times"] = 5
 										tracklist = trackentity.TrackList{}

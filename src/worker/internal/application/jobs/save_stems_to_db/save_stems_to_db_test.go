@@ -5,17 +5,17 @@ import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 )
 
 var _ = Describe("JobHandler", func() {
 	var (
 		tracklistID string
 		trackID     string
-		trackType   entity.TrackType
+		trackType   trackentity.SplitRequestType
 
 		dummyTrackStore *dummy.TrackStore
 		handler         save_stems_to_db.JobHandler
@@ -24,24 +24,29 @@ var _ = Describe("JobHandler", func() {
 	BeforeEach(func() {
 		tracklistID = "tracklist-ID"
 		trackID = "track-ID"
-		trackType = entity.InvalidType
+		trackType = ""
 
 		dummyTrackStore = dummy.NewDummyTrackStore()
 		handler = save_stems_to_db.NewJobHandler(dummyTrackStore)
 	})
 
 	JustBeforeEach(func() {
-		Expect(trackType).NotTo(Equal(entity.InvalidType))
+		Expect(trackType).NotTo(BeZero())
 
 		prevUnavailable := dummyTrackStore.Unavailable
 		dummyTrackStore.Unavailable = false
 
-		err := dummyTrackStore.SetTrack(context.Background(), tracklistID, trackID, entity.SplitStemTrack{
-			BaseTrack: entity.BaseTrack{
-				TrackType: trackType,
+		tracklist := trackentity.TrackList{}
+		tracklist.Defined.SongID = tracklistID
+		tracklist.Defined.Tracks = trackentity.Tracks{
+			&trackentity.SplitRequestTrack{
+				TrackFields: trackentity.TrackFields{ID: trackID},
+				TrackType:   trackType,
+				OriginalURL: "https://whocares",
 			},
-			OriginalURL: "https://whocares",
-		})
+		}
+
+		err := dummyTrackStore.SetTrackList(context.Background(), tracklist)
 
 		dummyTrackStore.Unavailable = prevUnavailable
 		Expect(err).NotTo(HaveOccurred())
@@ -73,7 +78,7 @@ var _ = Describe("JobHandler", func() {
 						},
 						StemURLS: stemURLs,
 					}
-					trackType = entity.SplitTwoStemsType
+					trackType = trackentity.SplitTwoStemsType
 
 					var err error
 					messageBytes, err = json.Marshal(jobParams)
@@ -88,11 +93,16 @@ var _ = Describe("JobHandler", func() {
 
 					It("updates the track store", func() {
 						_ = handler.HandleSaveStemsToDBJob(messageBytes)
-						track, err := dummyTrackStore.GetTrack(context.Background(), tracklistID, trackID)
+
+						tracklist, err := dummyTrackStore.GetTrackList(context.Background(), tracklistID)
 						Expect(err).NotTo(HaveOccurred())
-						stemTrack, ok := track.(entity.StemTrack)
+
+						track, err := tracklist.GetTrack(trackID)
+						Expect(err).NotTo(HaveOccurred())
+
+						stemTrack, ok := track.(*trackentity.StemTrack)
 						Expect(ok).To(BeTrue())
-						Expect(stemTrack.TrackType).To(Equal(entity.TwoStemsType))
+						Expect(stemTrack.TrackType).To(Equal(trackentity.TwoStemsType))
 						Expect(stemTrack.StemURLs).To(Equal(stemURLs))
 					})
 				})
@@ -124,7 +134,7 @@ var _ = Describe("JobHandler", func() {
 						},
 						StemURLS: stemURLs,
 					}
-					trackType = entity.SplitFourStemsType
+					trackType = trackentity.SplitFourStemsType
 
 					var err error
 					messageBytes, err = json.Marshal(jobParams)
@@ -139,11 +149,15 @@ var _ = Describe("JobHandler", func() {
 
 					It("updates the track store", func() {
 						_ = handler.HandleSaveStemsToDBJob(messageBytes)
-						track, err := dummyTrackStore.GetTrack(context.Background(), tracklistID, trackID)
+						tracklist, err := dummyTrackStore.GetTrackList(context.Background(), tracklistID)
 						Expect(err).NotTo(HaveOccurred())
-						stemTrack, ok := track.(entity.StemTrack)
+
+						track, err := tracklist.GetTrack(trackID)
+						Expect(err).NotTo(HaveOccurred())
+
+						stemTrack, ok := track.(*trackentity.StemTrack)
 						Expect(ok).To(BeTrue())
-						Expect(stemTrack.TrackType).To(Equal(entity.FourStemsType))
+						Expect(stemTrack.TrackType).To(Equal(trackentity.FourStemsType))
 						Expect(stemTrack.StemURLs).To(Equal(stemURLs))
 					})
 				})
@@ -176,7 +190,7 @@ var _ = Describe("JobHandler", func() {
 						},
 						StemURLS: stemURLs,
 					}
-					trackType = entity.SplitFiveStemsType
+					trackType = trackentity.SplitFiveStemsType
 
 					var err error
 					messageBytes, err = json.Marshal(jobParams)
@@ -191,11 +205,15 @@ var _ = Describe("JobHandler", func() {
 
 					It("updates the track store", func() {
 						_ = handler.HandleSaveStemsToDBJob(messageBytes)
-						track, err := dummyTrackStore.GetTrack(context.Background(), tracklistID, trackID)
+						tracklist, err := dummyTrackStore.GetTrackList(context.Background(), tracklistID)
 						Expect(err).NotTo(HaveOccurred())
-						stemTrack, ok := track.(entity.StemTrack)
+
+						track, err := tracklist.GetTrack(trackID)
+						Expect(err).NotTo(HaveOccurred())
+
+						stemTrack, ok := track.(*trackentity.StemTrack)
 						Expect(ok).To(BeTrue())
-						Expect(stemTrack.TrackType).To(Equal(entity.FiveStemsType))
+						Expect(stemTrack.TrackType).To(Equal(trackentity.FiveStemsType))
 						Expect(stemTrack.StemURLs).To(Equal(stemURLs))
 					})
 				})
@@ -227,7 +245,7 @@ var _ = Describe("JobHandler", func() {
 				messageBytes, err = json.Marshal(jobParams)
 				Expect(err).NotTo(HaveOccurred())
 
-				trackType = entity.TwoStemsType
+				trackType = trackentity.SplitRequestType(trackentity.TwoStemsType)
 			})
 
 			It("returns error", func() {

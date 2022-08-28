@@ -7,7 +7,7 @@ import (
 )
 
 // compare most of the fields, except last saved at
-func ExpectJSONEqualExceptLastSavedAt(a map[string]interface{}, b map[string]interface{}) {
+func ExpectJSONEqualExceptLastSavedAt(a map[string]any, b map[string]any) {
 	a["lastSavedAt"] = nil
 	b["lastSavedAt"] = nil
 	ExpectWithOffset(1, a).To(Equal(b))
@@ -16,10 +16,10 @@ func ExpectJSONEqualExceptLastSavedAt(a map[string]interface{}, b map[string]int
 //go:embed demo_song_test.json
 var demoSongFS embed.FS
 
-func LoadDemoSong() map[string]interface{} {
+func LoadDemoSong() map[string]any {
 	file := ExpectSuccess(demoSongFS.Open("demo_song_test.json"))
 
-	output := map[string]interface{}{}
+	output := map[string]any{}
 	err := json.NewDecoder(file).Decode(&output)
 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
 

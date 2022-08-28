@@ -9,19 +9,19 @@ import (
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/usecase"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/errors"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/entity"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/storage"
 )
 
 type Usecase struct {
-	db          trackstorage.DB
+	db          trackentity.Store
 	songUsecase songusecase.Usecase
 	publisher   rabbitmq.QueuePublisher
 }
 
-func NewUsecase(db trackstorage.DB, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) Usecase {
+func NewUsecase(db trackentity.Store, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) Usecase {
 	return Usecase{
 		db:          db,
 		songUsecase: songUsecase,
@@ -62,15 +62,9 @@ func (u Usecase) SetTrackList(ctx context.Context, authHeader string, songID str
 	// just overwrite the song ID in case there's any discrepancies
 	tracklist.Defined.SongID = songID
 
-	newTrackIDs := tracklist.EnsureTrackIDs()
+	newSplitRequests := initializeNewSplitRequests(tracklist)
 
-	for i := range tracklist.Defined.Tracks {
-		track := &tracklist.Defined.Tracks[i]
-		isNewTrack := newTrackIDs[track.Defined.ID]
-		if isNewTrack && track.IsSplitRequest() {
-			track.InitializeSplitJob()
-		}
-	}
+	tracklist.EnsureTrackIDs()
 
 	err := u.db.SetTrackList(ctx, tracklist)
 	if err != nil {
@@ -93,34 +87,45 @@ func (u Usecase) SetTrackList(ctx context.Context, authHeader string, songID str
 	}
 
 	// do this as non-blocking as it's a long term async work
-	go u.publishAllSplitRequests(tracklist, newTrackIDs)
+	go u.publishAllSplitRequests(tracklist.Defined.SongID, newSplitRequests)
 
 	return tracklist, nil
 }
 
 type failedSplitJob struct {
-	track trackentity.Track
+	track *trackentity.SplitRequestTrack
 	err   error
 }
 
-func (u Usecase) publishAllSplitRequests(tracklist trackentity.TrackList, newTrackIDs map[string]bool) {
-	failedSplitJobs := []failedSplitJob{}
+func initializeNewSplitRequests(tracklist trackentity.TrackList) []*trackentity.SplitRequestTrack {
+	newSplitRequests := []*trackentity.SplitRequestTrack{}
 	for _, track := range tracklist.Defined.Tracks {
-		isNewTrack := newTrackIDs[track.Defined.ID]
-		if isNewTrack && track.IsSplitRequest() {
-			err := u.publishSplitJob(tracklist.Defined.SongID, track.Defined.ID)
-			if err != nil {
-				err = errors.Wrap(err, "Failed to publish split job for track")
-				failedSplitJobs = append(failedSplitJobs, failedSplitJob{
-					track: track,
-					err:   err,
-				})
+		if track.IsNew() {
+			if splitRequest, ok := track.(*trackentity.SplitRequestTrack); ok {
+				splitRequest.InitializeRequest()
+				newSplitRequests = append(newSplitRequests, splitRequest)
 			}
 		}
 	}
 
+	return newSplitRequests
+}
+
+func (u Usecase) publishAllSplitRequests(tracklistID string, newSplitRequests []*trackentity.SplitRequestTrack) {
+	failedSplitJobs := []failedSplitJob{}
+	for _, track := range newSplitRequests {
+		err := u.publishSplitJob(tracklistID, track.ID)
+		if err != nil {
+			err = errors.Wrap(err, "Failed to publish split job for track")
+			failedSplitJobs = append(failedSplitJobs, failedSplitJob{
+				track: track,
+				err:   err,
+			})
+		}
+	}
+
 	for _, failedJob := range failedSplitJobs {
-		u.markSplitJobFailed(tracklist.Defined.SongID, failedJob)
+		u.markSplitJobFailed(tracklistID, failedJob)
 	}
 }
 
@@ -153,24 +158,20 @@ func (u Usecase) publishSplitJob(tracklistID string, trackID string) error {
 }
 
 func (u Usecase) markSplitJobFailed(tracklistID string, failedSplitJob failedSplitJob) {
-	failedJobFields := trackentity.SplitJobFields{
-		Status:         "error",
-		StatusMessage:  "",
-		StatusDebugLog: failedSplitJob.err.Error(),
-		Progress:       10,
+	updater := func(track trackentity.Track) (trackentity.Track, error) {
+		failedTrack := failedSplitJob.track
+		failedTrack.Status = "error"
+		failedTrack.StatusMessage = ""
+		failedTrack.StatusDebugLog = failedSplitJob.err.Error()
+		failedTrack.Progress = 10
+		return failedTrack, nil
 	}
 
-	failedTrack := failedSplitJob.track
-	err := failedTrack.SetSplitJobFields(failedJobFields)
-	if err != nil {
-		log.WithField("failedJobFields", failedJobFields).
-			Error("Failed to set the fields into the current track")
-		return
-	}
+	trackID := failedSplitJob.track.ID
 
-	err = u.db.UpdateTrack(context.Background(), tracklistID, failedTrack)
+	err := u.db.UpdateTrack(context.Background(), tracklistID, trackID, updater)
 	if err != nil {
-		log.WithField("track", failedTrack).
+		log.WithField("track", failedSplitJob.track).
 			Error("Failed to set track in DB")
 		return
 	}

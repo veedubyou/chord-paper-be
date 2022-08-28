@@ -2,83 +2,75 @@ package dummy
 
 import (
 	"context"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"sync"
 )
 
-var _ entity.TrackStore = &TrackStore{}
+var _ trackentity.Store = &TrackStore{}
 
 func NewDummyTrackStore() *TrackStore {
 	return &TrackStore{
 		Unavailable: false,
-		State:       make(map[string]map[string]entity.Track),
+		State:       make(map[string]trackentity.TrackList),
 	}
 }
 
 type TrackStore struct {
 	Unavailable bool
-	State       map[string]map[string]entity.Track
+	State       map[string]trackentity.TrackList
 	mutex       sync.RWMutex
 }
 
-func (t *TrackStore) GetTrack(_ context.Context, tracklistID string, trackID string) (entity.Track, error) {
+func (t *TrackStore) GetTrackList(ctx context.Context, songID string) (trackentity.TrackList, error) {
 	if t.Unavailable {
-		return entity.BaseTrack{}, NetworkFailure
+		return trackentity.TrackList{}, NetworkFailure
 	}
 
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
 
-	trackMap, ok := t.State[tracklistID]
+	tracklist, ok := t.State[songID]
 	if !ok {
-		return entity.BaseTrack{}, NotFound
+		return trackentity.TrackList{}, NotFound
 	}
 
-	track, ok := trackMap[trackID]
-	if !ok {
-		return entity.BaseTrack{}, NotFound
-	}
-
-	return track, nil
+	return tracklist, nil
 }
 
-func (t *TrackStore) SetTrack(_ context.Context, tracklistID string, trackID string, track entity.Track) error {
+func (t *TrackStore) SetTrackList(ctx context.Context, tracklist trackentity.TrackList) error {
 	if t.Unavailable {
 		return NetworkFailure
 	}
 
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
+	t.mutex.RLock()
+	defer t.mutex.RUnlock()
 
-	if t.State[tracklistID] == nil {
-		t.State[tracklistID] = make(map[string]entity.Track)
-	}
-
-	t.State[tracklistID][trackID] = track
-
+	t.State[tracklist.Defined.SongID] = tracklist
 	return nil
 }
 
-func (t *TrackStore) UpdateTrack(ctx context.Context, trackListID string, trackID string, updater entity.TrackUpdater) error {
+func (t *TrackStore) UpdateTrack(ctx context.Context, trackListID string, trackID string, updater trackentity.TrackUpdater) error {
 	if t.Unavailable {
 		return NetworkFailure
 	}
 
-	track, err := t.GetTrack(ctx, trackListID, trackID)
+	tracklist, err := t.GetTrackList(ctx, trackListID)
 	if err != nil {
-		return cerr.Wrap(err).Error("Failed to get track from DB")
+		return cerr.Wrap(err).Error("Failed to get tracklist from DB")
 	}
 
-	updatedTrack, err := updater(track)
-	if err != nil {
-		return cerr.Wrap(err).Error("Track update function failed")
+	for i, track := range tracklist.Defined.Tracks {
+		if track.GetID() == trackID {
+			updatedTrack, err := updater(track)
+			if err != nil {
+				return cerr.Wrap(err).Error("Track update function failed")
+			}
+
+			tracklist.Defined.Tracks[i] = updatedTrack
+			return t.SetTrackList(ctx, tracklist)
+		}
 	}
 
-	err = t.SetTrack(ctx, trackListID, trackID, updatedTrack)
-	if err != nil {
-		return cerr.Wrap(err).Error("Failed to set the updated track")
-	}
-
-	return nil
+	return cerr.Error("Track ID not found in tracklist")
 }

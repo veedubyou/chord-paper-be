@@ -13,10 +13,10 @@ var encoder = dynamodbattribute.NewEncoder(func(e *dynamodbattribute.Encoder) {
 	e.NullEmptyByteSlice = false
 })
 
-type putMap map[string]interface{}
+type putMap map[string]any
 
 func (p putMap) MarshalDynamo() (*dynamodb.AttributeValue, error) {
-	var fields map[string]interface{} = p
+	var fields map[string]any = p
 	return encoder.Encode(fields)
 }
 
@@ -42,17 +42,17 @@ func (d DynamoDBWrapper) Table(tableName string) DynamoTableWrapper {
 	}
 }
 
-func (d DynamoTableWrapper) Put(input map[string]interface{}) *dynamo.Put {
+func (d DynamoTableWrapper) Put(input map[string]any) *dynamo.Put {
 	return d.Table.Put(putMap(input))
 }
 
-func (d DynamoTableWrapper) Update(hashKey string, value interface{}) DynamoUpdateWrapper {
+func (d DynamoTableWrapper) Update(hashKey string, value any) DynamoUpdateWrapper {
 	return DynamoUpdateWrapper{
 		Update: d.Table.Update(hashKey, value),
 	}
 }
 
-func (d DynamoUpdateWrapper) Set(path string, value map[string]interface{}) DynamoUpdateWrapper {
+func (d DynamoUpdateWrapper) Set(path string, value map[string]any) DynamoUpdateWrapper {
 	return DynamoUpdateWrapper{
 		Update: d.Update.Set(path, putMap(value)),
 	}

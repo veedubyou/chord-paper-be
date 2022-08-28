@@ -3,8 +3,8 @@ package start
 import (
 	"context"
 	"encoding/json"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
@@ -22,14 +22,14 @@ type JobParams struct {
 	job_message.TrackIdentifier
 }
 
-func NewJobHandler(trackStore entity.TrackStore) JobHandler {
+func NewJobHandler(trackStore trackentity.Store) JobHandler {
 	return JobHandler{
 		trackStore: trackStore,
 	}
 }
 
 type JobHandler struct {
-	trackStore entity.TrackStore
+	trackStore trackentity.Store
 }
 
 func (d JobHandler) HandleStartJob(message []byte) (JobParams, error) {
@@ -41,17 +41,17 @@ func (d JobHandler) HandleStartJob(message []byte) (JobParams, error) {
 	errCtx := cerr.Field("tracklist_id", params.TrackListID).
 		Field("track_id", params.TrackID)
 
-	updater := func(track entity.Track) (entity.Track, error) {
-		splitStemTrack, ok := track.(entity.SplitStemTrack)
+	updater := func(track trackentity.Track) (trackentity.Track, error) {
+		splitStemTrack, ok := track.(*trackentity.SplitRequestTrack)
 		if !ok {
-			return entity.BaseTrack{}, errCtx.Error("Track from DB is not a split stem track")
+			return nil, errCtx.Error("Track from DB is not a split stem track")
 		}
 
-		if splitStemTrack.JobStatus != entity.RequestedStatus {
-			return entity.BaseTrack{}, errCtx.Error("Track is not in requested status, abort processing to be safe")
+		if splitStemTrack.Status != trackentity.RequestedStatus {
+			return nil, errCtx.Error("Track is not in requested status, abort processing to be safe")
 		}
 
-		splitStemTrack.JobStatus = entity.ProcessingStatus
+		splitStemTrack.Status = trackentity.ProcessingStatus
 
 		return splitStemTrack, nil
 	}

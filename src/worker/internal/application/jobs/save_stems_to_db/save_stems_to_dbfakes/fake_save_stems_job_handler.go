@@ -18,7 +18,7 @@ type FakeSaveStemsJobHandler struct {
 	handleSaveStemsToDBJobReturnsOnCall map[int]struct {
 		result1 error
 	}
-	invocations      map[string][][]interface{}
+	invocations      map[string][][]any
 	invocationsMutex sync.RWMutex
 }
 
@@ -35,7 +35,7 @@ func (fake *FakeSaveStemsJobHandler) HandleSaveStemsToDBJob(arg1 []byte) error {
 	}{arg1Copy})
 	stub := fake.HandleSaveStemsToDBJobStub
 	fakeReturns := fake.handleSaveStemsToDBJobReturns
-	fake.recordInvocation("HandleSaveStemsToDBJob", []interface{}{arg1Copy})
+	fake.recordInvocation("HandleSaveStemsToDBJob", []any{arg1Copy})
 	fake.handleSaveStemsToDBJobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -88,26 +88,26 @@ func (fake *FakeSaveStemsJobHandler) HandleSaveStemsToDBJobReturnsOnCall(i int, 
 	}{result1}
 }
 
-func (fake *FakeSaveStemsJobHandler) Invocations() map[string][][]interface{} {
+func (fake *FakeSaveStemsJobHandler) Invocations() map[string][][]any {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.handleSaveStemsToDBJobMutex.RLock()
 	defer fake.handleSaveStemsToDBJobMutex.RUnlock()
-	copiedInvocations := map[string][][]interface{}{}
+	copiedInvocations := map[string][][]any{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
 	}
 	return copiedInvocations
 }
 
-func (fake *FakeSaveStemsJobHandler) recordInvocation(key string, args []interface{}) {
+func (fake *FakeSaveStemsJobHandler) recordInvocation(key string, args []any) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
+		fake.invocations = map[string][][]any{}
 	}
 	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
+		fake.invocations[key] = [][]any{}
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }

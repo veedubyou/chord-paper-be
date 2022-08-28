@@ -7,12 +7,12 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter/file_splitter"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
@@ -33,14 +33,14 @@ var _ = Describe("Split handler", func() {
 
 		tracklistID string
 		trackID     string
-		trackType   entity.TrackType
+		trackType   trackentity.SplitRequestType
 	)
 
 	BeforeEach(func() {
 		By("Assigning all the variables data", func() {
 			tracklistID = "tracklist-ID"
 			trackID = "track-ID"
-			trackType = entity.InvalidType
+			trackType = ""
 			bucketName = "bucket-head"
 
 			remoteURLBase = fmt.Sprintf("%s/%s/%s/%s", prod.GOOGLE_STORAGE_HOST, bucketName, tracklistID, trackID)
@@ -76,18 +76,22 @@ var _ = Describe("Split handler", func() {
 	})
 
 	JustBeforeEach(func() {
-		Expect(trackType).NotTo(Equal(entity.InvalidType))
+		Expect(trackType).NotTo(Equal(BeZero()))
 
 		prevUnavailable := dummyTrackStore.Unavailable
 		dummyTrackStore.Unavailable = false
 
-		err := dummyTrackStore.SetTrack(context.Background(), tracklistID, trackID, entity.SplitStemTrack{
-			BaseTrack: entity.BaseTrack{
-				TrackType: trackType,
+		tracklist := trackentity.TrackList{}
+		tracklist.Defined.SongID = tracklistID
+		tracklist.Defined.Tracks = trackentity.Tracks{
+			&trackentity.SplitRequestTrack{
+				TrackFields: trackentity.TrackFields{ID: trackID},
+				TrackType:   trackType,
+				OriginalURL: "https://whocares",
 			},
-			OriginalURL: "https://whocares",
-		})
+		}
 
+		err := dummyTrackStore.SetTrackList(context.Background(), tracklist)
 		dummyTrackStore.Unavailable = prevUnavailable
 
 		Expect(err).NotTo(HaveOccurred())
@@ -109,7 +113,7 @@ var _ = Describe("Split handler", func() {
 
 			// just setting something for now so that other paths
 			// don't run into an error
-			trackType = entity.TwoStemsType
+			trackType = trackentity.SplitRequestType(trackentity.TwoStemsType)
 		})
 
 		Describe("Happy path", func() {
@@ -149,7 +153,7 @@ var _ = Describe("Split handler", func() {
 
 			Describe("2stems", func() {
 				BeforeEach(func() {
-					trackType = entity.SplitTwoStemsType
+					trackType = trackentity.SplitTwoStemsType
 
 					vocalsURL := remoteURLBase + "/2stems/vocals.mp3"
 					accompanimentURL := remoteURLBase + "/2stems/accompaniment.mp3"
@@ -176,7 +180,7 @@ var _ = Describe("Split handler", func() {
 
 			Describe("4stems", func() {
 				BeforeEach(func() {
-					trackType = entity.SplitFourStemsType
+					trackType = trackentity.SplitFourStemsType
 
 					vocalsURL := remoteURLBase + "/4stems/vocals.mp3"
 					otherURL := remoteURLBase + "/4stems/other.mp3"
@@ -209,7 +213,7 @@ var _ = Describe("Split handler", func() {
 
 			Describe("5stems", func() {
 				BeforeEach(func() {
-					trackType = entity.SplitFiveStemsType
+					trackType = trackentity.SplitFiveStemsType
 
 					vocalsURL := remoteURLBase + "/5stems/vocals.mp3"
 					otherURL := remoteURLBase + "/5stems/other.mp3"
@@ -280,7 +284,7 @@ var _ = Describe("Split handler", func() {
 			message, err = json.Marshal(job)
 			Expect(err).NotTo(HaveOccurred())
 
-			trackType = entity.TwoStemsType
+			trackType = trackentity.SplitRequestType(trackentity.TwoStemsType)
 		})
 
 		It("failaroo", func() {

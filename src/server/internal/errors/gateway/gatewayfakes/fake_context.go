@@ -24,10 +24,10 @@ type FakeContext struct {
 	attachmentReturnsOnCall map[int]struct {
 		result1 error
 	}
-	BindStub        func(interface{}) error
+	BindStub        func(any) error
 	bindMutex       sync.RWMutex
 	bindArgsForCall []struct {
-		arg1 interface{}
+		arg1 any
 	}
 	bindReturns struct {
 		result1 error
@@ -133,16 +133,16 @@ type FakeContext struct {
 	formValueReturnsOnCall map[int]struct {
 		result1 string
 	}
-	GetStub        func(string) interface{}
+	GetStub        func(string) any
 	getMutex       sync.RWMutex
 	getArgsForCall []struct {
 		arg1 string
 	}
 	getReturns struct {
-		result1 interface{}
+		result1 any
 	}
 	getReturnsOnCall map[int]struct {
-		result1 interface{}
+		result1 any
 	}
 	HTMLStub        func(int, string) error
 	hTMLMutex       sync.RWMutex
@@ -210,11 +210,11 @@ type FakeContext struct {
 	isWebSocketReturnsOnCall map[int]struct {
 		result1 bool
 	}
-	JSONStub        func(int, interface{}) error
+	JSONStub        func(int, any) error
 	jSONMutex       sync.RWMutex
 	jSONArgsForCall []struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 	}
 	jSONReturns struct {
 		result1 error
@@ -234,12 +234,12 @@ type FakeContext struct {
 	jSONBlobReturnsOnCall map[int]struct {
 		result1 error
 	}
-	JSONPStub        func(int, string, interface{}) error
+	JSONPStub        func(int, string, any) error
 	jSONPMutex       sync.RWMutex
 	jSONPArgsForCall []struct {
 		arg1 int
 		arg2 string
-		arg3 interface{}
+		arg3 any
 	}
 	jSONPReturns struct {
 		result1 error
@@ -260,11 +260,11 @@ type FakeContext struct {
 	jSONPBlobReturnsOnCall map[int]struct {
 		result1 error
 	}
-	JSONPrettyStub        func(int, interface{}, string) error
+	JSONPrettyStub        func(int, any, string) error
 	jSONPrettyMutex       sync.RWMutex
 	jSONPrettyArgsForCall []struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 		arg3 string
 	}
 	jSONPrettyReturns struct {
@@ -400,12 +400,12 @@ type FakeContext struct {
 	redirectReturnsOnCall map[int]struct {
 		result1 error
 	}
-	RenderStub        func(int, string, interface{}) error
+	RenderStub        func(int, string, any) error
 	renderMutex       sync.RWMutex
 	renderArgsForCall []struct {
 		arg1 int
 		arg2 string
-		arg3 interface{}
+		arg3 any
 	}
 	renderReturns struct {
 		result1 error
@@ -449,11 +449,11 @@ type FakeContext struct {
 	schemeReturnsOnCall map[int]struct {
 		result1 string
 	}
-	SetStub        func(string, interface{})
+	SetStub        func(string, any)
 	setMutex       sync.RWMutex
 	setArgsForCall []struct {
 		arg1 string
-		arg2 interface{}
+		arg2 any
 	}
 	SetCookieStub        func(*http.Cookie)
 	setCookieMutex       sync.RWMutex
@@ -520,10 +520,10 @@ type FakeContext struct {
 	stringReturnsOnCall map[int]struct {
 		result1 error
 	}
-	ValidateStub        func(interface{}) error
+	ValidateStub        func(any) error
 	validateMutex       sync.RWMutex
 	validateArgsForCall []struct {
-		arg1 interface{}
+		arg1 any
 	}
 	validateReturns struct {
 		result1 error
@@ -531,11 +531,11 @@ type FakeContext struct {
 	validateReturnsOnCall map[int]struct {
 		result1 error
 	}
-	XMLStub        func(int, interface{}) error
+	XMLStub        func(int, any) error
 	xMLMutex       sync.RWMutex
 	xMLArgsForCall []struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 	}
 	xMLReturns struct {
 		result1 error
@@ -555,11 +555,11 @@ type FakeContext struct {
 	xMLBlobReturnsOnCall map[int]struct {
 		result1 error
 	}
-	XMLPrettyStub        func(int, interface{}, string) error
+	XMLPrettyStub        func(int, any, string) error
 	xMLPrettyMutex       sync.RWMutex
 	xMLPrettyArgsForCall []struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 		arg3 string
 	}
 	xMLPrettyReturns struct {
@@ -568,7 +568,7 @@ type FakeContext struct {
 	xMLPrettyReturnsOnCall map[int]struct {
 		result1 error
 	}
-	invocations      map[string][][]interface{}
+	invocations      map[string][][]any
 	invocationsMutex sync.RWMutex
 }
 
@@ -581,7 +581,7 @@ func (fake *FakeContext) Attachment(arg1 string, arg2 string) error {
 	}{arg1, arg2})
 	stub := fake.AttachmentStub
 	fakeReturns := fake.attachmentReturns
-	fake.recordInvocation("Attachment", []interface{}{arg1, arg2})
+	fake.recordInvocation("Attachment", []any{arg1, arg2})
 	fake.attachmentMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -634,15 +634,15 @@ func (fake *FakeContext) AttachmentReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) Bind(arg1 interface{}) error {
+func (fake *FakeContext) Bind(arg1 any) error {
 	fake.bindMutex.Lock()
 	ret, specificReturn := fake.bindReturnsOnCall[len(fake.bindArgsForCall)]
 	fake.bindArgsForCall = append(fake.bindArgsForCall, struct {
-		arg1 interface{}
+		arg1 any
 	}{arg1})
 	stub := fake.BindStub
 	fakeReturns := fake.bindReturns
-	fake.recordInvocation("Bind", []interface{}{arg1})
+	fake.recordInvocation("Bind", []any{arg1})
 	fake.bindMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -659,13 +659,13 @@ func (fake *FakeContext) BindCallCount() int {
 	return len(fake.bindArgsForCall)
 }
 
-func (fake *FakeContext) BindCalls(stub func(interface{}) error) {
+func (fake *FakeContext) BindCalls(stub func(any) error) {
 	fake.bindMutex.Lock()
 	defer fake.bindMutex.Unlock()
 	fake.BindStub = stub
 }
 
-func (fake *FakeContext) BindArgsForCall(i int) interface{} {
+func (fake *FakeContext) BindArgsForCall(i int) any {
 	fake.bindMutex.RLock()
 	defer fake.bindMutex.RUnlock()
 	argsForCall := fake.bindArgsForCall[i]
@@ -710,7 +710,7 @@ func (fake *FakeContext) Blob(arg1 int, arg2 string, arg3 []byte) error {
 	}{arg1, arg2, arg3Copy})
 	stub := fake.BlobStub
 	fakeReturns := fake.blobReturns
-	fake.recordInvocation("Blob", []interface{}{arg1, arg2, arg3Copy})
+	fake.recordInvocation("Blob", []any{arg1, arg2, arg3Copy})
 	fake.blobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -771,7 +771,7 @@ func (fake *FakeContext) Cookie(arg1 string) (*http.Cookie, error) {
 	}{arg1})
 	stub := fake.CookieStub
 	fakeReturns := fake.cookieReturns
-	fake.recordInvocation("Cookie", []interface{}{arg1})
+	fake.recordInvocation("Cookie", []any{arg1})
 	fake.cookieMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -834,7 +834,7 @@ func (fake *FakeContext) Cookies() []*http.Cookie {
 	}{})
 	stub := fake.CookiesStub
 	fakeReturns := fake.cookiesReturns
-	fake.recordInvocation("Cookies", []interface{}{})
+	fake.recordInvocation("Cookies", []any{})
 	fake.cookiesMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -887,7 +887,7 @@ func (fake *FakeContext) Echo() *echo.Echo {
 	}{})
 	stub := fake.EchoStub
 	fakeReturns := fake.echoReturns
-	fake.recordInvocation("Echo", []interface{}{})
+	fake.recordInvocation("Echo", []any{})
 	fake.echoMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -939,7 +939,7 @@ func (fake *FakeContext) Error(arg1 error) {
 		arg1 error
 	}{arg1})
 	stub := fake.ErrorStub
-	fake.recordInvocation("Error", []interface{}{arg1})
+	fake.recordInvocation("Error", []any{arg1})
 	fake.errorMutex.Unlock()
 	if stub != nil {
 		fake.ErrorStub(arg1)
@@ -973,7 +973,7 @@ func (fake *FakeContext) File(arg1 string) error {
 	}{arg1})
 	stub := fake.FileStub
 	fakeReturns := fake.fileReturns
-	fake.recordInvocation("File", []interface{}{arg1})
+	fake.recordInvocation("File", []any{arg1})
 	fake.fileMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -1034,7 +1034,7 @@ func (fake *FakeContext) FormFile(arg1 string) (*multipart.FileHeader, error) {
 	}{arg1})
 	stub := fake.FormFileStub
 	fakeReturns := fake.formFileReturns
-	fake.recordInvocation("FormFile", []interface{}{arg1})
+	fake.recordInvocation("FormFile", []any{arg1})
 	fake.formFileMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -1097,7 +1097,7 @@ func (fake *FakeContext) FormParams() (url.Values, error) {
 	}{})
 	stub := fake.FormParamsStub
 	fakeReturns := fake.formParamsReturns
-	fake.recordInvocation("FormParams", []interface{}{})
+	fake.recordInvocation("FormParams", []any{})
 	fake.formParamsMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -1154,7 +1154,7 @@ func (fake *FakeContext) FormValue(arg1 string) string {
 	}{arg1})
 	stub := fake.FormValueStub
 	fakeReturns := fake.formValueReturns
-	fake.recordInvocation("FormValue", []interface{}{arg1})
+	fake.recordInvocation("FormValue", []any{arg1})
 	fake.formValueMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -1207,7 +1207,7 @@ func (fake *FakeContext) FormValueReturnsOnCall(i int, result1 string) {
 	}{result1}
 }
 
-func (fake *FakeContext) Get(arg1 string) interface{} {
+func (fake *FakeContext) Get(arg1 string) any {
 	fake.getMutex.Lock()
 	ret, specificReturn := fake.getReturnsOnCall[len(fake.getArgsForCall)]
 	fake.getArgsForCall = append(fake.getArgsForCall, struct {
@@ -1215,7 +1215,7 @@ func (fake *FakeContext) Get(arg1 string) interface{} {
 	}{arg1})
 	stub := fake.GetStub
 	fakeReturns := fake.getReturns
-	fake.recordInvocation("Get", []interface{}{arg1})
+	fake.recordInvocation("Get", []any{arg1})
 	fake.getMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -1232,7 +1232,7 @@ func (fake *FakeContext) GetCallCount() int {
 	return len(fake.getArgsForCall)
 }
 
-func (fake *FakeContext) GetCalls(stub func(string) interface{}) {
+func (fake *FakeContext) GetCalls(stub func(string) any) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = stub
@@ -1245,26 +1245,26 @@ func (fake *FakeContext) GetArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeContext) GetReturns(result1 interface{}) {
+func (fake *FakeContext) GetReturns(result1 any) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	fake.getReturns = struct {
-		result1 interface{}
+		result1 any
 	}{result1}
 }
 
-func (fake *FakeContext) GetReturnsOnCall(i int, result1 interface{}) {
+func (fake *FakeContext) GetReturnsOnCall(i int, result1 any) {
 	fake.getMutex.Lock()
 	defer fake.getMutex.Unlock()
 	fake.GetStub = nil
 	if fake.getReturnsOnCall == nil {
 		fake.getReturnsOnCall = make(map[int]struct {
-			result1 interface{}
+			result1 any
 		})
 	}
 	fake.getReturnsOnCall[i] = struct {
-		result1 interface{}
+		result1 any
 	}{result1}
 }
 
@@ -1277,7 +1277,7 @@ func (fake *FakeContext) HTML(arg1 int, arg2 string) error {
 	}{arg1, arg2})
 	stub := fake.HTMLStub
 	fakeReturns := fake.hTMLReturns
-	fake.recordInvocation("HTML", []interface{}{arg1, arg2})
+	fake.recordInvocation("HTML", []any{arg1, arg2})
 	fake.hTMLMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -1344,7 +1344,7 @@ func (fake *FakeContext) HTMLBlob(arg1 int, arg2 []byte) error {
 	}{arg1, arg2Copy})
 	stub := fake.HTMLBlobStub
 	fakeReturns := fake.hTMLBlobReturns
-	fake.recordInvocation("HTMLBlob", []interface{}{arg1, arg2Copy})
+	fake.recordInvocation("HTMLBlob", []any{arg1, arg2Copy})
 	fake.hTMLBlobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -1404,7 +1404,7 @@ func (fake *FakeContext) Handler() echo.HandlerFunc {
 	}{})
 	stub := fake.HandlerStub
 	fakeReturns := fake.handlerReturns
-	fake.recordInvocation("Handler", []interface{}{})
+	fake.recordInvocation("Handler", []any{})
 	fake.handlerMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -1459,7 +1459,7 @@ func (fake *FakeContext) Inline(arg1 string, arg2 string) error {
 	}{arg1, arg2})
 	stub := fake.InlineStub
 	fakeReturns := fake.inlineReturns
-	fake.recordInvocation("Inline", []interface{}{arg1, arg2})
+	fake.recordInvocation("Inline", []any{arg1, arg2})
 	fake.inlineMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -1519,7 +1519,7 @@ func (fake *FakeContext) IsTLS() bool {
 	}{})
 	stub := fake.IsTLSStub
 	fakeReturns := fake.isTLSReturns
-	fake.recordInvocation("IsTLS", []interface{}{})
+	fake.recordInvocation("IsTLS", []any{})
 	fake.isTLSMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -1572,7 +1572,7 @@ func (fake *FakeContext) IsWebSocket() bool {
 	}{})
 	stub := fake.IsWebSocketStub
 	fakeReturns := fake.isWebSocketReturns
-	fake.recordInvocation("IsWebSocket", []interface{}{})
+	fake.recordInvocation("IsWebSocket", []any{})
 	fake.isWebSocketMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -1618,16 +1618,16 @@ func (fake *FakeContext) IsWebSocketReturnsOnCall(i int, result1 bool) {
 	}{result1}
 }
 
-func (fake *FakeContext) JSON(arg1 int, arg2 interface{}) error {
+func (fake *FakeContext) JSON(arg1 int, arg2 any) error {
 	fake.jSONMutex.Lock()
 	ret, specificReturn := fake.jSONReturnsOnCall[len(fake.jSONArgsForCall)]
 	fake.jSONArgsForCall = append(fake.jSONArgsForCall, struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 	}{arg1, arg2})
 	stub := fake.JSONStub
 	fakeReturns := fake.jSONReturns
-	fake.recordInvocation("JSON", []interface{}{arg1, arg2})
+	fake.recordInvocation("JSON", []any{arg1, arg2})
 	fake.jSONMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -1644,13 +1644,13 @@ func (fake *FakeContext) JSONCallCount() int {
 	return len(fake.jSONArgsForCall)
 }
 
-func (fake *FakeContext) JSONCalls(stub func(int, interface{}) error) {
+func (fake *FakeContext) JSONCalls(stub func(int, any) error) {
 	fake.jSONMutex.Lock()
 	defer fake.jSONMutex.Unlock()
 	fake.JSONStub = stub
 }
 
-func (fake *FakeContext) JSONArgsForCall(i int) (int, interface{}) {
+func (fake *FakeContext) JSONArgsForCall(i int) (int, any) {
 	fake.jSONMutex.RLock()
 	defer fake.jSONMutex.RUnlock()
 	argsForCall := fake.jSONArgsForCall[i]
@@ -1694,7 +1694,7 @@ func (fake *FakeContext) JSONBlob(arg1 int, arg2 []byte) error {
 	}{arg1, arg2Copy})
 	stub := fake.JSONBlobStub
 	fakeReturns := fake.jSONBlobReturns
-	fake.recordInvocation("JSONBlob", []interface{}{arg1, arg2Copy})
+	fake.recordInvocation("JSONBlob", []any{arg1, arg2Copy})
 	fake.jSONBlobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -1747,17 +1747,17 @@ func (fake *FakeContext) JSONBlobReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) JSONP(arg1 int, arg2 string, arg3 interface{}) error {
+func (fake *FakeContext) JSONP(arg1 int, arg2 string, arg3 any) error {
 	fake.jSONPMutex.Lock()
 	ret, specificReturn := fake.jSONPReturnsOnCall[len(fake.jSONPArgsForCall)]
 	fake.jSONPArgsForCall = append(fake.jSONPArgsForCall, struct {
 		arg1 int
 		arg2 string
-		arg3 interface{}
+		arg3 any
 	}{arg1, arg2, arg3})
 	stub := fake.JSONPStub
 	fakeReturns := fake.jSONPReturns
-	fake.recordInvocation("JSONP", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("JSONP", []any{arg1, arg2, arg3})
 	fake.jSONPMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -1774,13 +1774,13 @@ func (fake *FakeContext) JSONPCallCount() int {
 	return len(fake.jSONPArgsForCall)
 }
 
-func (fake *FakeContext) JSONPCalls(stub func(int, string, interface{}) error) {
+func (fake *FakeContext) JSONPCalls(stub func(int, string, any) error) {
 	fake.jSONPMutex.Lock()
 	defer fake.jSONPMutex.Unlock()
 	fake.JSONPStub = stub
 }
 
-func (fake *FakeContext) JSONPArgsForCall(i int) (int, string, interface{}) {
+func (fake *FakeContext) JSONPArgsForCall(i int) (int, string, any) {
 	fake.jSONPMutex.RLock()
 	defer fake.jSONPMutex.RUnlock()
 	argsForCall := fake.jSONPArgsForCall[i]
@@ -1825,7 +1825,7 @@ func (fake *FakeContext) JSONPBlob(arg1 int, arg2 string, arg3 []byte) error {
 	}{arg1, arg2, arg3Copy})
 	stub := fake.JSONPBlobStub
 	fakeReturns := fake.jSONPBlobReturns
-	fake.recordInvocation("JSONPBlob", []interface{}{arg1, arg2, arg3Copy})
+	fake.recordInvocation("JSONPBlob", []any{arg1, arg2, arg3Copy})
 	fake.jSONPBlobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -1878,17 +1878,17 @@ func (fake *FakeContext) JSONPBlobReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) JSONPretty(arg1 int, arg2 interface{}, arg3 string) error {
+func (fake *FakeContext) JSONPretty(arg1 int, arg2 any, arg3 string) error {
 	fake.jSONPrettyMutex.Lock()
 	ret, specificReturn := fake.jSONPrettyReturnsOnCall[len(fake.jSONPrettyArgsForCall)]
 	fake.jSONPrettyArgsForCall = append(fake.jSONPrettyArgsForCall, struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 		arg3 string
 	}{arg1, arg2, arg3})
 	stub := fake.JSONPrettyStub
 	fakeReturns := fake.jSONPrettyReturns
-	fake.recordInvocation("JSONPretty", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("JSONPretty", []any{arg1, arg2, arg3})
 	fake.jSONPrettyMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -1905,13 +1905,13 @@ func (fake *FakeContext) JSONPrettyCallCount() int {
 	return len(fake.jSONPrettyArgsForCall)
 }
 
-func (fake *FakeContext) JSONPrettyCalls(stub func(int, interface{}, string) error) {
+func (fake *FakeContext) JSONPrettyCalls(stub func(int, any, string) error) {
 	fake.jSONPrettyMutex.Lock()
 	defer fake.jSONPrettyMutex.Unlock()
 	fake.JSONPrettyStub = stub
 }
 
-func (fake *FakeContext) JSONPrettyArgsForCall(i int) (int, interface{}, string) {
+func (fake *FakeContext) JSONPrettyArgsForCall(i int) (int, any, string) {
 	fake.jSONPrettyMutex.RLock()
 	defer fake.jSONPrettyMutex.RUnlock()
 	argsForCall := fake.jSONPrettyArgsForCall[i]
@@ -1948,7 +1948,7 @@ func (fake *FakeContext) Logger() echo.Logger {
 	}{})
 	stub := fake.LoggerStub
 	fakeReturns := fake.loggerReturns
-	fake.recordInvocation("Logger", []interface{}{})
+	fake.recordInvocation("Logger", []any{})
 	fake.loggerMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2001,7 +2001,7 @@ func (fake *FakeContext) MultipartForm() (*multipart.Form, error) {
 	}{})
 	stub := fake.MultipartFormStub
 	fakeReturns := fake.multipartFormReturns
-	fake.recordInvocation("MultipartForm", []interface{}{})
+	fake.recordInvocation("MultipartForm", []any{})
 	fake.multipartFormMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2058,7 +2058,7 @@ func (fake *FakeContext) NoContent(arg1 int) error {
 	}{arg1})
 	stub := fake.NoContentStub
 	fakeReturns := fake.noContentReturns
-	fake.recordInvocation("NoContent", []interface{}{arg1})
+	fake.recordInvocation("NoContent", []any{arg1})
 	fake.noContentMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -2119,7 +2119,7 @@ func (fake *FakeContext) Param(arg1 string) string {
 	}{arg1})
 	stub := fake.ParamStub
 	fakeReturns := fake.paramReturns
-	fake.recordInvocation("Param", []interface{}{arg1})
+	fake.recordInvocation("Param", []any{arg1})
 	fake.paramMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -2179,7 +2179,7 @@ func (fake *FakeContext) ParamNames() []string {
 	}{})
 	stub := fake.ParamNamesStub
 	fakeReturns := fake.paramNamesReturns
-	fake.recordInvocation("ParamNames", []interface{}{})
+	fake.recordInvocation("ParamNames", []any{})
 	fake.paramNamesMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2232,7 +2232,7 @@ func (fake *FakeContext) ParamValues() []string {
 	}{})
 	stub := fake.ParamValuesStub
 	fakeReturns := fake.paramValuesReturns
-	fake.recordInvocation("ParamValues", []interface{}{})
+	fake.recordInvocation("ParamValues", []any{})
 	fake.paramValuesMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2285,7 +2285,7 @@ func (fake *FakeContext) Path() string {
 	}{})
 	stub := fake.PathStub
 	fakeReturns := fake.pathReturns
-	fake.recordInvocation("Target", []interface{}{})
+	fake.recordInvocation("Target", []any{})
 	fake.pathMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2339,7 +2339,7 @@ func (fake *FakeContext) QueryParam(arg1 string) string {
 	}{arg1})
 	stub := fake.QueryParamStub
 	fakeReturns := fake.queryParamReturns
-	fake.recordInvocation("QueryParam", []interface{}{arg1})
+	fake.recordInvocation("QueryParam", []any{arg1})
 	fake.queryParamMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -2399,7 +2399,7 @@ func (fake *FakeContext) QueryParams() url.Values {
 	}{})
 	stub := fake.QueryParamsStub
 	fakeReturns := fake.queryParamsReturns
-	fake.recordInvocation("QueryParams", []interface{}{})
+	fake.recordInvocation("QueryParams", []any{})
 	fake.queryParamsMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2452,7 +2452,7 @@ func (fake *FakeContext) QueryString() string {
 	}{})
 	stub := fake.QueryStringStub
 	fakeReturns := fake.queryStringReturns
-	fake.recordInvocation("QueryString", []interface{}{})
+	fake.recordInvocation("QueryString", []any{})
 	fake.queryStringMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2505,7 +2505,7 @@ func (fake *FakeContext) RealIP() string {
 	}{})
 	stub := fake.RealIPStub
 	fakeReturns := fake.realIPReturns
-	fake.recordInvocation("RealIP", []interface{}{})
+	fake.recordInvocation("RealIP", []any{})
 	fake.realIPMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2560,7 +2560,7 @@ func (fake *FakeContext) Redirect(arg1 int, arg2 string) error {
 	}{arg1, arg2})
 	stub := fake.RedirectStub
 	fakeReturns := fake.redirectReturns
-	fake.recordInvocation("Redirect", []interface{}{arg1, arg2})
+	fake.recordInvocation("Redirect", []any{arg1, arg2})
 	fake.redirectMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -2613,17 +2613,17 @@ func (fake *FakeContext) RedirectReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) Render(arg1 int, arg2 string, arg3 interface{}) error {
+func (fake *FakeContext) Render(arg1 int, arg2 string, arg3 any) error {
 	fake.renderMutex.Lock()
 	ret, specificReturn := fake.renderReturnsOnCall[len(fake.renderArgsForCall)]
 	fake.renderArgsForCall = append(fake.renderArgsForCall, struct {
 		arg1 int
 		arg2 string
-		arg3 interface{}
+		arg3 any
 	}{arg1, arg2, arg3})
 	stub := fake.RenderStub
 	fakeReturns := fake.renderReturns
-	fake.recordInvocation("Render", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("Render", []any{arg1, arg2, arg3})
 	fake.renderMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -2640,13 +2640,13 @@ func (fake *FakeContext) RenderCallCount() int {
 	return len(fake.renderArgsForCall)
 }
 
-func (fake *FakeContext) RenderCalls(stub func(int, string, interface{}) error) {
+func (fake *FakeContext) RenderCalls(stub func(int, string, any) error) {
 	fake.renderMutex.Lock()
 	defer fake.renderMutex.Unlock()
 	fake.RenderStub = stub
 }
 
-func (fake *FakeContext) RenderArgsForCall(i int) (int, string, interface{}) {
+func (fake *FakeContext) RenderArgsForCall(i int) (int, string, any) {
 	fake.renderMutex.RLock()
 	defer fake.renderMutex.RUnlock()
 	argsForCall := fake.renderArgsForCall[i]
@@ -2683,7 +2683,7 @@ func (fake *FakeContext) Request() *http.Request {
 	}{})
 	stub := fake.RequestStub
 	fakeReturns := fake.requestReturns
-	fake.recordInvocation("Request", []interface{}{})
+	fake.recordInvocation("Request", []any{})
 	fake.requestMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2736,7 +2736,7 @@ func (fake *FakeContext) Reset(arg1 *http.Request, arg2 http.ResponseWriter) {
 		arg2 http.ResponseWriter
 	}{arg1, arg2})
 	stub := fake.ResetStub
-	fake.recordInvocation("Reset", []interface{}{arg1, arg2})
+	fake.recordInvocation("Reset", []any{arg1, arg2})
 	fake.resetMutex.Unlock()
 	if stub != nil {
 		fake.ResetStub(arg1, arg2)
@@ -2769,7 +2769,7 @@ func (fake *FakeContext) Response() *echo.Response {
 	}{})
 	stub := fake.ResponseStub
 	fakeReturns := fake.responseReturns
-	fake.recordInvocation("Response", []interface{}{})
+	fake.recordInvocation("Response", []any{})
 	fake.responseMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2822,7 +2822,7 @@ func (fake *FakeContext) Scheme() string {
 	}{})
 	stub := fake.SchemeStub
 	fakeReturns := fake.schemeReturns
-	fake.recordInvocation("Scheme", []interface{}{})
+	fake.recordInvocation("Scheme", []any{})
 	fake.schemeMutex.Unlock()
 	if stub != nil {
 		return stub()
@@ -2868,14 +2868,14 @@ func (fake *FakeContext) SchemeReturnsOnCall(i int, result1 string) {
 	}{result1}
 }
 
-func (fake *FakeContext) Set(arg1 string, arg2 interface{}) {
+func (fake *FakeContext) Set(arg1 string, arg2 any) {
 	fake.setMutex.Lock()
 	fake.setArgsForCall = append(fake.setArgsForCall, struct {
 		arg1 string
-		arg2 interface{}
+		arg2 any
 	}{arg1, arg2})
 	stub := fake.SetStub
-	fake.recordInvocation("Set", []interface{}{arg1, arg2})
+	fake.recordInvocation("Set", []any{arg1, arg2})
 	fake.setMutex.Unlock()
 	if stub != nil {
 		fake.SetStub(arg1, arg2)
@@ -2888,13 +2888,13 @@ func (fake *FakeContext) SetCallCount() int {
 	return len(fake.setArgsForCall)
 }
 
-func (fake *FakeContext) SetCalls(stub func(string, interface{})) {
+func (fake *FakeContext) SetCalls(stub func(string, any)) {
 	fake.setMutex.Lock()
 	defer fake.setMutex.Unlock()
 	fake.SetStub = stub
 }
 
-func (fake *FakeContext) SetArgsForCall(i int) (string, interface{}) {
+func (fake *FakeContext) SetArgsForCall(i int) (string, any) {
 	fake.setMutex.RLock()
 	defer fake.setMutex.RUnlock()
 	argsForCall := fake.setArgsForCall[i]
@@ -2907,7 +2907,7 @@ func (fake *FakeContext) SetCookie(arg1 *http.Cookie) {
 		arg1 *http.Cookie
 	}{arg1})
 	stub := fake.SetCookieStub
-	fake.recordInvocation("SetCookie", []interface{}{arg1})
+	fake.recordInvocation("SetCookie", []any{arg1})
 	fake.setCookieMutex.Unlock()
 	if stub != nil {
 		fake.SetCookieStub(arg1)
@@ -2939,7 +2939,7 @@ func (fake *FakeContext) SetHandler(arg1 echo.HandlerFunc) {
 		arg1 echo.HandlerFunc
 	}{arg1})
 	stub := fake.SetHandlerStub
-	fake.recordInvocation("SetHandler", []interface{}{arg1})
+	fake.recordInvocation("SetHandler", []any{arg1})
 	fake.setHandlerMutex.Unlock()
 	if stub != nil {
 		fake.SetHandlerStub(arg1)
@@ -2971,7 +2971,7 @@ func (fake *FakeContext) SetLogger(arg1 echo.Logger) {
 		arg1 echo.Logger
 	}{arg1})
 	stub := fake.SetLoggerStub
-	fake.recordInvocation("SetLogger", []interface{}{arg1})
+	fake.recordInvocation("SetLogger", []any{arg1})
 	fake.setLoggerMutex.Unlock()
 	if stub != nil {
 		fake.SetLoggerStub(arg1)
@@ -3003,7 +3003,7 @@ func (fake *FakeContext) SetParamNames(arg1 ...string) {
 		arg1 []string
 	}{arg1})
 	stub := fake.SetParamNamesStub
-	fake.recordInvocation("SetParamNames", []interface{}{arg1})
+	fake.recordInvocation("SetParamNames", []any{arg1})
 	fake.setParamNamesMutex.Unlock()
 	if stub != nil {
 		fake.SetParamNamesStub(arg1...)
@@ -3035,7 +3035,7 @@ func (fake *FakeContext) SetParamValues(arg1 ...string) {
 		arg1 []string
 	}{arg1})
 	stub := fake.SetParamValuesStub
-	fake.recordInvocation("SetParamValues", []interface{}{arg1})
+	fake.recordInvocation("SetParamValues", []any{arg1})
 	fake.setParamValuesMutex.Unlock()
 	if stub != nil {
 		fake.SetParamValuesStub(arg1...)
@@ -3067,7 +3067,7 @@ func (fake *FakeContext) SetPath(arg1 string) {
 		arg1 string
 	}{arg1})
 	stub := fake.SetPathStub
-	fake.recordInvocation("SetPath", []interface{}{arg1})
+	fake.recordInvocation("SetPath", []any{arg1})
 	fake.setPathMutex.Unlock()
 	if stub != nil {
 		fake.SetPathStub(arg1)
@@ -3099,7 +3099,7 @@ func (fake *FakeContext) SetRequest(arg1 *http.Request) {
 		arg1 *http.Request
 	}{arg1})
 	stub := fake.SetRequestStub
-	fake.recordInvocation("SetRequest", []interface{}{arg1})
+	fake.recordInvocation("SetRequest", []any{arg1})
 	fake.setRequestMutex.Unlock()
 	if stub != nil {
 		fake.SetRequestStub(arg1)
@@ -3131,7 +3131,7 @@ func (fake *FakeContext) SetResponse(arg1 *echo.Response) {
 		arg1 *echo.Response
 	}{arg1})
 	stub := fake.SetResponseStub
-	fake.recordInvocation("SetResponse", []interface{}{arg1})
+	fake.recordInvocation("SetResponse", []any{arg1})
 	fake.setResponseMutex.Unlock()
 	if stub != nil {
 		fake.SetResponseStub(arg1)
@@ -3167,7 +3167,7 @@ func (fake *FakeContext) Stream(arg1 int, arg2 string, arg3 io.Reader) error {
 	}{arg1, arg2, arg3})
 	stub := fake.StreamStub
 	fakeReturns := fake.streamReturns
-	fake.recordInvocation("Stream", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("Stream", []any{arg1, arg2, arg3})
 	fake.streamMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -3229,7 +3229,7 @@ func (fake *FakeContext) String(arg1 int, arg2 string) error {
 	}{arg1, arg2})
 	stub := fake.StringStub
 	fakeReturns := fake.stringReturns
-	fake.recordInvocation("String", []interface{}{arg1, arg2})
+	fake.recordInvocation("String", []any{arg1, arg2})
 	fake.stringMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -3282,15 +3282,15 @@ func (fake *FakeContext) StringReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) Validate(arg1 interface{}) error {
+func (fake *FakeContext) Validate(arg1 any) error {
 	fake.validateMutex.Lock()
 	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
 	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
-		arg1 interface{}
+		arg1 any
 	}{arg1})
 	stub := fake.ValidateStub
 	fakeReturns := fake.validateReturns
-	fake.recordInvocation("Validate", []interface{}{arg1})
+	fake.recordInvocation("Validate", []any{arg1})
 	fake.validateMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -3307,13 +3307,13 @@ func (fake *FakeContext) ValidateCallCount() int {
 	return len(fake.validateArgsForCall)
 }
 
-func (fake *FakeContext) ValidateCalls(stub func(interface{}) error) {
+func (fake *FakeContext) ValidateCalls(stub func(any) error) {
 	fake.validateMutex.Lock()
 	defer fake.validateMutex.Unlock()
 	fake.ValidateStub = stub
 }
 
-func (fake *FakeContext) ValidateArgsForCall(i int) interface{} {
+func (fake *FakeContext) ValidateArgsForCall(i int) any {
 	fake.validateMutex.RLock()
 	defer fake.validateMutex.RUnlock()
 	argsForCall := fake.validateArgsForCall[i]
@@ -3343,16 +3343,16 @@ func (fake *FakeContext) ValidateReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) XML(arg1 int, arg2 interface{}) error {
+func (fake *FakeContext) XML(arg1 int, arg2 any) error {
 	fake.xMLMutex.Lock()
 	ret, specificReturn := fake.xMLReturnsOnCall[len(fake.xMLArgsForCall)]
 	fake.xMLArgsForCall = append(fake.xMLArgsForCall, struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 	}{arg1, arg2})
 	stub := fake.XMLStub
 	fakeReturns := fake.xMLReturns
-	fake.recordInvocation("XML", []interface{}{arg1, arg2})
+	fake.recordInvocation("XML", []any{arg1, arg2})
 	fake.xMLMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -3369,13 +3369,13 @@ func (fake *FakeContext) XMLCallCount() int {
 	return len(fake.xMLArgsForCall)
 }
 
-func (fake *FakeContext) XMLCalls(stub func(int, interface{}) error) {
+func (fake *FakeContext) XMLCalls(stub func(int, any) error) {
 	fake.xMLMutex.Lock()
 	defer fake.xMLMutex.Unlock()
 	fake.XMLStub = stub
 }
 
-func (fake *FakeContext) XMLArgsForCall(i int) (int, interface{}) {
+func (fake *FakeContext) XMLArgsForCall(i int) (int, any) {
 	fake.xMLMutex.RLock()
 	defer fake.xMLMutex.RUnlock()
 	argsForCall := fake.xMLArgsForCall[i]
@@ -3419,7 +3419,7 @@ func (fake *FakeContext) XMLBlob(arg1 int, arg2 []byte) error {
 	}{arg1, arg2Copy})
 	stub := fake.XMLBlobStub
 	fakeReturns := fake.xMLBlobReturns
-	fake.recordInvocation("XMLBlob", []interface{}{arg1, arg2Copy})
+	fake.recordInvocation("XMLBlob", []any{arg1, arg2Copy})
 	fake.xMLBlobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
@@ -3472,17 +3472,17 @@ func (fake *FakeContext) XMLBlobReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) XMLPretty(arg1 int, arg2 interface{}, arg3 string) error {
+func (fake *FakeContext) XMLPretty(arg1 int, arg2 any, arg3 string) error {
 	fake.xMLPrettyMutex.Lock()
 	ret, specificReturn := fake.xMLPrettyReturnsOnCall[len(fake.xMLPrettyArgsForCall)]
 	fake.xMLPrettyArgsForCall = append(fake.xMLPrettyArgsForCall, struct {
 		arg1 int
-		arg2 interface{}
+		arg2 any
 		arg3 string
 	}{arg1, arg2, arg3})
 	stub := fake.XMLPrettyStub
 	fakeReturns := fake.xMLPrettyReturns
-	fake.recordInvocation("XMLPretty", []interface{}{arg1, arg2, arg3})
+	fake.recordInvocation("XMLPretty", []any{arg1, arg2, arg3})
 	fake.xMLPrettyMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2, arg3)
@@ -3499,13 +3499,13 @@ func (fake *FakeContext) XMLPrettyCallCount() int {
 	return len(fake.xMLPrettyArgsForCall)
 }
 
-func (fake *FakeContext) XMLPrettyCalls(stub func(int, interface{}, string) error) {
+func (fake *FakeContext) XMLPrettyCalls(stub func(int, any, string) error) {
 	fake.xMLPrettyMutex.Lock()
 	defer fake.xMLPrettyMutex.Unlock()
 	fake.XMLPrettyStub = stub
 }
 
-func (fake *FakeContext) XMLPrettyArgsForCall(i int) (int, interface{}, string) {
+func (fake *FakeContext) XMLPrettyArgsForCall(i int) (int, any, string) {
 	fake.xMLPrettyMutex.RLock()
 	defer fake.xMLPrettyMutex.RUnlock()
 	argsForCall := fake.xMLPrettyArgsForCall[i]
@@ -3535,7 +3535,7 @@ func (fake *FakeContext) XMLPrettyReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeContext) Invocations() map[string][][]interface{} {
+func (fake *FakeContext) Invocations() map[string][][]any {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.attachmentMutex.RLock()
@@ -3648,21 +3648,21 @@ func (fake *FakeContext) Invocations() map[string][][]interface{} {
 	defer fake.xMLBlobMutex.RUnlock()
 	fake.xMLPrettyMutex.RLock()
 	defer fake.xMLPrettyMutex.RUnlock()
-	copiedInvocations := map[string][][]interface{}{}
+	copiedInvocations := map[string][][]any{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
 	}
 	return copiedInvocations
 }
 
-func (fake *FakeContext) recordInvocation(key string, args []interface{}) {
+func (fake *FakeContext) recordInvocation(key string, args []any) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
+		fake.invocations = map[string][][]any{}
 	}
 	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
+		fake.invocations[key] = [][]any{}
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }

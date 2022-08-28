@@ -59,7 +59,7 @@ var (
 	valueNotString = domains.New("Unexpected: the retrieved value is not string type")
 )
 
-func getStringField(claims map[string]interface{}, key string) (string, error) {
+func getStringField(claims map[string]any, key string) (string, error) {
 	value, ok := claims[key]
 	if !ok {
 		return "", errors.Wrap(keyNotFound, "The key "+key+" couldn't be found")

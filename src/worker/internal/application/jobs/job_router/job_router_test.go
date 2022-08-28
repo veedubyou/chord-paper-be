@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/rabbitmq/amqp091-go"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -19,7 +20,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start/startfakes"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/transferfakes"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
@@ -51,13 +51,16 @@ var _ = Describe("JobRouter", func() {
 
 					_ = jobRouter.HandleMessage(message)
 
-					track, err := trackStore.GetTrack(context.Background(), tracklistID, trackID)
+					tracklist, err := trackStore.GetTrackList(context.Background(), tracklistID)
 					Expect(err).NotTo(HaveOccurred())
 
-					stemTrack, ok := track.(entity.SplitStemTrack)
+					track, err := tracklist.GetTrack(trackID)
+					Expect(err).NotTo(HaveOccurred())
+
+					stemTrack, ok := track.(*trackentity.SplitRequestTrack)
 					Expect(ok).To(BeTrue())
 
-					Expect(stemTrack.JobStatus).To(Equal(entity.ErrorStatus))
+					Expect(stemTrack.Status).To(Equal(trackentity.ErrorStatus))
 				})
 
 				It("returns an error", func() {
@@ -75,13 +78,16 @@ var _ = Describe("JobRouter", func() {
 			It("updates the progress", func() {
 				_ = jobRouter.HandleMessage(message)
 
-				track, err := trackStore.GetTrack(context.Background(), tracklistID, trackID)
+				tracklist, err := trackStore.GetTrackList(context.Background(), tracklistID)
 				Expect(err).NotTo(HaveOccurred())
 
-				stemTrack, ok := track.(entity.SplitStemTrack)
+				track, err := tracklist.GetTrack(trackID)
+				Expect(err).NotTo(HaveOccurred())
+
+				stemTrack, ok := track.(*trackentity.SplitRequestTrack)
 				Expect(ok).To(BeTrue())
 
-				Expect(stemTrack.JobProgress).To(BeNumerically(">", 0))
+				Expect(stemTrack.Progress).To(BeNumerically(">", 0))
 			})
 		}
 	)
@@ -111,17 +117,21 @@ var _ = Describe("JobRouter", func() {
 		})
 
 		By("Setting up the track store", func() {
-			track := entity.SplitStemTrack{
-				BaseTrack: entity.BaseTrack{
-					TrackType: entity.SplitFourStemsType,
+			tracklist := trackentity.TrackList{}
+			tracklist.Defined.SongID = tracklistID
+			tracklist.Defined.Tracks = trackentity.Tracks{
+				&trackentity.SplitRequestTrack{
+					TrackFields:    trackentity.TrackFields{ID: trackID},
+					TrackType:      trackentity.SplitFourStemsType,
+					OriginalURL:    "",
+					Status:         trackentity.RequestedStatus,
+					StatusMessage:  "",
+					StatusDebugLog: "",
+					Progress:       0,
 				},
-				OriginalURL:       "",
-				JobStatus:         entity.RequestedStatus,
-				JobStatusMessage:  "",
-				JobStatusDebugLog: "",
-				JobProgress:       0,
 			}
-			err := trackStore.SetTrack(context.Background(), tracklistID, trackID, track)
+
+			err := trackStore.SetTrackList(context.Background(), tracklist)
 			Expect(err).NotTo(HaveOccurred())
 		})
 	})
@@ -300,16 +310,19 @@ var _ = Describe("JobRouter", func() {
 			})
 
 			It("doesn't update progress", func() {
-				track, err := trackStore.GetTrack(context.Background(), tracklistID, trackID)
+				tracklist, err := trackStore.GetTrackList(context.Background(), tracklistID)
+				Expect(err).NotTo(HaveOccurred())
+
+				track, err := tracklist.GetTrack(trackID)
 				Expect(err).NotTo(HaveOccurred())
 
 				// technically in the real run this would not be a split stem track anymore
 				// because this job would have updated it to a loaded stem track
 				// however, this was mocked out and we still want to assert this behaviour
-				stemTrack, ok := track.(entity.SplitStemTrack)
+				stemTrack, ok := track.(*trackentity.SplitRequestTrack)
 				Expect(ok).To(BeTrue())
 
-				Expect(stemTrack.JobProgress).To(BeZero())
+				Expect(stemTrack.Progress).To(BeZero())
 			})
 		})
 

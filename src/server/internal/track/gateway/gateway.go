@@ -6,9 +6,9 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/api"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/errors/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/lib/request"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/errors"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/usecase"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"net/http"
 )
 

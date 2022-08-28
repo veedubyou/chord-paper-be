@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/entity"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
 	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/entity"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/storage"
 )
 
 var _ = Describe("Track DB", func() {
@@ -24,13 +24,13 @@ var _ = Describe("Track DB", func() {
 
 	Describe("UpdateTrack", func() {
 		var (
-			newTrack trackentity.Track
+			newTrack trackentity.GenericTrack
 		)
 
 		BeforeEach(func() {
-			newTrack = trackentity.Track{}
+			newTrack = trackentity.GenericTrack{}
 			newTrack.Defined.TrackType = "unrecognizable"
-			newTrack.Extra = map[string]interface{}{
+			newTrack.Extra = map[string]any{
 				"super-secret-data": "burp",
 			}
 		})
@@ -50,32 +50,30 @@ var _ = Describe("Track DB", func() {
 
 				tracklist = trackentity.TrackList{}
 				tracklist.Defined.SongID = uuid.New().String()
-				tracklist.Extra = map[string]interface{}{
+				tracklist.Extra = map[string]any{
 					"extra": "metadata",
 				}
 
-				track1 := trackentity.Track{}
+				track1 := trackentity.StemTrack{}
 				track1.CreateID()
-				track1.Defined.TrackType = "4stems"
-				track1.Extra = map[string]interface{}{}
+				track1.TrackType = "4stems"
 
-				track2 := trackentity.Track{}
+				track2 := trackentity.GenericTrack{}
 				track2.CreateID()
 				track2.Defined.TrackType = "accompaniment"
-				track2.Extra = map[string]interface{}{
+				track2.Extra = map[string]any{
 					"accompaniment_url": "accompaniment.mp3",
 				}
 
-				track3 := trackentity.Track{}
+				track3 := trackentity.SplitRequestTrack{}
 				track3.CreateID()
-				track3.Defined.TrackType = "split_2stems"
-				track3.Extra = map[string]interface{}{
-					"url": "song.mp3",
-				}
-				track3.InitializeSplitJob()
+				track3.TrackType = "split_2stems"
+				track3.OriginalURL = "song.mp3"
+
+				track3.InitializeRequest()
 
 				tracklist.Defined.Tracks = []trackentity.Track{
-					track1, track2, track3,
+					&track1, &track2, &track3,
 				}
 
 				Expect(trackSize).To(Equal(3))
@@ -85,7 +83,10 @@ var _ = Describe("Track DB", func() {
 			})
 
 			JustBeforeEach(func() {
-				setTrackErr = trackDB.UpdateTrack(context.Background(), tracklist.Defined.SongID, newTrack)
+				setter := func(_ trackentity.Track) (trackentity.Track, error) {
+					return &newTrack, nil
+				}
+				setTrackErr = trackDB.UpdateTrack(context.Background(), tracklist.Defined.SongID, newTrack.GetID(), setter)
 			})
 
 			AfterEach(func() {
@@ -96,7 +97,7 @@ var _ = Describe("Track DB", func() {
 				trackIndex := trackIndex
 				Describe(fmt.Sprintf("Setting the track in the index %d", trackIndex), func() {
 					BeforeEach(func() {
-						newTrack.Defined.ID = tracklist.Defined.Tracks[trackIndex].Defined.ID
+						newTrack.Defined.ID = tracklist.Defined.Tracks[trackIndex].GetID()
 					})
 
 					It("succeeds", func() {
@@ -106,7 +107,7 @@ var _ = Describe("Track DB", func() {
 					It("sets the track", func() {
 						fetchedTracklist := ExpectSuccess(trackDB.GetTrackList(context.Background(), tracklist.Defined.SongID))
 						expectedTrackList := tracklist
-						expectedTrackList.Defined.Tracks[trackIndex] = newTrack
+						expectedTrackList.Defined.Tracks[trackIndex] = &newTrack
 
 						Expect(fetchedTracklist).To(Equal(expectedTrackList))
 					})
@@ -131,7 +132,11 @@ var _ = Describe("Track DB", func() {
 			})
 
 			It("fails", func() {
-				err := trackDB.UpdateTrack(context.Background(), uuid.New().String(), newTrack)
+				setter := func(_ trackentity.Track) (trackentity.Track, error) {
+					return &newTrack, nil
+				}
+
+				err := trackDB.UpdateTrack(context.Background(), uuid.New().String(), newTrack.GetID(), setter)
 				Expect(err).To(HaveOccurred())
 			})
 		})

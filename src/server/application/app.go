@@ -14,7 +14,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/usecase"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/gateway"
-	"github.com/veedubyou/chord-paper-be/src/server/internal/track/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/track/usecase"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/gateway"
 	userstorage "github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
@@ -22,6 +21,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/shared/config"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
+	"github.com/veedubyou/chord-paper-be/src/shared/track/storage"
 	"net/http"
 )
 

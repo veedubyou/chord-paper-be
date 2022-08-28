@@ -12,7 +12,7 @@ import (
 
 var _ error = ContextualError{}
 
-type F map[string]interface{}
+type F map[string]any
 
 type ContextualError struct {
 	Context ErrorContext
@@ -20,11 +20,11 @@ type ContextualError struct {
 }
 
 type ErrorContext struct {
-	ContextFields map[string]interface{}
+	ContextFields map[string]any
 	WrappedError  error
 }
 
-func Field(key string, value interface{}) *ErrorContext {
+func Field(key string, value any) *ErrorContext {
 	ctx := &ErrorContext{}
 	return ctx.Field(key, value)
 }
@@ -50,7 +50,7 @@ func (c ContextualError) Unwrap() error {
 	return c.Context.WrappedError
 }
 
-func (c ContextualError) Fields() map[string]interface{} {
+func (c ContextualError) Fields() map[string]any {
 	return c.Context.ContextFields
 }
 
@@ -74,7 +74,7 @@ func (e ErrorContext) Error(msg string) ContextualError {
 }
 
 func (e ErrorContext) Clone() ErrorContext {
-	clonedFields := map[string]interface{}{}
+	clonedFields := map[string]any{}
 	for k, v := range e.ContextFields {
 		clonedFields[k] = v
 	}
@@ -85,7 +85,7 @@ func (e ErrorContext) Clone() ErrorContext {
 	}
 }
 
-func (e *ErrorContext) Field(key string, value interface{}) *ErrorContext {
+func (e *ErrorContext) Field(key string, value any) *ErrorContext {
 	newCtx := e.Clone()
 
 	newCtx.ensureFields()
@@ -113,6 +113,6 @@ func (e *ErrorContext) Wrap(err error) *ErrorContext {
 
 func (e *ErrorContext) ensureFields() {
 	if e.ContextFields == nil {
-		e.ContextFields = make(map[string]interface{})
+		e.ContextFields = make(map[string]any)
 	}
 }

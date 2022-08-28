@@ -22,7 +22,7 @@ type FakeSplitJobHandler struct {
 		result2 map[string]string
 		result3 error
 	}
-	invocations      map[string][][]interface{}
+	invocations      map[string][][]any
 	invocationsMutex sync.RWMutex
 }
 
@@ -39,7 +39,7 @@ func (fake *FakeSplitJobHandler) HandleSplitJob(arg1 []byte) (split.JobParams, m
 	}{arg1Copy})
 	stub := fake.HandleSplitJobStub
 	fakeReturns := fake.handleSplitJobReturns
-	fake.recordInvocation("HandleSplitJob", []interface{}{arg1Copy})
+	fake.recordInvocation("HandleSplitJob", []any{arg1Copy})
 	fake.handleSplitJobMutex.Unlock()
 	if stub != nil {
 		return stub(arg1)
@@ -98,26 +98,26 @@ func (fake *FakeSplitJobHandler) HandleSplitJobReturnsOnCall(i int, result1 spli
 	}{result1, result2, result3}
 }
 
-func (fake *FakeSplitJobHandler) Invocations() map[string][][]interface{} {
+func (fake *FakeSplitJobHandler) Invocations() map[string][][]any {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.handleSplitJobMutex.RLock()
 	defer fake.handleSplitJobMutex.RUnlock()
-	copiedInvocations := map[string][][]interface{}{}
+	copiedInvocations := map[string][][]any{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
 	}
 	return copiedInvocations
 }
 
-func (fake *FakeSplitJobHandler) recordInvocation(key string, args []interface{}) {
+func (fake *FakeSplitJobHandler) recordInvocation(key string, args []any) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
-		fake.invocations = map[string][][]interface{}{}
+		fake.invocations = map[string][][]any{}
 	}
 	if fake.invocations[key] == nil {
-		fake.invocations[key] = [][]interface{}{}
+		fake.invocations[key] = [][]any{}
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }

@@ -13,14 +13,14 @@ const (
 
 var _ dynamo.ItemUnmarshaler = &dbTrackList{}
 
-type dbTrackList map[string]interface{}
+type dbTrackList map[string]any
 
 func (d *dbTrackList) UnmarshalDynamoItem(dynamoItem map[string]*dynamodb.AttributeValue) error {
 	if err := dynamolib.ValidateStringField(dynamoItem, idKey); err != nil {
 		return mark.Wrap(err, UnmarshalMark, "Failed to validate id field")
 	}
 
-	plainMap := map[string]interface{}{}
+	plainMap := map[string]any{}
 	err := dynamo.UnmarshalItem(dynamoItem, &plainMap)
 	if err != nil {
 		return mark.Wrap(err, UnmarshalMark, "Failed to unmarshal dynamo item")
