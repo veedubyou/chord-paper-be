@@ -9,9 +9,6 @@ import (
 
 const (
 	InitialProgressPercentage = 5
-	RequestedStatus           = "requested"
-	ProcessingStatus          = "processing"
-	ErrorStatus               = "error"
 )
 
 type StemTrackType string
@@ -85,14 +82,22 @@ type StemTrack struct {
 	StemURLs  map[string]string `json:"stem_urls"`
 }
 
+type SplitRequestStatus string
+
+const (
+	RequestedStatus  SplitRequestStatus = "requested"
+	ProcessingStatus SplitRequestStatus = "processing"
+	ErrorStatus      SplitRequestStatus = "error"
+)
+
 type SplitRequestTrack struct {
 	TrackFields
-	TrackType      SplitRequestType `json:"track_type"`
-	OriginalURL    string           `json:"original_url"`
-	Status         string           `json:"job_status"`
-	StatusMessage  string           `json:"job_status_message"`
-	StatusDebugLog string           `json:"job_status_debug_log"`
-	Progress       int              `json:"job_progress"`
+	TrackType      SplitRequestType   `json:"track_type"`
+	OriginalURL    string             `json:"original_url"`
+	Status         SplitRequestStatus `json:"job_status"`
+	StatusMessage  string             `json:"job_status_message"`
+	StatusDebugLog string             `json:"job_status_debug_log"`
+	Progress       int                `json:"job_progress"`
 }
 
 func (g GenericTrack) GetID() string {

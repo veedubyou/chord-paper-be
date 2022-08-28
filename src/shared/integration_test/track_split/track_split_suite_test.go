@@ -7,6 +7,7 @@ import (
 	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
 	. "github.com/veedubyou/chord-paper-be/src/shared/testing"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -19,8 +20,10 @@ const (
 func TestTrackSplit(t *testing.T) {
 	// this test takes a lot of setup in the CI
 	// so this env var helps toggle it so that these test runs can be separated
-	if _, isSet := os.LookupEnv("SKIP_SPLIT_TRACK_TEST"); isSet {
-		t.Skip("Skipping split track integration test")
+	if skipSplitTest, isSet := os.LookupEnv("SKIP_SPLIT_TRACK_TEST"); isSet {
+		if strings.ToLower(skipSplitTest) == "true" {
+			t.Skip("Skipping split track integration test")
+		}
 	}
 
 	RegisterFailHandler(Fail)
