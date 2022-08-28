@@ -9,8 +9,8 @@ on:
       - 'src/shared/**'
 
 jobs:
-  worker-build-and-test:
-    name: Worker Gates
+  build-and-test:
+    name: Build and Test
     uses: ./.github/workflows/worker-build-and-test.yml
 
   split-track-test:
@@ -19,7 +19,7 @@ jobs:
 
   push:
     name: Build Image and Deploy
-    needs: [worker-build-and-test, split-track-test]
+    needs: [build-and-test, split-track-test]
     runs-on: cluster-runner
     steps:
       # Checkout with history (to get git describe output properly)

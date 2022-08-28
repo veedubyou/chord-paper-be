@@ -34,7 +34,7 @@ func WithUserCred(user User) RequestModifier {
 type RequestFactory struct {
 	Method  string
 	Target  string
-	JSONObj interface{}
+	JSONObj any
 	Mods    RequestModifiers
 }
 

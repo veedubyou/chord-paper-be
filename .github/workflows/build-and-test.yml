@@ -1,4 +1,4 @@
-name: Server Build/Test
+name: Build and Test
 
 on:
   workflow_call:
@@ -16,9 +16,13 @@ jobs:
           go-version: 1.18
           cache: true
 
-      - name: Build
+      - name: Server Build
         working-directory: ./src/server
         run: go build -v server.go
+
+      - name: Worker Build
+        working-directory: ./src/worker
+        run: go build -v worker.go
 
   test:
     name: Test
@@ -45,6 +49,8 @@ jobs:
           cache: true
 
       - name: Test
-        working-directory: ./src/server
+        working-directory: ./src
+        env:
+          SKIP_SPLIT_TRACK_TEST: true
         run: go test -v ./...
         

@@ -44,5 +44,5 @@ jobs:
           cache: true
 
       - name: Test
-        working-directory: ./src/shared/integration_test
+        working-directory: ./src/shared/integration_test/track_split
         run: go test -v ./...

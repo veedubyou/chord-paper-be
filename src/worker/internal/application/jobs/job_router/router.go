@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/save_stems_to_db"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
 func NewJobRouter(
-	trackStore entity.TrackStore,
+	trackStore trackentity.Store,
 	publisher rabbitmq.Publisher,
 	startHandler start.StartJobHandler,
 	transferHandler transfer.TransferJobHandler,
@@ -35,7 +35,7 @@ func NewJobRouter(
 
 type JobRouter struct {
 	publisher  rabbitmq.Publisher
-	trackStore entity.TrackStore
+	trackStore trackentity.Store
 
 	startHandler     start.StartJobHandler
 	transferHandler  transfer.TransferJobHandler
@@ -143,14 +143,14 @@ func (j JobRouter) updateProgress(message amqp091.Delivery, statusMessage string
 		return cerr.Wrap(err).Error("Failed to unmarshal job message")
 	}
 
-	updater := func(track entity.Track) (entity.Track, error) {
-		splitStemTrack, ok := track.(entity.SplitStemTrack)
+	updater := func(track trackentity.Track) (trackentity.Track, error) {
+		splitStemTrack, ok := track.(*trackentity.SplitRequestTrack)
 		if !ok {
-			return entity.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
+			return nil, cerr.Error("Track from DB is not a split stem track")
 		}
 
-		splitStemTrack.JobStatusMessage = statusMessage
-		splitStemTrack.JobProgress = progress
+		splitStemTrack.StatusMessage = statusMessage
+		splitStemTrack.Progress = progress
 
 		return splitStemTrack, nil
 	}
@@ -185,22 +185,22 @@ func (j JobRouter) handleError(message amqp091.Delivery, jobError error) error {
 		return cerr.Wrap(err).Error("Failed to report error to track DB")
 	}
 
-	updater := func(track entity.Track) (entity.Track, error) {
-		splitStemTrack, ok := track.(entity.SplitStemTrack)
+	setToErrorStatus := func(track trackentity.Track) (trackentity.Track, error) {
+		splitStemTrack, ok := track.(*trackentity.SplitRequestTrack)
 		if !ok {
-			return entity.BaseTrack{}, cerr.Error("Track from DB is not a split stem track")
+			return nil, cerr.Error("Track from DB is not a split stem track")
 		}
 
-		splitStemTrack.JobStatus = entity.ErrorStatus
-		splitStemTrack.JobStatusMessage = j.getErrorMessage(message.Type)
-		splitStemTrack.JobStatusDebugLog = jobError.Error()
+		splitStemTrack.Status = trackentity.ErrorStatus
+		splitStemTrack.StatusMessage = j.getErrorMessage(message.Type)
+		splitStemTrack.StatusDebugLog = jobError.Error()
 
 		return splitStemTrack, nil
 	}
 
-	err = j.trackStore.UpdateTrack(context.Background(), trackParams.TrackListID, trackParams.TrackID, updater)
+	err = j.trackStore.UpdateTrack(context.Background(), trackParams.TrackListID, trackParams.TrackID, setToErrorStatus)
 	if err != nil {
-		return cerr.Wrap(err).Error("Failed to update track")
+		return cerr.Wrap(err).Error("Failed to update track as error")
 	}
 
 	return nil
@@ -241,7 +241,7 @@ func createSaveStemsToDBJobMessage(tracklistID string, trackID string, stemURLs 
 	return createJobMessage(save_stems_to_db.JobType, job)
 }
 
-func createJobMessage(jobType string, message interface{}) (amqp091.Publishing, error) {
+func createJobMessage(jobType string, message any) (amqp091.Publishing, error) {
 	jsonBytes, err := json.Marshal(message)
 	if err != nil {
 		return amqp091.Publishing{}, cerr.Wrap(err).Error("Failed to marshal job params")

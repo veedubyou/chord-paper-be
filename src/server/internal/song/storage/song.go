@@ -14,7 +14,7 @@ const (
 
 var _ dynamo.ItemUnmarshaler = &dbSong{}
 
-type dbSong map[string]interface{}
+type dbSong map[string]any
 
 func (d *dbSong) UnmarshalDynamoItem(dynamoItem map[string]*dynamodb.AttributeValue) error {
 	if err := dynamolib.ValidateStringField(dynamoItem, idKey); err != nil {
@@ -25,7 +25,7 @@ func (d *dbSong) UnmarshalDynamoItem(dynamoItem map[string]*dynamodb.AttributeVa
 		return mark.Wrap(err, SongUnmarshalMark, "Failed to validate owner field")
 	}
 
-	plainMap := map[string]interface{}{}
+	plainMap := map[string]any{}
 	err := dynamo.UnmarshalItem(dynamoItem, &plainMap)
 	if err != nil {
 		return mark.Wrap(err, SongUnmarshalMark, "Failed to unmarshal dynamo item")

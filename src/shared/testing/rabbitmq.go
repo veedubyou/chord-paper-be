@@ -28,7 +28,7 @@ func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.QueuePublisher {
 
 type ReceivedMessage struct {
 	Type    string
-	Message map[string]interface{}
+	Message map[string]any
 }
 
 type RabbitMQConsumer struct {
@@ -73,7 +73,7 @@ func (r *RabbitMQConsumer) AsyncStart() {
 			continue
 		}
 
-		body := map[string]interface{}{}
+		body := map[string]any{}
 		err := json.Unmarshal(message.Body, &body)
 		if err != nil {
 			r.err = err

@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 )
 
 var _ = Describe("Start", func() {
@@ -35,13 +35,18 @@ var _ = Describe("Start", func() {
 		})
 
 		By("Setting up the dummy track store data", func() {
-			err := dummyTrackStore.SetTrack(context.Background(), tracklistID, trackID, entity.SplitStemTrack{
-				BaseTrack: entity.BaseTrack{
-					TrackType: entity.SplitFourStemsType,
+			tracklist := trackentity.TrackList{}
+			tracklist.Defined.SongID = tracklistID
+			tracklist.Defined.Tracks = trackentity.Tracks{
+				&trackentity.SplitRequestTrack{
+					TrackFields: trackentity.TrackFields{ID: trackID},
+					TrackType:   trackentity.SplitFourStemsType,
+					OriginalURL: "",
+					Status:      trackentity.RequestedStatus,
 				},
-				OriginalURL: "",
-				JobStatus:   entity.RequestedStatus,
-			})
+			}
+
+			err := dummyTrackStore.SetTrackList(context.Background(), tracklist)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -78,13 +83,16 @@ var _ = Describe("Start", func() {
 			})
 
 			It("updates the track status", func() {
-				track, err := dummyTrackStore.GetTrack(context.Background(), tracklistID, trackID)
+				tracklist, err := dummyTrackStore.GetTrackList(context.Background(), tracklistID)
 				Expect(err).NotTo(HaveOccurred())
 
-				splitStemTrack, ok := track.(entity.SplitStemTrack)
+				track, err := tracklist.GetTrack(trackID)
+				Expect(err).NotTo(HaveOccurred())
+
+				splitStemTrack, ok := track.(*trackentity.SplitRequestTrack)
 				Expect(ok).To(BeTrue())
 
-				Expect(splitStemTrack.JobStatus).To(Equal(entity.ProcessingStatus))
+				Expect(splitStemTrack.Status).To(Equal(trackentity.ProcessingStatus))
 			})
 
 			It("returns the processed data", func() {

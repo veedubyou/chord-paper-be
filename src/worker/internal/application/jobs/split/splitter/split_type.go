@@ -1,7 +1,7 @@
 package splitter
 
 import (
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 )
 
@@ -14,13 +14,13 @@ const (
 	SplitFiveStemsType SplitType = "5stems"
 )
 
-func ConvertToSplitType(trackType entity.TrackType) (SplitType, error) {
+func ConvertToSplitType(trackType trackentity.SplitRequestType) (SplitType, error) {
 	switch trackType {
-	case entity.SplitTwoStemsType:
+	case trackentity.SplitTwoStemsType:
 		return SplitTwoStemsType, nil
-	case entity.SplitFourStemsType:
+	case trackentity.SplitFourStemsType:
 		return SplitFourStemsType, nil
-	case entity.SplitFiveStemsType:
+	case trackentity.SplitFiveStemsType:
 		return SplitFiveStemsType, nil
 	default:
 		return InvalidSplitType,

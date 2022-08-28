@@ -4,10 +4,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/guregu/dynamo"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/shared/config"
+	dynamolib "github.com/veedubyou/chord-paper-be/src/shared/lib/dynamo"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/rabbitmq"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
+	trackstorage "github.com/veedubyou/chord-paper-be/src/shared/track/storage"
 	filestore "github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/executor"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
@@ -18,7 +21,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
-	trackstore "github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/store"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
@@ -75,7 +77,7 @@ func (a *App) Stop() {
 func newWorker(config Config, consumerConn *amqp091.Connection, producerConn *amqp091.Connection) worker.QueueWorker {
 	publisher := newPublisher(config, producerConn)
 
-	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB(config.DynamoConfig))
+	trackStore := trackstorage.NewDB(newDynamoDB(config.DynamoConfig))
 	queueWorker := must(worker.NewQueueWorkerFromConnection(
 		consumerConn,
 		config.RabbitMQQueueName,
@@ -89,7 +91,7 @@ func newPublisher(config Config, conn *amqp091.Connection) rabbitmq.QueuePublish
 	return publisher
 }
 
-func newDynamoDB(dynamoConfig config.Dynamo) *dynamodb.DynamoDB {
+func newDynamoDB(dynamoConfig config.Dynamo) dynamolib.DynamoDBWrapper {
 	dbSession := session.Must(session.NewSession())
 
 	var dbConfig *aws.Config
@@ -118,7 +120,9 @@ func newDynamoDB(dynamoConfig config.Dynamo) *dynamodb.DynamoDB {
 		panic("Unexpected dynamo config type")
 	}
 
-	return dynamodb.New(dbSession, dbConfig)
+	return dynamolib.DynamoDBWrapper{
+		DB: dynamo.New(dbSession, dbConfig),
+	}
 }
 
 func newGoogleFileStore(cloudStorageConfig config.CloudStorage) filestore.GoogleFileStore {
@@ -141,7 +145,7 @@ func newGoogleFileStore(cloudStorageConfig config.CloudStorage) filestore.Google
 	}
 }
 
-func newJobRouter(config Config, trackStore trackstore.DynamoDBTrackStore, publisher rabbitmq.Publisher) job_router.JobRouter {
+func newJobRouter(config Config, trackStore trackentity.Store, publisher rabbitmq.Publisher) job_router.JobRouter {
 	pathGenerator := storagepath.Generator{
 		Host:   config.CloudStorageConfig.GetStorageHost(),
 		Bucket: config.CloudStorageConfig.GetBucket(),
@@ -156,7 +160,7 @@ func newJobRouter(config Config, trackStore trackstore.DynamoDBTrackStore, publi
 		newSaveToDBJobHandler(trackStore))
 }
 
-func newStartJobHandler(trackStore trackstore.DynamoDBTrackStore) start.JobHandler {
+func newStartJobHandler(trackStore trackentity.Store) start.JobHandler {
 	return start.NewJobHandler(trackStore)
 }
 
@@ -170,7 +174,7 @@ func newDownloadJobHandler(config Config, pathGenerator storagepath.Generator) t
 
 	selectdler := download.NewSelectDLer(youtubedler, genericdler)
 
-	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB(config.DynamoConfig))
+	trackStore := trackstorage.NewDB(newDynamoDB(config.DynamoConfig))
 	trackDownloader := must(transfer.NewTrackTransferrer(
 		selectdler,
 		trackStore,
@@ -200,7 +204,7 @@ func newSplitJobHandler(config Config, pathGenerator storagepath.Generator) spli
 		localUsecase,
 	))
 
-	trackStore := trackstore.NewDynamoDBTrackStore(newDynamoDB(config.DynamoConfig))
+	trackStore := trackstorage.NewDB(newDynamoDB(config.DynamoConfig))
 
 	songSplitUsecase := splitter.NewTrackSplitter(
 		remoteUsecase,
@@ -211,6 +215,6 @@ func newSplitJobHandler(config Config, pathGenerator storagepath.Generator) spli
 	return split.NewJobHandler(songSplitUsecase)
 }
 
-func newSaveToDBJobHandler(trackStore trackstore.DynamoDBTrackStore) save_stems_to_db.JobHandler {
+func newSaveToDBJobHandler(trackStore trackentity.Store) save_stems_to_db.JobHandler {
 	return save_stems_to_db.NewJobHandler(trackStore)
 }

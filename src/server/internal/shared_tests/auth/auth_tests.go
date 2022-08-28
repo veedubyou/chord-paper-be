@@ -14,7 +14,7 @@ import (
 // and JSONBody optionally
 var (
 	Endpoint func(c echo.Context) error
-	JSONBody interface{}
+	JSONBody any
 )
 
 func ItRejectsUnpermittedRequests(method string, path string) {

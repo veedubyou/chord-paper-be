@@ -7,11 +7,11 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
 
@@ -51,12 +51,17 @@ var _ = Describe("Download Job Handler", func() {
 		})
 
 		By("Setting up the dummy track store data", func() {
-			err := dummyTrackStore.SetTrack(context.Background(), tracklistID, trackID, entity.SplitStemTrack{
-				BaseTrack: entity.BaseTrack{
-					TrackType: entity.SplitFourStemsType,
+			tracklist := trackentity.TrackList{}
+			tracklist.Defined.SongID = tracklistID
+			tracklist.Defined.Tracks = trackentity.Tracks{
+				&trackentity.SplitRequestTrack{
+					TrackFields: trackentity.TrackFields{ID: trackID},
+					TrackType:   trackentity.SplitFourStemsType,
+					OriginalURL: originalURL,
 				},
-				OriginalURL: originalURL,
-			})
+			}
+
+			err := dummyTrackStore.SetTrackList(context.Background(), tracklist)
 			Expect(err).NotTo(HaveOccurred())
 		})
 

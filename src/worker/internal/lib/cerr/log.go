@@ -7,7 +7,7 @@ import (
 )
 
 type Fielder interface {
-	Fields() map[string]interface{}
+	Fields() map[string]any
 }
 
 func Log(err error) {

@@ -2,7 +2,7 @@ package splitter
 
 import (
 	"context"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
@@ -14,12 +14,12 @@ var splitDirNames = map[SplitType]string{
 }
 
 type TrackSplitter struct {
-	trackStore    entity.TrackStore
+	trackStore    trackentity.Store
 	splitter      FileSplitter
 	pathGenerator storagepath.Generator
 }
 
-func NewTrackSplitter(splitter FileSplitter, trackStore entity.TrackStore, pathGenerator storagepath.Generator) TrackSplitter {
+func NewTrackSplitter(splitter FileSplitter, trackStore trackentity.Store, pathGenerator storagepath.Generator) TrackSplitter {
 	return TrackSplitter{
 		trackStore:    trackStore,
 		splitter:      splitter,
@@ -34,12 +34,17 @@ func (t TrackSplitter) SplitTrack(ctx context.Context, tracklistID string, track
 		"saved_original_url": savedOriginalURL,
 	})
 
-	track, err := t.trackStore.GetTrack(ctx, tracklistID, trackID)
+	tracklist, err := t.trackStore.GetTrackList(ctx, tracklistID)
 	if err != nil {
-		return nil, errctx.Wrap(err).Error("Failed to get track from track store")
+		return nil, errctx.Wrap(err).Error("Failed to get tracklist from track store")
 	}
 
-	splitStemTrack, ok := track.(entity.SplitStemTrack)
+	track, err := tracklist.GetTrack(trackID)
+	if err != nil {
+		return nil, errctx.Wrap(err).Error("Failed to get track from tracklist")
+	}
+
+	splitStemTrack, ok := track.(*trackentity.SplitRequestTrack)
 	if !ok {
 		return nil, errctx.Error("Unexpected: track is not a split request")
 	}

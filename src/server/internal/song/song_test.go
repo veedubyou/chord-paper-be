@@ -37,7 +37,7 @@ var _ = Describe("Song", func() {
 		songGateway = songgateway.NewGateway(songUsecase)
 	})
 
-	var getSong = func(songID string) map[string]interface{} {
+	var getSong = func(songID string) map[string]any {
 		getRequest := testing.RequestFactory{
 			Method:  "GET",
 			Target:  fmt.Sprintf("/songs/%s", songID),
@@ -49,10 +49,10 @@ var _ = Describe("Song", func() {
 		err := songGateway.GetSong(c, songID)
 		Expect(err).NotTo(HaveOccurred())
 
-		return testing.DecodeJSON[map[string]interface{}](getResponse.Body)
+		return testing.DecodeJSON[map[string]any](getResponse.Body)
 	}
 
-	var createSong = func(songPayload map[string]interface{}) (string, map[string]interface{}) {
+	var createSong = func(songPayload map[string]any) (string, map[string]any) {
 		response := httptest.NewRecorder()
 
 		By("First creating a song", func() {
@@ -71,7 +71,7 @@ var _ = Describe("Song", func() {
 
 		By("Extracting the ID from the created song")
 
-		song := testing.DecodeJSON[map[string]interface{}](response.Body)
+		song := testing.DecodeJSON[map[string]any](response.Body)
 		songID := testing.ExpectType[string](song["id"])
 		Expect(songID).NotTo(BeEmpty())
 		return songID, song
@@ -200,20 +200,20 @@ var _ = Describe("Song", func() {
 				})
 
 				It("returns an empty array", func() {
-					result := testing.DecodeJSON[[]interface{}](response.Body)
+					result := testing.DecodeJSON[[]any](response.Body)
 					Expect(result).To(BeEmpty())
 				})
 			})
 
 			Describe("With some songs", func() {
 				var (
-					songs   [3]map[string]interface{}
+					songs   [3]map[string]any
 					songIDs [3]string
 				)
 
 				var (
-					makeExpectedSummary = func(song map[string]interface{}) map[string]interface{} {
-						summary := map[string]interface{}{}
+					makeExpectedSummary = func(song map[string]any) map[string]any {
+						summary := map[string]any{}
 
 						summary["id"] = song["id"]
 						summary["owner"] = song["owner"]
@@ -224,7 +224,7 @@ var _ = Describe("Song", func() {
 				)
 
 				BeforeEach(func() {
-					songs = [3]map[string]interface{}{}
+					songs = [3]map[string]any{}
 					songIDs = [3]string{}
 
 					songs[0] = testing.LoadDemoSong()
@@ -233,7 +233,7 @@ var _ = Describe("Song", func() {
 
 					songs[1] = testing.LoadDemoSong()
 					Expect(songs[1]["elements"]).NotTo(BeNil())
-					song2Metadata := testing.ExpectType[map[string]interface{}](songs[1]["metadata"])
+					song2Metadata := testing.ExpectType[map[string]any](songs[1]["metadata"])
 					song2Metadata["title"] = "Ocean Wide Canyon Deep"
 					song2Metadata["composedBy"] = "Jacob Collier"
 					song2Metadata["performedBy"] = "Jacob Collier"
@@ -241,7 +241,7 @@ var _ = Describe("Song", func() {
 
 					songs[2] = testing.LoadDemoSong()
 					Expect(songs[2]["elements"]).NotTo(BeNil())
-					song3Metadata := testing.ExpectType[map[string]interface{}](songs[2]["metadata"])
+					song3Metadata := testing.ExpectType[map[string]any](songs[2]["metadata"])
 					song3Metadata["title"] = "苺"
 					song3Metadata["composedBy"] = "荒谷翔大"
 					song3Metadata["performedBy"] = "yonawo"
@@ -253,19 +253,19 @@ var _ = Describe("Song", func() {
 				})
 
 				It("doesn't return the body of the song", func() {
-					songSummaries := testing.DecodeJSON[[]map[string]interface{}](response.Body)
+					songSummaries := testing.DecodeJSON[[]map[string]any](response.Body)
 					for _, summary := range songSummaries {
 						Expect(summary).NotTo(HaveKey("elements"))
 					}
 				})
 
 				It("returns the other data of the song besides the body", func() {
-					expectedSummaries := []interface{}{}
+					expectedSummaries := []any{}
 					for _, song := range songs {
 						expectedSummaries = append(expectedSummaries, makeExpectedSummary(song))
 					}
 
-					songSummaries := testing.DecodeJSON[[]map[string]interface{}](response.Body)
+					songSummaries := testing.DecodeJSON[[]map[string]any](response.Body)
 					Expect(songSummaries).To(ConsistOf(expectedSummaries...))
 				})
 			})
@@ -274,7 +274,7 @@ var _ = Describe("Song", func() {
 
 	Describe("Create Song", func() {
 		var (
-			createSongPayload map[string]interface{}
+			createSongPayload map[string]any
 		)
 
 		BeforeEach(func() {
@@ -329,12 +329,12 @@ var _ = Describe("Song", func() {
 					})
 
 					It("returns a new song with an ID", func() {
-						responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+						responseBody := testing.DecodeJSON[map[string]any](response.Body)
 						Expect(responseBody["id"]).NotTo(BeEmpty())
 					})
 
 					It("returns an updated lastSavedAt", func() {
-						responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+						responseBody := testing.DecodeJSON[map[string]any](response.Body)
 						lastSavedAtStr := testing.ExpectType[string](responseBody["lastSavedAt"])
 						lastSavedAt := testing.ExpectSuccess(time.Parse(time.RFC3339, lastSavedAtStr))
 						Expect(lastSavedAt).To(BeTemporally(">=", requestTime))
@@ -342,14 +342,14 @@ var _ = Describe("Song", func() {
 					})
 
 					It("returns the same song object", func() {
-						responseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+						responseBody := testing.DecodeJSON[map[string]any](response.Body)
 
 						responseBody["id"] = ""
 						testing.ExpectJSONEqualExceptLastSavedAt(responseBody, createSongPayload)
 					})
 
 					It("persists and can be retrieved after", func() {
-						createResponseBody := testing.DecodeJSON[map[string]interface{}](response.Body)
+						createResponseBody := testing.DecodeJSON[map[string]any](response.Body)
 						songID := testing.ExpectType[string](createResponseBody["id"])
 
 						getResponseBody := getSong(songID)
@@ -408,21 +408,21 @@ var _ = Describe("Song", func() {
 	Describe("Update Song", func() {
 		var (
 			songID     string
-			songUpdate map[string]interface{}
+			songUpdate map[string]any
 		)
 
-		var getFirstBlock = func(song map[string]interface{}) map[string]interface{} {
-			lines := testing.ExpectType[[]interface{}](song["elements"])
+		var getFirstBlock = func(song map[string]any) map[string]any {
+			lines := testing.ExpectType[[]any](song["elements"])
 			Expect(lines).NotTo(BeEmpty())
-			firstLine := testing.ExpectType[map[string]interface{}](lines[0])
-			firstLineElements := testing.ExpectType[[]interface{}](firstLine["elements"])
+			firstLine := testing.ExpectType[map[string]any](lines[0])
+			firstLineElements := testing.ExpectType[[]any](firstLine["elements"])
 			Expect(firstLineElements).NotTo(BeEmpty())
-			firstBlock := testing.ExpectType[map[string]interface{}](firstLineElements[0])
+			firstBlock := testing.ExpectType[map[string]any](firstLineElements[0])
 			return firstBlock
 		}
 
-		var getMetadata = func(song map[string]interface{}) map[string]interface{} {
-			return testing.ExpectType[map[string]interface{}](songUpdate["metadata"])
+		var getMetadata = func(song map[string]any) map[string]any {
+			return testing.ExpectType[map[string]any](songUpdate["metadata"])
 		}
 
 		BeforeEach(func() {
@@ -493,7 +493,7 @@ var _ = Describe("Song", func() {
 					})
 
 					It("updated the last saved at time", func() {
-						updatedSong := testing.DecodeJSON[map[string]interface{}](response.Body)
+						updatedSong := testing.DecodeJSON[map[string]any](response.Body)
 						updatedTimeStr := testing.ExpectType[string](updatedSong["lastSavedAt"])
 						Expect(updatedTimeStr).NotTo(BeZero())
 						updatedTime := testing.ExpectSuccess(time.Parse(time.RFC3339, updatedTimeStr))
@@ -502,13 +502,13 @@ var _ = Describe("Song", func() {
 					})
 
 					It("returns the updated song", func() {
-						updatedSong := testing.DecodeJSON[map[string]interface{}](response.Body)
+						updatedSong := testing.DecodeJSON[map[string]any](response.Body)
 						testing.ExpectJSONEqualExceptLastSavedAt(updatedSong, songUpdate)
 					})
 
 					It("is updated and can be fetched", func() {
 						fetchedSong := getSong(songID)
-						updatedSong := testing.DecodeJSON[map[string]interface{}](response.Body)
+						updatedSong := testing.DecodeJSON[map[string]any](response.Body)
 						Expect(fetchedSong).To(Equal(updatedSong))
 					})
 				})
@@ -525,7 +525,7 @@ var _ = Describe("Song", func() {
 					})
 
 					It("doesn't overwrite the ID", func() {
-						updatedSong := testing.DecodeJSON[map[string]interface{}](response.Body)
+						updatedSong := testing.DecodeJSON[map[string]any](response.Body)
 						Expect(updatedSong["id"]).To(Equal(songID))
 					})
 				})
@@ -540,7 +540,7 @@ var _ = Describe("Song", func() {
 					})
 
 					It("doesn't overwrite the owner", func() {
-						updatedSong := testing.DecodeJSON[map[string]interface{}](response.Body)
+						updatedSong := testing.DecodeJSON[map[string]any](response.Body)
 						Expect(updatedSong["owner"]).To(Equal(testing.PrimaryUser.ID))
 					})
 				})

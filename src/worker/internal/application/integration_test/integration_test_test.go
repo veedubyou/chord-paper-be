@@ -8,6 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/shared/config/prod"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/integration_test/dummy"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_message"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/job_router"
@@ -18,7 +19,6 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/start"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/transfer/download"
-	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/tracks/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/worker"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/storagepath"
 )
@@ -59,14 +59,18 @@ var _ = Describe("IntegrationTest", func() {
 		})
 
 		By("Setting up the track store", func() {
-			track := entity.SplitStemTrack{
-				BaseTrack: entity.BaseTrack{
-					TrackType: entity.SplitFourStemsType,
+			tracklist := trackentity.TrackList{}
+			tracklist.Defined.SongID = tracklistID
+			tracklist.Defined.Tracks = trackentity.Tracks{
+				&trackentity.SplitRequestTrack{
+					TrackFields: trackentity.TrackFields{ID: trackID},
+					TrackType:   trackentity.SplitFourStemsType,
+					OriginalURL: originalURL,
+					Status:      trackentity.RequestedStatus,
 				},
-				OriginalURL: originalURL,
-				JobStatus:   entity.RequestedStatus,
 			}
-			err := trackStore.SetTrack(context.Background(), tracklistID, trackID, track)
+
+			err := trackStore.SetTrackList(context.Background(), tracklist)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -171,17 +175,22 @@ var _ = Describe("IntegrationTest", func() {
 			run()
 
 			Eventually(func() bool {
-				track, err := trackStore.GetTrack(context.Background(), tracklistID, trackID)
+				tracklist, err := trackStore.GetTrackList(context.Background(), tracklistID)
 				if err != nil {
 					return false
 				}
 
-				stemTrack, ok := track.(entity.StemTrack)
+				track, err := tracklist.GetTrack(trackID)
+				if err != nil {
+					return false
+				}
+
+				stemTrack, ok := track.(*trackentity.StemTrack)
 				if !ok {
 					return false
 				}
 
-				if stemTrack.TrackType != entity.FourStemsType {
+				if stemTrack.TrackType != trackentity.FourStemsType {
 					return false
 				}
 
@@ -231,21 +240,26 @@ var _ = Describe("IntegrationTest", func() {
 			run()
 
 			Eventually(func() bool {
-				track, err := trackStore.GetTrack(context.Background(), tracklistID, trackID)
+				tracklist, err := trackStore.GetTrackList(context.Background(), tracklistID)
 				if err != nil {
 					return false
 				}
 
-				stemTrack, ok := track.(entity.SplitStemTrack)
+				track, err := tracklist.GetTrack(trackID)
+				if err != nil {
+					return false
+				}
+
+				stemTrack, ok := track.(*trackentity.SplitRequestTrack)
 				if !ok {
 					return false
 				}
 
-				if stemTrack.TrackType != entity.SplitFourStemsType {
+				if stemTrack.TrackType != trackentity.SplitFourStemsType {
 					return false
 				}
 
-				if stemTrack.JobStatus != entity.ErrorStatus {
+				if stemTrack.Status != trackentity.ErrorStatus {
 					return false
 				}
 
