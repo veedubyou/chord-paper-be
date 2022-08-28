@@ -34,7 +34,7 @@ func main() {
 			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 			SpleeterWorkingDirPath:  envvar.MustGet(envvar.SPLEETER_WORKING_DIR_PATH),
 		}
-		
+
 	case env.Development:
 		appConfig = application.Config{
 			DynamoConfig: dev.DynamoConfig,
