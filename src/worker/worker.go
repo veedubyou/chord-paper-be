@@ -51,6 +51,7 @@ func main() {
 			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 			SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
 		}
+
 	default:
 		panic("Unexpected environment")
 	}
