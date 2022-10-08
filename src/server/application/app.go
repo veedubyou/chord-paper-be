@@ -8,7 +8,6 @@ import (
 	"github.com/guregu/dynamo"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rabbitmq/amqp091-go"
 	"github.com/veedubyou/chord-paper-be/src/server/google_id"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/song/storage"
@@ -149,13 +148,8 @@ func (a *App) Stop() error {
 	return nil
 }
 
-func makeRabbitMQPublisher(config Config) rabbitmq.QueuePublisher {
-	conn, err := amqp091.Dial(config.RabbitMQURL)
-	if err != nil {
-		panic(errors.Wrap(err, "Failed to dial rabbitMQ url"))
-	}
-
-	publisher, err := rabbitmq.NewQueuePublisher(conn, config.RabbitMQQueueName)
+func makeRabbitMQPublisher(config Config) *rabbitmq.QueuePublisher {
+	publisher, err := rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName)
 	if err != nil {
 		panic(errors.Wrap(err, "Failed to create rabbitMQ publisher"))
 	}
@@ -205,7 +199,7 @@ func makeSongGateway(songUsecase songusecase.Usecase) songgateway.Gateway {
 	return songgateway.NewGateway(songUsecase)
 }
 
-func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) trackgateway.Gateway {
+func makeTrackGateway(dynamoDB dynamolib.DynamoDBWrapper, songUsecase songusecase.Usecase, publisher *rabbitmq.QueuePublisher) trackgateway.Gateway {
 	trackDB := trackstorage.NewDB(dynamoDB)
 	trackUsecase := trackusecase.NewUsecase(trackDB, songUsecase, publisher)
 	return trackgateway.NewGateway(trackUsecase)
