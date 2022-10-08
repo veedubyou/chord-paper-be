@@ -52,5 +52,5 @@ jobs:
         working-directory: ./src
         env:
           SKIP_SPLIT_TRACK_TEST: true
-        run: go test -v -p 1 ./...
+        run: go test -v ./...
         
