@@ -30,6 +30,10 @@ jobs:
 
     services:
       dynamodb:
+        # anchoring to 1.19 because 1.20 breaks the region isolation somehow
+        # and causes tests to fail. the reason being that tests run in parallel
+        # by declaring different regions to isolate the data from each other
+        # but 1.20 somehow breaks that
         image: amazon/dynamodb-local:1.19.0
         ports:
           - 8000:8000
