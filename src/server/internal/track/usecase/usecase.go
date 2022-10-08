@@ -18,10 +18,10 @@ import (
 type Usecase struct {
 	db          trackentity.Store
 	songUsecase songusecase.Usecase
-	publisher   rabbitmq.QueuePublisher
+	publisher   rabbitmq.Publisher
 }
 
-func NewUsecase(db trackentity.Store, songUsecase songusecase.Usecase, publisher rabbitmq.QueuePublisher) Usecase {
+func NewUsecase(db trackentity.Store, songUsecase songusecase.Usecase, publisher rabbitmq.Publisher) Usecase {
 	return Usecase{
 		db:          db,
 		songUsecase: songUsecase,
