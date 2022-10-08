@@ -30,7 +30,7 @@ jobs:
 
     services:
       dynamodb:
-        image: amazon/dynamodb-local
+        image: amazon/dynamodb-local:1.19
         ports:
           - 8000:8000
 
