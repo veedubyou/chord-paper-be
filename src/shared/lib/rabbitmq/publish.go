@@ -31,19 +31,33 @@ func NewQueuePublisher(rabbitMQURL string, queueName string) (*QueuePublisher, e
 	return publisher, nil
 }
 
+func NewQueuePublisherWithConnection(
+	rabbitMQURL string,
+	conn *amqp091.Connection,
+	queueName string,
+) (*QueuePublisher, error) {
+	publisher := &QueuePublisher{
+		rabbitMQURL: rabbitMQURL,
+		queueName:   queueName,
+		channel:     nil,
+	}
+
+	err := publisher.connectChannelForConnection(conn)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to connect to RabbitMQ")
+	}
+
+	return publisher, nil
+}
+
 type QueuePublisher struct {
 	rabbitMQURL string
 	channel     *amqp091.Channel
 	queueName   string
 }
 
-func (q *QueuePublisher) connectChannel() error {
+func (q *QueuePublisher) connectChannelForConnection(conn *amqp091.Connection) error {
 	q.channel = nil
-
-	conn, err := amqp091.Dial(q.rabbitMQURL)
-	if err != nil {
-		return errors.Wrap(err, "Failed to dial rabbitMQURL")
-	}
 
 	channel, err := conn.Channel()
 	if err != nil {
@@ -65,6 +79,15 @@ func (q *QueuePublisher) connectChannel() error {
 
 	q.channel = channel
 	return nil
+}
+
+func (q *QueuePublisher) connectChannel() error {
+	conn, err := amqp091.Dial(q.rabbitMQURL)
+	if err != nil {
+		return errors.Wrap(err, "Failed to dial rabbitMQURL")
+	}
+
+	return q.connectChannelForConnection(conn)
 }
 
 func (q *QueuePublisher) publishWithoutRetry(msg amqp091.Publishing) error {

@@ -54,10 +54,9 @@ type Config struct {
 
 func NewApp(config Config) App {
 	consumerConn := must(amqp091.Dial(config.RabbitMQURL))
-	producerConn := must(amqp091.Dial(config.RabbitMQURL))
 
 	return App{
-		worker: newWorker(config, consumerConn, producerConn),
+		worker: newWorker(config, consumerConn),
 	}
 }
 
@@ -74,8 +73,8 @@ func (a *App) Stop() {
 	a.worker.Stop()
 }
 
-func newWorker(config Config, consumerConn *amqp091.Connection, producerConn *amqp091.Connection) worker.QueueWorker {
-	publisher := newPublisher(config, producerConn)
+func newWorker(config Config, consumerConn *amqp091.Connection) worker.QueueWorker {
+	publisher := newPublisher(config)
 
 	trackStore := trackstorage.NewDB(newDynamoDB(config.DynamoConfig))
 	queueWorker := must(worker.NewQueueWorkerFromConnection(
@@ -86,8 +85,8 @@ func newWorker(config Config, consumerConn *amqp091.Connection, producerConn *am
 	return queueWorker
 }
 
-func newPublisher(config Config, conn *amqp091.Connection) rabbitmq.QueuePublisher {
-	publisher := must(rabbitmq.NewQueuePublisher(conn, config.RabbitMQQueueName))
+func newPublisher(config Config) *rabbitmq.QueuePublisher {
+	publisher := must(rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName))
 	return publisher
 }
 

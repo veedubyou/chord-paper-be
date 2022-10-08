@@ -21,8 +21,8 @@ func AfterSuiteRabbitMQ(conn *amqp091.Connection) {
 	ExpectSuccess(channel.QueueDelete(RabbitMQQueueName, false, false, false))
 }
 
-func MakeRabbitMQPublisher(conn *amqp091.Connection) rabbitmq.QueuePublisher {
-	publisher := ExpectSuccess(rabbitmq.NewQueuePublisher(conn, RabbitMQQueueName))
+func MakeRabbitMQPublisher(conn *amqp091.Connection) *rabbitmq.QueuePublisher {
+	publisher := ExpectSuccess(rabbitmq.NewQueuePublisherWithConnection(RabbitMQHost, conn, RabbitMQQueueName))
 	return publisher
 }
 

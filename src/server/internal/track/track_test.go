@@ -29,7 +29,7 @@ var _ = Describe("Track", func() {
 	var (
 		trackGateway trackgateway.Gateway
 		songGateway  songgateway.Gateway
-		publisher    rabbitmq.QueuePublisher
+		publisher    *rabbitmq.QueuePublisher
 		validator    testing.Validator
 
 		consumer testing.RabbitMQConsumer
