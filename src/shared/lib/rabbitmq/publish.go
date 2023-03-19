@@ -16,19 +16,14 @@ type Publisher interface {
 	Publish(msg amqp091.Publishing) error
 }
 
-func NewQueuePublisher(rabbitMQURL string, queueName string) (*QueuePublisher, error) {
+func NewQueuePublisher(rabbitMQURL string, queueName string) *QueuePublisher {
 	publisher := &QueuePublisher{
 		rabbitMQURL: rabbitMQURL,
 		queueName:   queueName,
 		channel:     nil,
 	}
 
-	err := publisher.connectChannel()
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to connect to RabbitMQ")
-	}
-
-	return publisher, nil
+	return publisher
 }
 
 func NewQueuePublisherWithConnection(
@@ -42,7 +37,7 @@ func NewQueuePublisherWithConnection(
 		channel:     nil,
 	}
 
-	err := publisher.connectChannelForConnection(conn)
+	err := publisher.connectChannel(conn)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to connect to RabbitMQ")
 	}
@@ -56,7 +51,20 @@ type QueuePublisher struct {
 	queueName   string
 }
 
-func (q *QueuePublisher) connectChannelForConnection(conn *amqp091.Connection) error {
+func (q *QueuePublisher) ensureChannel() error {
+	if q.channel != nil {
+		return nil
+	}
+
+	err := q.resetChannel()
+	if err != nil {
+		return errors.Wrap(err, "Failed to reset the channel")
+	}
+
+	return nil
+}
+
+func (q *QueuePublisher) connectChannel(conn *amqp091.Connection) error {
 	q.channel = nil
 
 	channel, err := conn.Channel()
@@ -81,13 +89,13 @@ func (q *QueuePublisher) connectChannelForConnection(conn *amqp091.Connection) e
 	return nil
 }
 
-func (q *QueuePublisher) connectChannel() error {
+func (q *QueuePublisher) resetChannel() error {
 	conn, err := amqp091.Dial(q.rabbitMQURL)
 	if err != nil {
 		return errors.Wrap(err, "Failed to dial rabbitMQURL")
 	}
 
-	return q.connectChannelForConnection(conn)
+	return q.connectChannel(conn)
 }
 
 func (q *QueuePublisher) publishWithoutRetry(msg amqp091.Publishing) error {
@@ -105,7 +113,12 @@ func (q *QueuePublisher) publishWithoutRetry(msg amqp091.Publishing) error {
 }
 
 func (q *QueuePublisher) Publish(msg amqp091.Publishing) error {
-	err := q.publishWithoutRetry(msg)
+	err := q.ensureChannel()
+	if err != nil {
+		return errors.Wrap(err, "Failed to ensure channel on publisher")
+	}
+
+	err = q.publishWithoutRetry(msg)
 
 	if err != nil {
 		publishErr := errors.Wrap(err, "Failed to publish message to rabbitMQ channel")
@@ -114,7 +127,7 @@ func (q *QueuePublisher) Publish(msg amqp091.Publishing) error {
 			return publishErr
 		}
 
-		err = q.connectChannel()
+		err = q.resetChannel()
 		if err != nil {
 			log.WithError(err).
 				Error("Unable to reconnect to rabbitMQ channel")

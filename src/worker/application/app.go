@@ -86,8 +86,7 @@ func newWorker(config Config, consumerConn *amqp091.Connection) worker.QueueWork
 }
 
 func newPublisher(config Config) *rabbitmq.QueuePublisher {
-	publisher := must(rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName))
-	return publisher
+	return rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName)
 }
 
 func newDynamoDB(dynamoConfig config.Dynamo) dynamolib.DynamoDBWrapper {
