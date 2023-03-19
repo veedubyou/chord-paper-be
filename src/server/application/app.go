@@ -149,12 +149,7 @@ func (a *App) Stop() error {
 }
 
 func makeRabbitMQPublisher(config Config) *rabbitmq.QueuePublisher {
-	publisher, err := rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName)
-	if err != nil {
-		panic(errors.Wrap(err, "Failed to create rabbitMQ publisher"))
-	}
-
-	return publisher
+	return rabbitmq.NewQueuePublisher(config.RabbitMQURL, config.RabbitMQQueueName)
 }
 
 func makeDynamoDB(dynamoConfig config.Dynamo) dynamolib.DynamoDBWrapper {

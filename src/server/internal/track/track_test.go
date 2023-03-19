@@ -37,7 +37,7 @@ var _ = Describe("Track", func() {
 
 	BeforeEach(func() {
 		validator = testing.Validator{}
-		publisher = testing.MakeRabbitMQPublisher(publisherConn)
+		publisher = testing.MakeRabbitMQPublisher()
 		consumer = testing.NewRabbitMQConsumer(consumerConn)
 
 		userStorage := userstorage.NewDB(db)
