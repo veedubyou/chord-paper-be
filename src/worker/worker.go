@@ -38,7 +38,7 @@ func main() {
 	case env.Development:
 		appConfig = application.Config{
 			DynamoConfig: dev.DynamoConfig,
-			// using prod for now because the local fake GCS doesn't persist
+			// using prod GCS creds for now because the local fake GCS doesn't persist
 			CloudStorageConfig: config.ProdCloudStorage{
 				StorageHost: prod.GOOGLE_STORAGE_HOST,
 				SecretKey:   envvar.MustGet(envvar.GOOGLE_CLOUD_KEY),
