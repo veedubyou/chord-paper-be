@@ -7,7 +7,7 @@ on:
     paths:
       - 'src/worker/**'
       - 'src/shared/**'
-
+      - '.github/**'
 jobs:
   build-and-test:
     name: Build and Test
