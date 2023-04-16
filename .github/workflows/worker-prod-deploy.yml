@@ -54,7 +54,7 @@ jobs:
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
           version: v1.24.3
-          command: set image --record deploy/chord-be-workers chord-be-workers=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }}
+          command: set image --record deploy/chord-be-workers chord-be-workers=${{ secrets.DOCKERHUB_USERNAME }}/chord-be-workers:${{ env.gitver }} youtube-dl-bin=${{ secrets.DOCKERHUB_USERNAME }}/youtube-dl-bin:${{ env.gitver }}
 
       - name: Verify K8S Deployment
         uses: steebchen/kubectl@master
