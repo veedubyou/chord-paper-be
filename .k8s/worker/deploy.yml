@@ -31,6 +31,9 @@ spec:
         volumeMounts:
         - mountPath: /shared
           name: cache-volume
+        resources:
+          requests:
+            memory: 3Gi
       initContainers:
       - name: youtube-dl-bin
         image: pw1124/youtube-dl-bin:${LATEST_YOUTUBE_IMAGE}
