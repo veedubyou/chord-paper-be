@@ -7,6 +7,7 @@
       }
     ],
     "CreationDateTime": 1602104423.315,
+    "DeletionProtectionEnabled": false,
     "ItemCount": 2,
     "KeySchema": [
       {
@@ -23,6 +24,11 @@
     "TableId": "ae965a09-fba8-4efc-8977-d102a6ef2323",
     "TableName": "Users",
     "TableSizeBytes": 84,
-    "TableStatus": "ACTIVE"
+    "TableStatus": "ACTIVE",
+    "WarmThroughput": {
+      "ReadUnitsPerSecond": 2,
+      "Status": "ACTIVE",
+      "WriteUnitsPerSecond": 2
+    }
   }
 }
