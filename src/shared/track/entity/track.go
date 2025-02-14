@@ -2,7 +2,6 @@ package trackentity
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
 	"github.com/veedubyou/chord-paper-be/src/shared/lib/jsonlib"
@@ -205,9 +204,6 @@ func UnmarshalTrack(contents map[string]any) (Track, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "Failed to create split track from map")
 		}
-
-		fmt.Println("HEREHERE")
-		fmt.Println("Engine type", splitTrack.EngineType)
 
 		return &splitTrack, nil
 
