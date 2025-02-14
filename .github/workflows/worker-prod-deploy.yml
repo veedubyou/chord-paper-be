@@ -8,6 +8,7 @@ on:
       - 'src/worker/**'
       - 'src/shared/**'
       - '.github/**'
+      - 'docker/worker/**'
 jobs:
   build-and-test:
     name: Build and Test

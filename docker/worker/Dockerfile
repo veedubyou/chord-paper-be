@@ -3,7 +3,6 @@ FROM python:3.9-buster as builder
 RUN apt-get update
 RUN apt install -y ffmpeg
 
-#RUN pip install --no-cache-dir tensorflow==2.3.0
 RUN pip install --no-cache-dir spleeter==2.3.0
 
 RUN mkdir /spleeter-scratch

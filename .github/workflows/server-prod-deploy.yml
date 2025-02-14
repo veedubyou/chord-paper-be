@@ -8,6 +8,7 @@ on:
       - 'src/server/**'
       - 'src/shared/**'
       - '.github/**'
+      - 'docker/server/**'
 
 jobs:
   build-and-test:
