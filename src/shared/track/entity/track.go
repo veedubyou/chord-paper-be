@@ -39,6 +39,18 @@ var splitTrackTypes = map[string]bool{
 	string(SplitFiveStemsType): true,
 }
 
+type SplitEngineType string
+
+const (
+	SpleeterType SplitEngineType = "spleeter"
+	DemucsType   SplitEngineType = "demucs"
+)
+
+var splitEngineTypes = map[string]bool{
+	string(SpleeterType): true,
+	string(DemucsType):   true,
+}
+
 type Tracks []Track
 
 func (t *Tracks) UnmarshalJSON(b []byte) error {
@@ -92,6 +104,7 @@ const (
 
 type SplitRequestTrack struct {
 	TrackFields
+	EngineType     SplitEngineType    `json:"engine_type"`
 	TrackType      SplitRequestType   `json:"track_type"`
 	OriginalURL    string             `json:"original_url"`
 	Status         SplitRequestStatus `json:"job_status"`
