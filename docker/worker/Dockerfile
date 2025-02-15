@@ -4,8 +4,10 @@ RUN apt-get update
 RUN apt install -y ffmpeg
 
 RUN pip install --no-cache-dir spleeter==2.3.0
+RUN pip install --no-cache-dir demucs==4.0.1
 
 RUN mkdir /spleeter-scratch
+RUN mkdir /demucs-scratch
 RUN mkdir /youtubedl-scratch
 
 RUN wget https://go.dev/dl/go1.18.linux-amd64.tar.gz
