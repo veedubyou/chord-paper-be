@@ -179,19 +179,23 @@ var _ = Describe("TrackSplit", func() {
 			songID string
 		)
 
-		stemTests := map[string]struct {
+		stemTests := []struct {
+			SplitType     string
 			CompletedType string
 			NumberOfStems int
 		}{
-			"split_2stems": {
+			{
+				SplitType:     "split_2stems",
 				CompletedType: "2stems",
 				NumberOfStems: 2,
 			},
-			"split_4stems": {
+			{
+				SplitType:     "split_4stems",
 				CompletedType: "4stems",
 				NumberOfStems: 4,
 			},
-			"split_5stems": {
+			{
+				SplitType:     "split_5stems",
 				CompletedType: "5stems",
 				NumberOfStems: 5,
 			},
@@ -215,11 +219,11 @@ var _ = Describe("TrackSplit", func() {
 			})
 		})
 
-		for requestType, expected := range stemTests {
-			requestType := requestType
+		for _, expected := range stemTests {
 			expected := expected
+			requestType := expected.SplitType
 
-			Describe(fmt.Sprintf("A valid split request for %s tyoe", requestType), func() {
+			Describe(fmt.Sprintf("A valid split request for %s type", requestType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
 						splitTracklist := map[string]any{
