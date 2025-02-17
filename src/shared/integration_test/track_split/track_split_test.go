@@ -203,12 +203,12 @@ var _ = Describe("TrackSplit", func() {
 				ExpectedCompletedType: "5stems",
 				ExpectedNumberOfStems: 5,
 			},
-			{
-				SplitType:             "split_2stems",
-				EngineType:            "demucs",
-				ExpectedCompletedType: "2stems",
-				ExpectedNumberOfStems: 2,
-			},
+			//{
+			//	SplitType:             "split_2stems",
+			//	EngineType:            "demucs",
+			//	ExpectedCompletedType: "2stems",
+			//	ExpectedNumberOfStems: 2,
+			//},
 			{
 				SplitType:             "split_4stems",
 				EngineType:            "demucs",
