@@ -37,6 +37,13 @@ jobs:
       - name: Set Spleeter bin environment variable
         run: echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
+      - name: Install Demucs
+        run:
+          pip install --no-cache-dir demucs==4.0.1
+
+      - name: Set Demucs bin environment variable
+        run: echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
