@@ -32,6 +32,8 @@ func WorkerConfig(dbRegion string, cloudStorageConfig config.LocalCloudStorage) 
 		YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
 		SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 		SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
+		DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+		DemucsWorkingDirPath:    path.Join(local.ProjectRoot(), "/src/worker/wd/demucs"),
 	}
 }
 
