@@ -102,7 +102,7 @@ var _ = Describe("IntegrationTest", func() {
 
 		var splitHandler split.JobHandler
 		By("Creating the split job handler", func() {
-			localFileSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/whatever/spleeter", "/whatever/demucs" spleeterExecutor)
+			localFileSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/whatever/spleeter", "/whatever/demucs", spleeterExecutor)
 			Expect(err).NotTo(HaveOccurred())
 			remoteFileSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, fileStore, localFileSplitter)
 			Expect(err).NotTo(HaveOccurred())
