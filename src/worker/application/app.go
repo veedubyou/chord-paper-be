@@ -50,6 +50,8 @@ type Config struct {
 	YoutubeDLWorkingDirPath string
 	SpleeterBinPath         string
 	SpleeterWorkingDirPath  string
+	DemucsBinPath           string
+	DemucsWorkingDirPath    string
 }
 
 func NewApp(config Config) App {
@@ -192,6 +194,7 @@ func newSplitJobHandler(config Config, pathGenerator storagepath.Generator) spli
 	localUsecase := must(file_splitter.NewLocalFileSplitter(
 		config.SpleeterWorkingDirPath,
 		config.SpleeterBinPath,
+		config.DemucsBinPath,
 		executor.BinaryFileExecutor{},
 	))
 

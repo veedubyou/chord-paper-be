@@ -3,6 +3,7 @@ package file_splitter
 import (
 	"context"
 	"fmt"
+	trackentity "github.com/veedubyou/chord-paper-be/src/shared/track/entity"
 	cloudstorage "github.com/veedubyou/chord-paper-be/src/worker/internal/application/cloud_storage/entity"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/application/jobs/split/splitter"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
@@ -35,7 +36,7 @@ type RemoteFileSplitter struct {
 	localSplitter   LocalFileSplitter
 }
 
-func (r RemoteFileSplitter) SplitFile(ctx context.Context, remoteSourcePath string, remoteDestPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
+func (r RemoteFileSplitter) SplitFile(ctx context.Context, remoteSourcePath string, remoteDestPath string, splitType splitter.SplitType, engineType trackentity.SplitEngineType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"remoteSourcePath": remoteSourcePath,
 		"remoteDestPath":   remoteDestPath,
@@ -71,7 +72,7 @@ func (r RemoteFileSplitter) SplitFile(ctx context.Context, remoteSourcePath stri
 	defer removeStemTrackDir()
 
 	logger.Info("Starting to run the split operation")
-	localFilePaths, err := r.localSplitter.SplitFile(ctx, originalTrackFilePath, stemTrackDir, splitType)
+	localFilePaths, err := r.localSplitter.SplitFile(ctx, originalTrackFilePath, stemTrackDir, splitType, engineType)
 	if err != nil {
 		return nil, cerr.Wrap(err).Error("Failed to run local stem splitter")
 	}
