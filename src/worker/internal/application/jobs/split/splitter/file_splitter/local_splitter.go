@@ -80,9 +80,10 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 		}
 
 		return filePaths, nil
-	}
 
-	panic(fmt.Sprintf("Unexpected engine type %s", engineType))
+	default:
+		return nil, cerr.Field("engine_type", engineType).Error("Unexpected engine type")
+	}
 }
 
 func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {

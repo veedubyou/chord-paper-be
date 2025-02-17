@@ -180,24 +180,40 @@ var _ = Describe("TrackSplit", func() {
 		)
 
 		stemTests := []struct {
-			SplitType     string
-			CompletedType string
-			NumberOfStems int
+			EngineType            string
+			SplitType             string
+			ExpectedCompletedType string
+			ExpectedNumberOfStems int
 		}{
 			{
-				SplitType:     "split_2stems",
-				CompletedType: "2stems",
-				NumberOfStems: 2,
+				SplitType:             "split_2stems",
+				EngineType:            "spleeter",
+				ExpectedCompletedType: "2stems",
+				ExpectedNumberOfStems: 2,
 			},
 			{
-				SplitType:     "split_4stems",
-				CompletedType: "4stems",
-				NumberOfStems: 4,
+				SplitType:             "split_4stems",
+				EngineType:            "spleeter",
+				ExpectedCompletedType: "4stems",
+				ExpectedNumberOfStems: 4,
 			},
 			{
-				SplitType:     "split_5stems",
-				CompletedType: "5stems",
-				NumberOfStems: 5,
+				SplitType:             "split_5stems",
+				EngineType:            "spleeter",
+				ExpectedCompletedType: "5stems",
+				ExpectedNumberOfStems: 5,
+			},
+			{
+				SplitType:             "split_2stems",
+				EngineType:            "demucs",
+				ExpectedCompletedType: "2stems",
+				ExpectedNumberOfStems: 2,
+			},
+			{
+				SplitType:             "split_4stems",
+				EngineType:            "demucs",
+				ExpectedCompletedType: "4stems",
+				ExpectedNumberOfStems: 4,
 			},
 		}
 
@@ -219,9 +235,10 @@ var _ = Describe("TrackSplit", func() {
 			})
 		})
 
-		for _, expected := range stemTests {
-			expected := expected
-			requestType := expected.SplitType
+		for _, test := range stemTests {
+			test := test
+			requestType := test.SplitType
+			engineType := test.EngineType
 
 			Describe(fmt.Sprintf("A valid split request for %s type", requestType), func() {
 				BeforeEach(func() {
@@ -232,6 +249,7 @@ var _ = Describe("TrackSplit", func() {
 								{
 									"id":           "",
 									"track_type":   requestType,
+									"engine_type":  engineType,
 									"label":        "test split",
 									"original_url": originalSongURL,
 								},
@@ -258,7 +276,7 @@ var _ = Describe("TrackSplit", func() {
 					}
 
 					By("detecting that the track type is changed", func() {
-						Eventually(GetFirstTrackType, time.Minute).Should(Equal(expected.CompletedType))
+						Eventually(GetFirstTrackType, time.Minute).Should(Equal(test.ExpectedCompletedType))
 					})
 
 					tracklist := GetTrackList(songID)
@@ -266,7 +284,7 @@ var _ = Describe("TrackSplit", func() {
 					stemUrls := ExpectType[map[string]any](firstTrack["stem_urls"])
 
 					By("checking the amount of stems", func() {
-						Expect(stemUrls).To(HaveLen(expected.NumberOfStems))
+						Expect(stemUrls).To(HaveLen(test.ExpectedNumberOfStems))
 					})
 
 					By("verifying each stem URL points to a file", func() {
@@ -288,6 +306,7 @@ var _ = Describe("TrackSplit", func() {
 								{
 									"id":           "",
 									"track_type":   requestType,
+									"engine_type":  engineType,
 									"label":        "test split",
 									"original_url": GetFileURL(bucketName, "no.mp3"),
 								},
@@ -310,7 +329,7 @@ var _ = Describe("TrackSplit", func() {
 				})
 			})
 
-			Describe(fmt.Sprintf("A not mp3 file for split request for %s tyoe", requestType), func() {
+			Describe(fmt.Sprintf("A not mp3 file for split request for %s type", requestType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
 						splitTracklist := map[string]any{
@@ -319,6 +338,7 @@ var _ = Describe("TrackSplit", func() {
 								{
 									"id":           "",
 									"track_type":   requestType,
+									"engine_type":  engineType,
 									"label":        "test split",
 									"original_url": notSongURL,
 								},
@@ -340,7 +360,6 @@ var _ = Describe("TrackSplit", func() {
 					Eventually(GetFirstTrackStatus, time.Minute).Should(Equal("error"))
 				})
 			})
-
 		}
 	})
 })
