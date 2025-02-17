@@ -65,6 +65,7 @@ var _ = Describe("IntegrationTest", func() {
 				&trackentity.SplitRequestTrack{
 					TrackFields: trackentity.TrackFields{ID: trackID},
 					TrackType:   trackentity.SplitFourStemsType,
+					EngineType:  trackentity.SpleeterType,
 					OriginalURL: originalURL,
 					Status:      trackentity.RequestedStatus,
 				},
