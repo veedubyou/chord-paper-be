@@ -9,6 +9,7 @@ import (
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/cerr"
 	"github.com/veedubyou/chord-paper-be/src/worker/internal/lib/working_dir"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -63,22 +64,28 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 
 	switch engineType {
 	case trackentity.SpleeterType:
-		if err := l.runSpleeter(absOriginalTrackFilePath, absStemsOutputDir, splitType); err != nil {
+		filePaths, err := l.runSpleeter(absOriginalTrackFilePath, absStemsOutputDir, splitType)
+		if err != nil {
 			return nil, cerr.Field("output_dir", absStemsOutputDir).
 				Wrap(err).Error("Failed to execute spleeter")
 		}
 
+		return filePaths, nil
+
 	case trackentity.DemucsType:
-		if err := l.runDemucs(absOriginalTrackFilePath, absStemsOutputDir, splitType); err != nil {
+		filePaths, err := l.runDemucs(absOriginalTrackFilePath, absStemsOutputDir, splitType)
+		if err != nil {
 			return nil, cerr.Field("output_dir", absStemsOutputDir).
 				Wrap(err).Error("Failed to execute demucs")
 		}
+
+		return filePaths, nil
 	}
 
-	return collectStemFilePaths(absStemsOutputDir)
+	panic(fmt.Sprintf("Unexpected engine type %s", engineType))
 }
 
-func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType) error {
+func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"sourcePath": sourcePath,
 		"destPath":   destPath,
@@ -88,7 +95,9 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 
 	logger.Info("Running demucs command")
 
-	args := []string{"-o", destPath, "--mp3", "-d", "cpu", "--filename", "{stem}.{ext}", sourcePath}
+	model := "htdemucs"
+
+	args := []string{"-o", destPath, "--name", model, "--device", "cpu", "--filename", "{stem}.{ext}", "--mp3", sourcePath}
 
 	errctx := cerr.Field("demucs_bin_path", l.demucsBinPath).Field("demucs_args", args)
 
@@ -97,7 +106,7 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return errctx.Field("demucs_output", string(output)).
+		return nil, errctx.Field("demucs_output", string(output)).
 			Wrap(err).
 			Error(fmt.Sprintf("Error occurred while running demucs: %s", string(output)))
 	}
@@ -105,10 +114,17 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 	logger.Debug(string(output))
 	logger.Info("Finished demucs command")
 
-	return nil
+	outputDir := path.Join(destPath, model)
+
+	filePaths, err := collectStemFilePaths(outputDir)
+	if err != nil {
+		return nil, errctx.Field("output_dir", outputDir).Wrap(err).Error("Failed to collect stem file paths")
+	}
+
+	return filePaths, nil
 }
 
-func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, splitType splitter.SplitType) error {
+func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"sourcePath": sourcePath,
 		"destPath":   destPath,
@@ -118,7 +134,7 @@ func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, split
 
 	splitParam, ok := spleeterParamMap[splitType]
 	if !ok {
-		return cerr.Error("Invalid split type passed in!")
+		return nil, cerr.Error("Invalid split type passed in!")
 	}
 
 	logger.Info("Running spleeter command")
@@ -132,7 +148,7 @@ func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, split
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return errctx.Field("spleeter_output", string(output)).
+		return nil, errctx.Field("spleeter_output", string(output)).
 			Wrap(err).
 			Error(fmt.Sprintf("Error occurred while running spleeter: %s", string(output)))
 	}
@@ -140,7 +156,12 @@ func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, split
 	logger.Debug(string(output))
 	logger.Info("Finished spleeter command")
 
-	return nil
+	filePaths, err := collectStemFilePaths(destPath)
+	if err != nil {
+		return nil, errctx.Field("output_dir", destPath).Wrap(err).Error("Failed to collect stem file paths")
+	}
+
+	return filePaths, nil
 }
 
 func collectStemFilePaths(dir string) (splitter.StemFilePaths, error) {
