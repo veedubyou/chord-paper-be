@@ -60,7 +60,7 @@ var _ = Describe("Split handler", func() {
 		})
 
 		By("Instantiating the handler", func() {
-			localSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/somewhere/spleeter", dummyExecutor)
+			localSplitter, err := file_splitter.NewLocalFileSplitter(workingDir, "/somewhere/spleeter", "/somewhere/demucs", dummyExecutor)
 			Expect(err).NotTo(HaveOccurred())
 
 			remoteSplitter, err := file_splitter.NewRemoteFileSplitter(workingDir, dummyFileStore, localSplitter)
@@ -87,6 +87,7 @@ var _ = Describe("Split handler", func() {
 			&trackentity.SplitRequestTrack{
 				TrackFields: trackentity.TrackFields{ID: trackID},
 				TrackType:   trackType,
+				EngineType:  trackentity.SpleeterType,
 				OriginalURL: "https://whocares",
 			},
 		}

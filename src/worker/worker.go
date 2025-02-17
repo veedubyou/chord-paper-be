@@ -33,6 +33,8 @@ func main() {
 			YoutubeDLWorkingDirPath: envvar.MustGet(envvar.YOUTUBEDL_WORKING_DIR_PATH),
 			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 			SpleeterWorkingDirPath:  envvar.MustGet(envvar.SPLEETER_WORKING_DIR_PATH),
+			DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+			DemucsWorkingDirPath:    envvar.MustGet(envvar.DEMUCS_WORKING_DIR_PATH),
 		}
 
 	case env.Development:
@@ -50,6 +52,8 @@ func main() {
 			YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
 			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
 			SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
+			DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+			DemucsWorkingDirPath:    path.Join(local.ProjectRoot(), "/src/worker/wd/demucs"),
 		}
 	default:
 		panic("Unexpected environment")

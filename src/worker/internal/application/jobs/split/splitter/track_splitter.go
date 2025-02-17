@@ -62,7 +62,7 @@ func (t TrackSplitter) SplitTrack(ctx context.Context, tracklistID string, track
 			Wrap(err).Error("Failed to generate a destination path for stem tracks")
 	}
 
-	return t.splitter.SplitFile(ctx, savedOriginalURL, destPath, splitType)
+	return t.splitter.SplitFile(ctx, savedOriginalURL, destPath, splitType, splitStemTrack.EngineType)
 }
 
 func (t TrackSplitter) generatePath(tracklistID string, trackID string, splitType SplitType) (string, error) {
