@@ -87,6 +87,7 @@ var _ = Describe("Split handler", func() {
 			&trackentity.SplitRequestTrack{
 				TrackFields: trackentity.TrackFields{ID: trackID},
 				TrackType:   trackType,
+				EngineType:  trackentity.SpleeterType,
 				OriginalURL: "https://whocares",
 			},
 		}
