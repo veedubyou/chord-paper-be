@@ -51,6 +51,8 @@ const (
 var splitEngineTypes = map[string]bool{
 	string(SpleeterType): true,
 	string(DemucsType):   true,
+	string(DemucsFineTunedType): true,
+	string(DemucsV3Type): true
 }
 
 type Tracks []Track
