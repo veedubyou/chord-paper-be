@@ -1,5 +1,5 @@
 {
-  "Count": 78,
+  "Count": 81,
   "Items": [
     {
       "tracks": {
@@ -423,6 +423,47 @@
       },
       "song_id": {
         "S": "f8182ede-9874-46cd-bd9a-a076437c6bb1"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "09a58712-3d26-4b69-acd0-9b1be76b65da"
+              },
+              "label": {
+                "S": "5 stems"
+              },
+              "track_type": {
+                "S": "5stems"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/98001476-4a4a-4d0a-9b15-bfb1153c7918/09a58712-3d26-4b69-acd0-9b1be76b65da/5stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/98001476-4a4a-4d0a-9b15-bfb1153c7918/09a58712-3d26-4b69-acd0-9b1be76b65da/5stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/98001476-4a4a-4d0a-9b15-bfb1153c7918/09a58712-3d26-4b69-acd0-9b1be76b65da/5stems/other.mp3"
+                  },
+                  "piano": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/98001476-4a4a-4d0a-9b15-bfb1153c7918/09a58712-3d26-4b69-acd0-9b1be76b65da/5stems/piano.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/98001476-4a4a-4d0a-9b15-bfb1153c7918/09a58712-3d26-4b69-acd0-9b1be76b65da/5stems/drums.mp3"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "98001476-4a4a-4d0a-9b15-bfb1153c7918"
       }
     },
     {
@@ -1132,6 +1173,43 @@
         "L": [
           {
             "M": {
+              "job_progress": {
+                "N": "10"
+              },
+              "job_status_message": {
+                "S": "Failed to download source audio for processing"
+              },
+              "job_status": {
+                "S": "error"
+              },
+              "original_url": {
+                "S": "https://www.youtube.com/watch?v=3N4fu4ovOcs"
+              },
+              "id": {
+                "S": "86004c3d-2449-4a1a-bc9c-02ce89b4812a"
+              },
+              "label": {
+                "S": "4 stems"
+              },
+              "track_type": {
+                "S": "split_4stems"
+              },
+              "job_status_debug_log": {
+                "S": "Failed to handle transfer job: Failed to download track: Failed to download track to cloud: Failed to run youtube-dl: [youtube] Extracting URL: https://www.youtube.com/watch?v=3N4fu4ovOcs\n[youtube] 3N4fu4ovOcs: Downloading webpage\n[youtube] 3N4fu4ovOcs: Downloading ios player API JSON\n[youtube] 3N4fu4ovOcs: Downloading android player API JSON\nWARNING: [youtube] YouTube said: ERROR - Precondition check failed.\nWARNING: [youtube] HTTP Error 400: Bad Request. Retrying (1/3)...\n[youtube] 3N4fu4ovOcs: Downloading android player API JSON\nWARNING: [youtube] YouTube said: ERROR - Precondition check failed.\nWARNING: [youtube] HTTP Error 400: Bad Request. Retrying (2/3)...\n[youtube] 3N4fu4ovOcs: Downloading android player API JSON\nWARNING: [youtube] YouTube said: ERROR - Precondition check failed.\nWARNING: [youtube] HTTP Error 400: Bad Request. Retrying (3/3)...\n[youtube] 3N4fu4ovOcs: Downloading android player API JSON\nWARNING: [youtube] YouTube said: ERROR - Precondition check failed.\nWARNING: [youtube] Unable to download API page: HTTP Error 400: Bad Request (caused by <HTTPError 400: 'Bad Request'>); please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U\n[youtube] 3N4fu4ovOcs: Downloading player 9c6dfc4a\nWARNING: [youtube] 3N4fu4ovOcs: Signature extraction failed: Some formats may be missing\nERROR: [youtube] 3N4fu4ovOcs: Sign in to confirm you\u2019re not a bot. This helps protect our community. Learn more\n: exit status 1"
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "7122a9a5-792f-47ae-8b3b-d1c791b99409"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
               "id": {
                 "S": "9dfcb913-5626-4faf-b183-3e29aa974c06"
               },
@@ -1554,6 +1632,73 @@
       },
       "song_id": {
         "S": "14338ee4-5a96-4653-a45c-9211d4cad5e5"
+      }
+    },
+    {
+      "tracks": {
+        "L": [
+          {
+            "M": {
+              "id": {
+                "S": "748cda4e-a60b-4cc2-86db-bb9d509150d1"
+              },
+              "label": {
+                "S": "4 stems (demucs)"
+              },
+              "track_type": {
+                "S": "4stems"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/748cda4e-a60b-4cc2-86db-bb9d509150d1/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/748cda4e-a60b-4cc2-86db-bb9d509150d1/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/748cda4e-a60b-4cc2-86db-bb9d509150d1/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/748cda4e-a60b-4cc2-86db-bb9d509150d1/4stems/drums.mp3"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "M": {
+              "id": {
+                "S": "70741ac9-77a5-4167-83d4-936b55ab4dea"
+              },
+              "label": {
+                "S": "4 stems (spleeter)"
+              },
+              "track_type": {
+                "S": "4stems"
+              },
+              "stem_urls": {
+                "M": {
+                  "vocals": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/70741ac9-77a5-4167-83d4-936b55ab4dea/4stems/vocals.mp3"
+                  },
+                  "bass": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/70741ac9-77a5-4167-83d4-936b55ab4dea/4stems/bass.mp3"
+                  },
+                  "other": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/70741ac9-77a5-4167-83d4-936b55ab4dea/4stems/other.mp3"
+                  },
+                  "drums": {
+                    "S": "https://storage.googleapis.com/chord-paper-tracks/3d72bfc5-7c1f-4342-be1b-6128d0992de5/70741ac9-77a5-4167-83d4-936b55ab4dea/4stems/drums.mp3"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "song_id": {
+        "S": "3d72bfc5-7c1f-4342-be1b-6128d0992de5"
       }
     },
     {
@@ -3540,5 +3685,5 @@
       }
     }
   ],
-  "ScannedCount": 78
+  "ScannedCount": 81
 }
