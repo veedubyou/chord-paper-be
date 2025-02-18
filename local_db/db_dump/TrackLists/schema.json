@@ -8,7 +8,7 @@
     ],
     "CreationDateTime": 1618018582.25,
     "DeletionProtectionEnabled": false,
-    "ItemCount": 78,
+    "ItemCount": 81,
     "KeySchema": [
       {
         "AttributeName": "song_id",
@@ -23,7 +23,7 @@
     "TableArn": "arn:aws:dynamodb:us-east-2:579696076733:table/TrackLists",
     "TableId": "4b68347c-cfba-4129-bb87-2f92881fe5e1",
     "TableName": "TrackLists",
-    "TableSizeBytes": 65335,
+    "TableSizeBytes": 68792,
     "TableStatus": "ACTIVE",
     "WarmThroughput": {
       "ReadUnitsPerSecond": 2,
