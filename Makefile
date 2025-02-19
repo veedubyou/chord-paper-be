@@ -40,3 +40,9 @@ backup-production:
 
 restore-db:
 	python3 ./local_db/scripts/dynamodump.py -m restore -s "*" --host localhost --port 8000 --accessKey local --secretKey local --region local --dumpPath ./local_db/db_dump
+
+dynamo:
+	docker run -p 8000:8000 amazon/dynamodb-local
+
+rabbit:
+	docker run -p 5672:5672 rabbitmq:3.10

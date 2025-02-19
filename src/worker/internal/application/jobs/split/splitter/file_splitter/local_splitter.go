@@ -73,7 +73,11 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 		return filePaths, nil
 
 	case trackentity.DemucsType:
-		filePaths, err := l.runDemucs(absOriginalTrackFilePath, absStemsOutputDir, splitType)
+		fallthrough
+	case trackentity.DemucsFineTunedType:
+		fallthrough
+	case trackentity.DemucsV3Type:
+		filePaths, err := l.runDemucs(absOriginalTrackFilePath, absStemsOutputDir, splitType, engineType)
 		if err != nil {
 			return nil, cerr.Field("output_dir", absStemsOutputDir).
 				Wrap(err).Error("Failed to execute demucs")
@@ -86,7 +90,7 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 	}
 }
 
-func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
+func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType, engineType trackentity.SplitEngineType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
 		"sourcePath": sourcePath,
 		"destPath":   destPath,
@@ -96,9 +100,31 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 
 	logger.Info("Running demucs command")
 
-	model := "htdemucs"
+	var model string
 
-	args := []string{"-o", destPath, "--name", model, "--device", "cpu", "--filename", "{stem}.{ext}", "--mp3", sourcePath}
+	switch engineType {
+	case trackentity.DemucsType:
+		model = "htdemucs"
+	case trackentity.DemucsFineTunedType:
+		model = "htdemucs_ft"
+	case trackentity.DemucsV3Type:
+		model = "hdemucs_mmi"
+	default:
+		return nil, cerr.Field("engine_type", engineType).Error("Unsupported engine type")
+	}
+
+	args := []string{"-o", destPath, "--name", model, "--device", "cpu", "--filename", "{stem}.{ext}", "--mp3"}
+
+	switch splitType {
+	case splitter.SplitTwoStemsType:
+		args = append(args, "--two-stems", "vocals")
+	case splitter.SplitFourStemsType:
+		// do nothing, all good
+	default:
+		return nil, cerr.Field("split_type", splitType).Error("Unsupported split type")
+	}
+
+	args = append(args, sourcePath)
 
 	errctx := cerr.Field("demucs_bin_path", l.demucsBinPath).Field("demucs_args", args)
 

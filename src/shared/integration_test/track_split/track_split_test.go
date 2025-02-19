@@ -203,15 +203,39 @@ var _ = Describe("TrackSplit", func() {
 				ExpectedCompletedType: "5stems",
 				ExpectedNumberOfStems: 5,
 			},
-			//{
-			//	SplitType:             "split_2stems",
-			//	EngineType:            "demucs",
-			//	ExpectedCompletedType: "2stems",
-			//	ExpectedNumberOfStems: 2,
-			//},
+			{
+				SplitType:             "split_2stems",
+				EngineType:            "demucs",
+				ExpectedCompletedType: "2stems",
+				ExpectedNumberOfStems: 2,
+			},
 			{
 				SplitType:             "split_4stems",
 				EngineType:            "demucs",
+				ExpectedCompletedType: "4stems",
+				ExpectedNumberOfStems: 4,
+			},
+			{
+				SplitType:             "split_2stems",
+				EngineType:            "demucs-ft",
+				ExpectedCompletedType: "2stems",
+				ExpectedNumberOfStems: 2,
+			},
+			{
+				SplitType:             "split_4stems",
+				EngineType:            "demucs-ft",
+				ExpectedCompletedType: "4stems",
+				ExpectedNumberOfStems: 4,
+			},
+			{
+				SplitType:             "split_2stems",
+				EngineType:            "demucs-v3",
+				ExpectedCompletedType: "2stems",
+				ExpectedNumberOfStems: 2,
+			},
+			{
+				SplitType:             "split_4stems",
+				EngineType:            "demucs-v3",
 				ExpectedCompletedType: "4stems",
 				ExpectedNumberOfStems: 4,
 			},
@@ -240,7 +264,7 @@ var _ = Describe("TrackSplit", func() {
 			requestType := test.SplitType
 			engineType := test.EngineType
 
-			Describe(fmt.Sprintf("A valid split request for %s type", requestType), func() {
+			Describe(fmt.Sprintf("A valid split request for %s type with %s", requestType, engineType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
 						splitTracklist := map[string]any{
@@ -276,7 +300,7 @@ var _ = Describe("TrackSplit", func() {
 					}
 
 					By("detecting that the track type is changed", func() {
-						Eventually(GetFirstTrackType, time.Minute).Should(Equal(test.ExpectedCompletedType))
+						Eventually(GetFirstTrackType, 4*time.Minute).Should(Equal(test.ExpectedCompletedType))
 					})
 
 					tracklist := GetTrackList(songID)
