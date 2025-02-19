@@ -24,24 +24,32 @@ var spleeterParamMap = map[splitter.SplitType]string{
 	splitter.SplitFiveStemsType: "spleeter:5stems-16kHz",
 }
 
-func NewLocalFileSplitter(workingDirStr string, spleeterBinPath string, demucsBinPath string, executor executor.Executor) (LocalFileSplitter, error) {
-	workingDir, err := working_dir.NewWorkingDir(workingDirStr)
+func NewLocalFileSplitter(spleeterWorkingDirStr string, spleeterBinPath string, demucsWorkingDirStr string, demucsBinPath string, executor executor.Executor) (LocalFileSplitter, error) {
+	spleeterWorkingDir, err := working_dir.NewWorkingDir(spleeterWorkingDirStr)
 	if err != nil {
 		return LocalFileSplitter{}, cerr.Wrap(err).Error("Failed to convert working dir to absolute format")
 	}
+
+	demucsWorkingDir, err := working_dir.NewWorkingDir(demucsWorkingDirStr)
+	if err != nil {
+		return LocalFileSplitter{}, cerr.Wrap(err).Error("Failed to convert working dir to absolute format")
+	}
+
 	return LocalFileSplitter{
-		workingDir:      workingDir,
-		spleeterBinPath: spleeterBinPath,
-		demucsBinPath:   demucsBinPath,
-		executor:        executor,
+		spleeterWorkingDir: spleeterWorkingDir,
+		spleeterBinPath:    spleeterBinPath,
+		demucsWorkingDir:   demucsWorkingDir,
+		demucsBinPath:      demucsBinPath,
+		executor:           executor,
 	}, nil
 }
 
 type LocalFileSplitter struct {
-	workingDir      working_dir.WorkingDir
-	spleeterBinPath string
-	demucsBinPath   string
-	executor        executor.Executor
+	spleeterWorkingDir working_dir.WorkingDir
+	spleeterBinPath    string
+	demucsWorkingDir   working_dir.WorkingDir
+	demucsBinPath      string
+	executor           executor.Executor
 }
 
 func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath string, stemsOutputDir string, splitType splitter.SplitType, engineType trackentity.SplitEngineType) (splitter.StemFilePaths, error) {
@@ -92,10 +100,10 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 
 func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitType splitter.SplitType, engineType trackentity.SplitEngineType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
-		"sourcePath": sourcePath,
-		"destPath":   destPath,
-		"splitType":  splitType,
-		"workingDir": l.workingDir,
+		"sourcePath":       sourcePath,
+		"destPath":         destPath,
+		"splitType":        splitType,
+		"demucsWorkingDir": l.demucsWorkingDir,
 	})
 
 	logger.Info("Running demucs command")
@@ -129,7 +137,7 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 	errctx := cerr.Field("demucs_bin_path", l.demucsBinPath).Field("demucs_args", args)
 
 	cmd := l.executor.Command(l.demucsBinPath, args...)
-	cmd.SetDir(l.workingDir.Root())
+	cmd.SetDir(l.demucsWorkingDir.Root())
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -153,10 +161,10 @@ func (l LocalFileSplitter) runDemucs(sourcePath string, destPath string, splitTy
 
 func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, splitType splitter.SplitType) (splitter.StemFilePaths, error) {
 	logger := log.WithFields(log.Fields{
-		"sourcePath": sourcePath,
-		"destPath":   destPath,
-		"splitType":  splitType,
-		"workingDir": l.workingDir,
+		"sourcePath":         sourcePath,
+		"destPath":           destPath,
+		"splitType":          splitType,
+		"spleeterWorkingDir": l.spleeterWorkingDir,
 	})
 
 	splitParam, ok := spleeterParamMap[splitType]
@@ -171,7 +179,7 @@ func (l LocalFileSplitter) runSpleeter(sourcePath string, destPath string, split
 	errctx := cerr.Field("spleeter_bin_path", l.spleeterBinPath).Field("spleeter_args", args)
 
 	cmd := l.executor.Command(l.spleeterBinPath, args...)
-	cmd.SetDir(l.workingDir.Root())
+	cmd.SetDir(l.spleeterWorkingDir.Root())
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

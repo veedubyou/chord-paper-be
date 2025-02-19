@@ -191,9 +191,14 @@ func newSplitJobHandler(config Config, pathGenerator storagepath.Generator) spli
 		panic(err)
 	}
 
+	if err := os.MkdirAll(config.DemucsWorkingDirPath, os.ModePerm); err != nil {
+		panic(err)
+	}
+
 	localUsecase := must(file_splitter.NewLocalFileSplitter(
 		config.SpleeterWorkingDirPath,
 		config.SpleeterBinPath,
+		config.DemucsWorkingDirPath,
 		config.DemucsBinPath,
 		executor.BinaryFileExecutor{},
 	))
