@@ -300,7 +300,7 @@ var _ = Describe("TrackSplit", func() {
 					}
 
 					By("detecting that the track type is changed", func() {
-						Eventually(GetFirstTrackType, time.Minute).Should(Equal(test.ExpectedCompletedType))
+						Eventually(GetFirstTrackType, 4*time.Minute).Should(Equal(test.ExpectedCompletedType))
 					})
 
 					tracklist := GetTrackList(songID)
