@@ -264,7 +264,7 @@ var _ = Describe("TrackSplit", func() {
 			requestType := test.SplitType
 			engineType := test.EngineType
 
-			Describe(fmt.Sprintf("A valid split request for %s type", requestType), func() {
+			Describe(fmt.Sprintf("A valid split request for %s type with %s", requestType, engineType), func() {
 				BeforeEach(func() {
 					By("Putting a tracklist with a split request", func() {
 						splitTracklist := map[string]any{

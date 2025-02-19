@@ -73,6 +73,10 @@ func (l LocalFileSplitter) SplitFile(ctx context.Context, originalTrackFilePath 
 		return filePaths, nil
 
 	case trackentity.DemucsType:
+		fallthrough
+	case trackentity.DemucsFineTunedType:
+		fallthrough
+	case trackentity.DemucsV3Type:
 		filePaths, err := l.runDemucs(absOriginalTrackFilePath, absStemsOutputDir, splitType, engineType)
 		if err != nil {
 			return nil, cerr.Field("output_dir", absStemsOutputDir).
