@@ -1,4 +1,4 @@
-.PHONY : server-build server-test server-docker worker-build worker-test worker-docker test check
+.PHONY : server-build server-test server-docker worker-build worker-test worker-docker tests-build test check type-check
 
 server-build:
 	go build -o /dev/null -v ./src/server/server.go
@@ -23,6 +23,17 @@ worker-test:
 
 worker-docker:
 	docker build . --file ./docker/worker/Dockerfile
+
+tests-build:
+	@for pkg in $(shell find . -type f -name '*_test.go' -exec dirname {} \; | sort | uniq); do \
+		go test -c -o /dev/null $$pkg; \
+		if [ $$? -ne 0 ]; then \
+			echo "Tests in $$pkg failed to compile"; \
+			exit 1; \
+		fi; \
+	done
+
+type-check: server-build worker-build tests-build
 
 track-test:
 	go test -v ./src/shared/integration_test/...
