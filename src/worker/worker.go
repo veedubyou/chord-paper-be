@@ -29,11 +29,11 @@ func main() {
 			},
 			RabbitMQURL:             envvar.MustGet(envvar.RABBITMQ_URL),
 			RabbitMQQueueName:       envvar.MustGet(envvar.RABBITMQ_QUEUE_NAME),
-			YoutubeDLBinPath:        envvar.MustGet(envvar.YOUTUBEDL_BIN_PATH),
+			YoutubeDLBinPath:        config.YoutubeDLPath(),
 			YoutubeDLWorkingDirPath: envvar.MustGet(envvar.YOUTUBEDL_WORKING_DIR_PATH),
-			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
+			SpleeterBinPath:         config.SpleeterPath(),
 			SpleeterWorkingDirPath:  envvar.MustGet(envvar.SPLEETER_WORKING_DIR_PATH),
-			DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+			DemucsBinPath:           config.DemucsPath(),
 			DemucsWorkingDirPath:    envvar.MustGet(envvar.DEMUCS_WORKING_DIR_PATH),
 		}
 
@@ -48,11 +48,11 @@ func main() {
 			},
 			RabbitMQURL:             dev.RabbitMQHost,
 			RabbitMQQueueName:       dev.RabbitMQQueueName,
-			YoutubeDLBinPath:        envvar.MustGet(envvar.YOUTUBEDL_BIN_PATH),
+			YoutubeDLBinPath:        config.YoutubeDLPath(),
 			YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
-			SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
+			SpleeterBinPath:         config.SpleeterPath(),
 			SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
-			DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+			DemucsBinPath:           config.DemucsPath(),
 			DemucsWorkingDirPath:    path.Join(local.ProjectRoot(), "/src/worker/wd/demucs"),
 		}
 	default:
