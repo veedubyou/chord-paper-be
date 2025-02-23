@@ -4,7 +4,6 @@ import (
 	server_app "github.com/veedubyou/chord-paper-be/src/server/application"
 	"github.com/veedubyou/chord-paper-be/src/shared/config"
 	"github.com/veedubyou/chord-paper-be/src/shared/config/dev"
-	"github.com/veedubyou/chord-paper-be/src/shared/config/envvar"
 	"github.com/veedubyou/chord-paper-be/src/shared/config/local"
 	worker_app "github.com/veedubyou/chord-paper-be/src/worker/application"
 	"path"
@@ -30,9 +29,9 @@ func WorkerConfig(dbRegion string, cloudStorageConfig config.LocalCloudStorage) 
 		RabbitMQQueueName:       RabbitMQQueueName,
 		YoutubeDLBinPath:        "/not-a-real-path-until-we-need-one",
 		YoutubeDLWorkingDirPath: path.Join(local.ProjectRoot(), "/src/worker/wd/youtube-dl"),
-		SpleeterBinPath:         envvar.MustGet(envvar.SPLEETER_BIN_PATH),
+		SpleeterBinPath:         config.SpleeterPath(),
 		SpleeterWorkingDirPath:  path.Join(local.ProjectRoot(), "/src/worker/wd/spleeter"),
-		DemucsBinPath:           envvar.MustGet(envvar.DEMUCS_BIN_PATH),
+		DemucsBinPath:           config.DemucsPath(),
 		DemucsWorkingDirPath:    path.Join(local.ProjectRoot(), "/src/worker/wd/demucs"),
 	}
 }
