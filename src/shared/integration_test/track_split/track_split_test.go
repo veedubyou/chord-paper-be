@@ -217,18 +217,6 @@ var _ = Describe("TrackSplit", func() {
 			},
 			{
 				SplitType:             "split_2stems",
-				EngineType:            "demucs-ft",
-				ExpectedCompletedType: "2stems",
-				ExpectedNumberOfStems: 2,
-			},
-			{
-				SplitType:             "split_4stems",
-				EngineType:            "demucs-ft",
-				ExpectedCompletedType: "4stems",
-				ExpectedNumberOfStems: 4,
-			},
-			{
-				SplitType:             "split_2stems",
 				EngineType:            "demucs-v3",
 				ExpectedCompletedType: "2stems",
 				ExpectedNumberOfStems: 2,
