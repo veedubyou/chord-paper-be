@@ -32,5 +32,5 @@ func DemucsPath() string {
 }
 
 func YoutubeDLPath() string {
-	return FindBin("yt-dlp")
+	return FindBin("youtube-dl")
 }
