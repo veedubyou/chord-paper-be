@@ -14,8 +14,7 @@ RUN mkdir /youtubedl-scratch
 RUN wget https://go.dev/dl/go1.18.linux-amd64.tar.gz
 RUN tar -C /usr/local -xzf go1.18.linux-amd64.tar.gz
 RUN rm go1.18.linux-amd64.tar.gz
-ENV PATH=$PATH:/usr/local/go/bin
-ENV PATH=$PATH:/home
+ENV PATH=$PATH:/usr/local/go/bin:/home
 
 WORKDIR /chord-paper-be/src/worker
 
