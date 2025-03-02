@@ -5,6 +5,7 @@ RUN apt install -y ffmpeg
 
 RUN pip install --no-cache-dir spleeter==2.3.0
 RUN pip install --no-cache-dir demucs==4.0.1
+RUN pip install --no-cache-dir syncedlyrics==1.0.1
 
 RUN mkdir /spleeter-scratch
 RUN mkdir /demucs-scratch
