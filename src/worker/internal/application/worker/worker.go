@@ -35,6 +35,13 @@ func NewQueueWorkerFromConnection(conn *amqp091.Connection, queueName string, jo
 		return QueueWorker{}, cerr.Wrap(err).Error("Failed to get channel")
 	}
 
+	// limit concurrent processing to prevent resource blow up during
+	// multiple split jobs happening at the same time
+	err = rabbitChannel.Qos(1, 0, true)
+	if err != nil {
+		panic(err)
+	}
+
 	queue, err := rabbitChannel.QueueDeclare(
 		queueName,
 		true,
