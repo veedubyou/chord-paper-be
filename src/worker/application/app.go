@@ -56,11 +56,7 @@ type Config struct {
 
 func NewApp(config Config) App {
 	consumerConn := must(amqp091.Dial(config.RabbitMQURL))
-	// only allow one message at a time to prevent
-	// resource use overload. in theory this is only a problem
-	// during multiple concurrent splitting operations
-	// worth finetuning in the future
-	must(consumerConn.Qos(1, 0, true))
+
 	return App{
 		worker: newWorker(config, consumerConn),
 	}
