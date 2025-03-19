@@ -5,7 +5,8 @@ const (
 )
 
 type dbUser struct {
-	ID    string `dynamo:"id"`
-	Name  string `dynamo:"username"`
-	Email string `dynamo:"email"`
+	ID       string `dynamo:"id"`
+	Name     string `dynamo:"username"`
+	Email    string `dynamo:"email"`
+	Verified bool   `dynamo:"verified"`
 }

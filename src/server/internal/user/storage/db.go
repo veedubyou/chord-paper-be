@@ -40,8 +40,26 @@ func (d DB) GetUser(ctx context.Context, userID string) (userentity.User, error)
 	}
 
 	return userentity.User{
-		ID:    value.ID,
-		Name:  value.Name,
-		Email: value.Email,
+		ID:       value.ID,
+		Name:     value.Name,
+		Email:    value.Email,
+		Verified: value.Verified,
 	}, nil
+}
+
+func (d DB) SetUser(ctx context.Context, user userentity.User) error {
+	value := dbUser{
+		ID:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		Verified: user.Verified,
+	}
+
+	err := d.dynamoDB.Table(UsersTable).Table.Put(value).RunWithContext(ctx)
+
+	if err != nil {
+		return mark.Wrap(err, DefaultErrorMark, "Failed to add user")
+	}
+
+	return nil
 }

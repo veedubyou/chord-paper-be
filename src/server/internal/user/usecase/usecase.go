@@ -2,6 +2,8 @@ package userusecase
 
 import (
 	"context"
+	"fmt"
+	"github.com/apex/log"
 	"github.com/cockroachdb/errors"
 	"github.com/cockroachdb/errors/markers"
 	google_id2 "github.com/veedubyou/chord-paper-be/src/server/google_id"
@@ -86,10 +88,36 @@ func (u Usecase) Login(ctx context.Context, authHeader string) (userentity.User,
 
 	userFromDB, apiErr := u.getUser(ctx, userFromGoogle.GoogleID)
 	if apiErr != nil {
+		if apiErr.ErrorCode == auth.NoAccountCode {
+			go func() {
+				err := u.addUnverifiedUser(context.Background(), userFromGoogle)
+				if err != nil {
+					log.Error(fmt.Sprintf("Failed to add %s, %s, %s", userFromGoogle.GoogleID, userFromGoogle.Name, userFromGoogle.Email))
+					log.Error(err.Error())
+				}
+			}()
+		}
+
 		return userentity.User{}, api.WrapError(apiErr, "Failed to fetch user")
 	}
 
+	if !userFromDB.Verified {
+		err := errors.New("User not verified")
+		return userentity.User{}, api.CommitError(err, auth.UnvalidatedAccountCode, "User not verified during login")
+	}
+
 	return userFromDB, nil
+}
+
+func (u Usecase) addUnverifiedUser(ctx context.Context, googleUser google_id2.User) error {
+	newUser := userentity.User{
+		ID:       googleUser.GoogleID,
+		Name:     googleUser.Name,
+		Email:    googleUser.Email,
+		Verified: false,
+	}
+
+	return u.db.SetUser(ctx, newUser)
 }
 
 func (u Usecase) getUser(ctx context.Context, userID string) (userentity.User, *api.Error) {
