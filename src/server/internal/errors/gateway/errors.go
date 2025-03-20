@@ -14,6 +14,7 @@ import (
 var httpStatusCodeMap = map[api.ErrorCode]int{
 	api.DefaultErrorCode:              http.StatusInternalServerError,
 	auth.NotGoogleAuthorizedCode:      http.StatusUnauthorized,
+	auth.UnvalidatedAccountCode:       http.StatusUnauthorized,
 	auth.NoAccountCode:                http.StatusUnauthorized,
 	auth.BadAuthorizationHeaderCode:   http.StatusBadRequest,
 	auth.WrongOwnerCode:               http.StatusForbidden,
