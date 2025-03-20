@@ -41,7 +41,7 @@ var _ = Describe("User", func() {
 			authtest.ItRejectsUnauthorizedRequests("POST", "/login")
 		})
 
-		Describe("For an unverified user", func() {
+		Describe("For an unverified user not yet in DB", func() {
 			var (
 				response *httptest.ResponseRecorder
 			)
@@ -51,7 +51,7 @@ var _ = Describe("User", func() {
 					Method:  "POST",
 					Target:  "/login",
 					JSONObj: nil,
-					Mods:    testing.RequestModifiers{testing.WithUserCred(testing.UnverifiedUser)},
+					Mods:    testing.RequestModifiers{testing.WithUserCred(testing.UnverifiedUserNotInDB)},
 				}.MakeFake()
 				response = httptest.NewRecorder()
 
@@ -66,8 +66,32 @@ var _ = Describe("User", func() {
 
 			It("commits the user to DB", func() {
 				Eventually(func() (userentity.User, error) {
-					return userStorage.GetUser(context.Background(), testing.UnverifiedUser.ID)
-				}).Should(BeEquivalentTo(testing.UnverifiedUser))
+					return userStorage.GetUser(context.Background(), testing.UnverifiedUserNotInDB.ID)
+				}).Should(BeEquivalentTo(testing.UnverifiedUserNotInDB))
+			})
+		})
+
+		Describe("For an unverified user that is in DB", func() {
+			var (
+				response *httptest.ResponseRecorder
+			)
+
+			BeforeEach(func() {
+				request := testing.RequestFactory{
+					Method:  "POST",
+					Target:  "/login",
+					JSONObj: nil,
+					Mods:    testing.RequestModifiers{testing.WithUserCred(testing.UnverifiedUserInDB)},
+				}.MakeFake()
+				response = httptest.NewRecorder()
+
+				c := testing.PrepareEchoContext(request, response)
+				err := userGateway.Login(c)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns 401", func() {
+				Expect(response.Code).To(Equal(http.StatusUnauthorized))
 			})
 		})
 
