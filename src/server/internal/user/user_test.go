@@ -1,6 +1,7 @@
 package user_test
 
 import (
+	"context"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
@@ -14,13 +15,14 @@ import (
 
 var _ = Describe("User", func() {
 	var (
+		userStorage userstorage.DB
 		userGateway usergateway.Gateway
 		validator   testing.Validator
 	)
 
 	BeforeEach(func() {
 		validator = testing.Validator{}
-		userStorage := userstorage.NewDB(db)
+		userStorage = userstorage.NewDB(db)
 		userUsecase := userusecase.NewUsecase(userStorage, validator)
 		userGateway = usergateway.NewGateway(userUsecase)
 	})
@@ -62,11 +64,13 @@ var _ = Describe("User", func() {
 			})
 
 			It("commits the user to DB", func() {
-				userResponse := testing.DecodeJSON[usergateway.UserJSON](response.Body)
+				committedUser, err := userStorage.GetUser(context.Background(), testing.UnverifiedUser.ID)
+				Expect(err).NotTo(HaveOccurred()))
 
-				Expect(userResponse.ID).To(Equal(testing.PrimaryUser.ID))
-				Expect(userResponse.Name).To(Equal(testing.PrimaryUser.Name))
-				Expect(userResponse.Email).To(Equal(testing.PrimaryUser.Email))
+				Expect(committedUser.ID).To(Equal(testing.PrimaryUser.ID))
+				Expect(committedUser.Name).To(Equal(testing.PrimaryUser.Name))
+				Expect(committedUser.Email).To(Equal(testing.PrimaryUser.Email))
+				Expect(committedUser.Verified).To(BeFalse())
 			})
 		})
 
