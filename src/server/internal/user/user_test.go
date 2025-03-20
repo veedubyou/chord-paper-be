@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/shared_tests/auth"
+	userentity "github.com/veedubyou/chord-paper-be/src/server/internal/user/entity"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/gateway"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/storage"
 	"github.com/veedubyou/chord-paper-be/src/server/internal/user/usecase"
@@ -64,13 +65,9 @@ var _ = Describe("User", func() {
 			})
 
 			It("commits the user to DB", func() {
-				committedUser, err := userStorage.GetUser(context.Background(), testing.UnverifiedUser.ID)
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(committedUser.ID).To(Equal(testing.PrimaryUser.ID))
-				Expect(committedUser.Name).To(Equal(testing.PrimaryUser.Name))
-				Expect(committedUser.Email).To(Equal(testing.PrimaryUser.Email))
-				Expect(committedUser.Verified).To(BeFalse())
+				Eventually(func() (userentity.User, error) {
+					return userStorage.GetUser(context.Background(), testing.UnverifiedUser.ID)
+				}).Should(BeEquivalentTo(testing.UnverifiedUser))
 			})
 		})
 
