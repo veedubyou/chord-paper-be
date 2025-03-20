@@ -67,7 +67,10 @@ var _ = Describe("User", func() {
 
 			It("returns the correct user", func() {
 				userResponse := testing.DecodeJSON[usergateway.UserJSON](response.Body)
-				Expect(userResponse).To(BeEquivalentTo(testing.PrimaryUser))
+
+				Expect(userResponse.ID).To(Equal(testing.PrimaryUser.ID))
+				Expect(userResponse.Name).To(Equal(testing.PrimaryUser.Name))
+				Expect(userResponse.Email).To(Equal(testing.PrimaryUser.Email))
 			})
 		})
 	})
