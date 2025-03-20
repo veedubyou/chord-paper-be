@@ -78,7 +78,6 @@ func (t Validator) ValidateToken(ctx context.Context, requestToken string) (goog
 func EnsureUsers(db dynamolib.DynamoDBWrapper) {
 	EnsureUser(db, PrimaryUser)
 	EnsureUser(db, OtherUser)
-	EnsureUser(db, UnverifiedUser)
 }
 
 func EnsureUser(db dynamolib.DynamoDBWrapper, u User) {

@@ -39,7 +39,35 @@ var _ = Describe("User", func() {
 		})
 
 		Describe("For an unverified user", func() {
+			var (
+				response *httptest.ResponseRecorder
+			)
 
+			BeforeEach(func() {
+				request := testing.RequestFactory{
+					Method:  "POST",
+					Target:  "/login",
+					JSONObj: nil,
+					Mods:    testing.RequestModifiers{testing.WithUserCred(testing.UnverifiedUser)},
+				}.MakeFake()
+				response = httptest.NewRecorder()
+
+				c := testing.PrepareEchoContext(request, response)
+				err := userGateway.Login(c)
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("returns 401", func() {
+				Expect(response.Code).To(Equal(http.StatusUnauthorized))
+			})
+
+			It("commits the user to DB", func() {
+				userResponse := testing.DecodeJSON[usergateway.UserJSON](response.Body)
+
+				Expect(userResponse.ID).To(Equal(testing.PrimaryUser.ID))
+				Expect(userResponse.Name).To(Equal(testing.PrimaryUser.Name))
+				Expect(userResponse.Email).To(Equal(testing.PrimaryUser.Email))
+			})
 		})
 
 		Describe("For an authorized user", func() {
