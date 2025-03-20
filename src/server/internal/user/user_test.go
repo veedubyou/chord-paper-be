@@ -65,7 +65,7 @@ var _ = Describe("User", func() {
 
 			It("commits the user to DB", func() {
 				committedUser, err := userStorage.GetUser(context.Background(), testing.UnverifiedUser.ID)
-				Expect(err).NotTo(HaveOccurred()))
+				Expect(err).NotTo(HaveOccurred())
 
 				Expect(committedUser.ID).To(Equal(testing.PrimaryUser.ID))
 				Expect(committedUser.Name).To(Equal(testing.PrimaryUser.Name))

@@ -103,7 +103,7 @@ func (u Usecase) Login(ctx context.Context, authHeader string) (userentity.User,
 
 	if !userFromDB.Verified {
 		err := errors.New("User not verified")
-		return userentity.User{}, api.CommitError(err, auth.UnvalidatedAccountCode, "User not verified during login")
+		return userentity.User{}, api.CommitError(err, auth.NoAccountCode, "User not verified during login")
 	}
 
 	return userFromDB, nil
