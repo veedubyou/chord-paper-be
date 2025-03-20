@@ -25,9 +25,10 @@ type tracklist struct {
 }
 
 type User struct {
-	ID    string `dynamo:"id,hash"`
-	Name  string `dynamo:"username"`
-	Email string `dynamo:"email"`
+	ID       string `dynamo:"id,hash"`
+	Name     string `dynamo:"username"`
+	Email    string `dynamo:"email"`
+	Verified bool   `dynamo:"verified"`
 }
 
 func MakeTestDB(testRegion string) dynamolib.DynamoDBWrapper {

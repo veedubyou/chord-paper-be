@@ -38,6 +38,10 @@ var _ = Describe("User", func() {
 			authtest.ItRejectsUnauthorizedRequests("POST", "/login")
 		})
 
+		Describe("For an unverified user", func() {
+
+		})
+
 		Describe("For an authorized user", func() {
 			var (
 				response *httptest.ResponseRecorder
