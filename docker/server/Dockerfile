@@ -1,5 +1,7 @@
 FROM golang:1.18.3-buster as builder
 
+RUN pip install --no-cache-dir syncedlyrics==1.0.1
+
 WORKDIR /chord-paper-be/src/server
 
 COPY ./go.mod ./go.sum ./
