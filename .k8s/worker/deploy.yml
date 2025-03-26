@@ -40,8 +40,8 @@ spec:
           name: cache-volume
         command: ["/bin/sh"]
         args: ["-c", "mv /home/youtube-dl /youtube-dl/"]
-      nodeSelector:
-        ram: 8gb
+#      nodeSelector:
+#        ram: 8gb
       volumes:
       - name: cache-volume
         emptyDir: {}
@@ -69,3 +69,5 @@ data:
   YOUTUBEDL_WORKING_DIR_PATH: /youtubedl-scratch
   GOOGLE_CLOUD_STORAGE_BUCKET_NAME: chord-paper-tracks
   RABBITMQ_QUEUE_NAME: chord-paper-tracks
+  DEMUCS_BIN_PATH: /usr/local/bin/demucs
+  DEMUCS_WORKING_DIR_PATH: /demucs-scratch
