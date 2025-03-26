@@ -2,5 +2,5 @@
 
 # Convenience script to undeploy everything
 
-kubectl delete deploy/chord-be-workers
-watch kubectl get all
+kubectl delete -n chord deploy/chord-be-workers
+watch kubectl get all -n chord
