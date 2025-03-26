@@ -17,9 +17,9 @@ export LATEST_YOUTUBE_IMAGE=$(curl -L --fail "https://hub.docker.com/v2/reposito
 printenv LATEST_WORKERS_IMAGE
 printenv LATEST_YOUTUBE_IMAGE
 
-mkdir -p ./processed-yamls/ && cat ./deploy.yml | envsubst > ./processed-yamls/deploy.yml
+mkdir -p ./processed-yamls/ && cat ./deploy.yaml | envsubst > ./processed-yamls/deploy.yaml
 
 kubectl apply -f "../common/chord-be-common-cm.yaml"
-kubectl apply -f "./processed-yamls/deploy.yml"
+kubectl apply -f "./processed-yamls/deploy.yaml"
 
-watch kubectl get all
+watch kubectl get all -n chord
