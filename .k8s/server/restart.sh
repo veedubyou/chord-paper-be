@@ -1,3 +1,3 @@
 #!/bin/bash
 
-kubectl rollout restart deploy/chord-be
+kubectl rollout restart deploy/chord-be -n chord
