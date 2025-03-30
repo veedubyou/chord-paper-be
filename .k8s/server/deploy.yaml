@@ -6,6 +6,7 @@ metadata:
   name: chord-be
   labels:
     app: chord-be
+  namespace: chord
 spec:
   replicas: 3
   selector:
@@ -17,6 +18,7 @@ spec:
         app: chord-be
       annotations:
         restartedAt: ""
+      namespace: chord
     spec:
       containers:
       - name: chord-be

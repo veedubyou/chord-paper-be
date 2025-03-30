@@ -4,9 +4,10 @@ metadata:
   name: chord-be-workers
   labels:
     app: chord-be-workers
+  namespace: chord
 spec:
   replicas: 1
-  selector: 
+  selector:
     matchLabels:
       app: chord-be-workers
   template:
@@ -15,6 +16,7 @@ spec:
         app: chord-be-workers
       annotations:
         restartedAt: '2006-01-02T15:04:05Z07:00'
+      namespace: chord
     spec:
       containers:
       - name: chord-be-workers
