@@ -1,0 +1,9 @@
+name: Actions Runner Tester
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runners:
+    runs-on: arc-chord-be-runner-set
+    steps:
+    - run: echo "🎉 arc-chord-be-runner-set running! 💦💦"
