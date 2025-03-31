@@ -17,4 +17,4 @@ kubectl apply -f "../common/chord-be-common-cm.yaml"
 kubectl apply -f "./processed-yamls/deploy.yaml"
 kubectl apply -f "service.yaml"
 
-watch kubectl get all
+watch kubectl get all -n chord
