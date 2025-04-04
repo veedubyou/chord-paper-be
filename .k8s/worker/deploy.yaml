@@ -64,6 +64,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: chord-be-workers-cm
+  namespace: chord
 data:
   SPLEETER_BIN_PATH: /usr/local/bin/spleeter
   SPLEETER_WORKING_DIR_PATH: /spleeter-scratch
