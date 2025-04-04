@@ -21,7 +21,7 @@ jobs:
   push:
     name: Build Image and Deploy
     needs: [build-and-test, split-track-test]
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
     steps:
       # Checkout with history (to get git describe output properly)
       - name: Checkout
