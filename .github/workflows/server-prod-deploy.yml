@@ -45,14 +45,14 @@ jobs:
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v1.24.3
+          version: v1.32.2
           command: set image --record deploy/chord-be chord-be=${{ secrets.DOCKERHUB_USERNAME }}/chord-be:${{ env.gitver }}
 
       - name: Verify K8S Deployment
         uses: steebchen/kubectl@master
         with:
           config: ${{ secrets.KUBE_CONFIG_DATA }}
-          version: v1.24.3
+          version: v1.32.2
           command: rollout status deploy/chord-be
 
       - name: Cleanup Images

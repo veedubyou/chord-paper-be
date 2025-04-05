@@ -6,7 +6,7 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
 
     services:
       dynamodb:
@@ -22,17 +22,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install pip
+        run: |
+          sudo apt-get update
+          sudo apt install -y python3-pip
+
       - name: Update pip
         run: sudo pip install --upgrade pip
 
       - name: Install Spleeter dependencies
         run: |
-          sudo apt-get update
           sudo apt install -y ffmpeg
 
       - name: Install Spleeter
         run:
-          pip install --no-cache-dir spleeter==2.3.0
+          pip install --no-cache-dir spleeter==2.4.2
 
       - name: Set Spleeter bin environment variable
         run: echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
