@@ -22,12 +22,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install pip
+        run: |
+          sudo apt-get update
+          sudo apt install -y python3-pip
+
       - name: Update pip
         run: sudo pip install --upgrade pip
 
       - name: Install Spleeter dependencies
         run: |
-          sudo apt-get update
           sudo apt install -y ffmpeg
 
       - name: Install Spleeter
