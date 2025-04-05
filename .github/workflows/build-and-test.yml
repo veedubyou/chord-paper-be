@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
     steps:
       - uses: actions/checkout@v2
 
@@ -26,7 +26,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
 
     services:
       dynamodb:

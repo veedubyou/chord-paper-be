@@ -6,7 +6,7 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
 
     services:
       dynamodb:
