@@ -61,4 +61,10 @@ jobs:
         env:
           SKIP_SPLIT_TRACK_TEST: true
         run: go test -v ./...
-        
+
+  lol:
+    name: Lol
+    runs-on: arc-chord-be-runner-set
+    steps:
+      - name: is which missing?
+        run: which apt
