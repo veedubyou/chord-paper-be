@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Spleeter
         run:
-          pip install --no-cache-dir spleeter==2.3.0
+          pip install --no-cache-dir spleeter==2.3.2
 
       - name: Set Spleeter bin environment variable
         run: |
