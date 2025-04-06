@@ -27,8 +27,8 @@ jobs:
           sudo apt-get update
           sudo apt install -y python3-pip
 
-      - name: Update pip
-        run: sudo pip install --upgrade pip
+      - name: Edit PATH to contain /home/runner/.local/bin
+        run: sudo sed -i '/^PATH=/ s|"$|:/home/runner/.local/bin"|' /etc/environment
 
       - name: Install Spleeter dependencies
         run: |
@@ -41,7 +41,6 @@ jobs:
       - name: Set Spleeter bin environment variable
         run: |
           ls -al /home/runner/.local/bin
-          export PATH=$PATH:/home/runner/.local/bin
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
