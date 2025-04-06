@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
     steps:
       - uses: actions/checkout@v2
 
@@ -26,7 +26,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: cluster-runner
+    runs-on: arc-chord-be-runner-set
 
     services:
       dynamodb:
@@ -45,6 +45,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up build-essential
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -57,4 +61,10 @@ jobs:
         env:
           SKIP_SPLIT_TRACK_TEST: true
         run: go test -v ./...
-        
+
+  lol:
+    name: Lol
+    runs-on: arc-chord-be-runner-set
+    steps:
+      - name: is which missing?
+        run: which apt
