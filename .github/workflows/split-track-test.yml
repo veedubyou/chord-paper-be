@@ -41,6 +41,7 @@ jobs:
       - name: Set Spleeter bin environment variable
         run: |
           ls -al /home/runner/.local/bin
+          export PATH=$PATH:/home/runner/.local/bin
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
