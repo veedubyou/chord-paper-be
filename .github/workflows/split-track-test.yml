@@ -28,7 +28,7 @@ jobs:
           sudo apt install -y python3-pip
 
       - name: Edit PATH to contain /home/runner/.local/bin
-        run: sudo sed -i '/^PATH=/ s|"$|:/home/runner/.local/bin"|' /etc/environment
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Install Spleeter dependencies
         run: |
