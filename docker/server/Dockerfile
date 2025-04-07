@@ -1,7 +1,7 @@
 FROM golang:1.18.3-buster as builder
 
 RUN apt-get update
-RUN apt install -y python3-pip
+RUN apt install -y python3-pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN pip install --no-cache-dir syncedlyrics==1.0.1
 
