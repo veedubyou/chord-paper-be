@@ -1,4 +1,5 @@
-FROM golang:1.18.3-buster as builder
+#FROM golang:1.18.3-buster as builder
+FROM golang:1.24-bullseye AS builder
 
 RUN apt-get update
 RUN apt install -y python3-pip && ln -s /usr/bin/pip3 /usr/bin/pip
