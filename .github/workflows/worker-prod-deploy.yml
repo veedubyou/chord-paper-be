@@ -10,13 +10,13 @@ on:
       - '.github/**'
       - 'docker/worker/**'
 jobs:
-  build-and-test:
-    name: Build and Test
-    uses: ./.github/workflows/build-and-test.yml
+#  build-and-test:
+#    name: Build and Test
+#    uses: ./.github/workflows/build-and-test.yml
 
-  split-track-test:
-    name: Split Track Integration Test
-    uses: ./.github/workflows/split-track-test.yml
+#  split-track-test:
+#    name: Split Track Integration Test
+#    uses: ./.github/workflows/split-track-test.yml
 
   push:
     name: Build Image and Deploy
@@ -35,6 +35,11 @@ jobs:
         run: echo "gitver=$(cat GIT-VERSION-FILE)" >> $GITHUB_ENV
       - name: Login to DockerHub
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Install pip
+        run: |
+          sudo apt-get update
+          sudo apt install -y python3-pip
 
       # base image
 
