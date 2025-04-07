@@ -1,15 +1,15 @@
-name: PR Gate
-
-on:
-  pull_request:
-    #branches: [ master ]
-    branches: []
-
-jobs:
-  build-and-test:
-    name: Build and Test
-    uses: ./.github/workflows/build-and-test.yml
-
-  split-track-test:
-    name: Split Track Integration Test
-    uses: ./.github/workflows/split-track-test.yml
+#name: PR Gate
+#
+#on:
+#  pull_request:
+#    #branches: [ master ]
+#    branches: []
+#
+#jobs:
+#  build-and-test:
+#    name: Build and Test
+#    uses: ./.github/workflows/build-and-test.yml
+#
+#  split-track-test:
+#    name: Split Track Integration Test
+#    uses: ./.github/workflows/split-track-test.yml
