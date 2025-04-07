@@ -2,6 +2,7 @@
 FROM golang:1.24-bullseye AS builder
 
 RUN apt-get update
+
 RUN apt install -y python3-pip
 #RUN apt install -y python3-pip && ln -s /usr/bin/pip3 /usr/bin/pip
 
