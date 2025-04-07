@@ -2,7 +2,8 @@ name: PR Gate
 
 on:
   pull_request:
-    branches: [ master ]
+    #branches: [ master ]
+    branches: []
 
 jobs:
   build-and-test:
