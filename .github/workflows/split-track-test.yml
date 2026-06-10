@@ -30,8 +30,6 @@ jobs:
           python3 --version
           sudo apt-get update
 
-
-
       - name: Identify sources of executables
         run: |
           which python3
@@ -43,15 +41,15 @@ jobs:
           python3 -m venv .venv
       
       - name: Edit PATH to contain /.venv/bin
-        run: echo ".venv/bin" >> "$GITHUB_PATH"
+        run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Install Spleeter dependencies
         run: |
-          sudo apt install -y ffmpeg
+          sudo apt-get install -y ffmpeg
 
       - name: Install Spleeter
         run:
-          .venv/bin/python3 -m pip install --no-cache-dir spleeter==2.4.2
+          pip install --no-cache-dir spleeter==2.4.2
 
       - name: Set Spleeter bin environment variable
         run: |
@@ -61,7 +59,7 @@ jobs:
 
       - name: Install Demucs
         run:
-          .venv/bin/python3 -m pip install --no-cache-dir demucs==4.0.1
+          pip install --no-cache-dir demucs==4.0.1
 
       - name: Set Demucs bin environment variable
         run: echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
