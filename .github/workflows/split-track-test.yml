@@ -22,6 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Use python venv
+        run: |
+          which python
+          python3 -m venv .venv
+          source .venv/bin/activate
+
       - name: Install pip
         run: |
           sudo apt-get update
