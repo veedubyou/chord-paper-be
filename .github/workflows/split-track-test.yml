@@ -33,13 +33,13 @@ jobs:
 
       - name: Identify sources of executables
         run: |
-          which python
+          which python3
           which pip
-          python --version
+          python3 --version
 
       - name: Create python venv
         run: |
-          python -m venv .venv
+          python3 -m venv .venv
       
       - name: Install Spleeter dependencies
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Spleeter
         run:
-          .venv/bin/python -m pip install --no-cache-dir spleeter==2.4.2
+          .venv/bin/python3 -m pip install --no-cache-dir spleeter==2.4.2
 
       - name: Set Spleeter bin environment variable
         run: |
@@ -57,7 +57,7 @@ jobs:
 
       - name: Install Demucs
         run:
-          .venv/bin/python -m pip install --no-cache-dir demucs==4.0.1
+          .venv/bin/python3 -m pip install --no-cache-dir demucs==4.0.1
 
       - name: Set Demucs bin environment variable
         run: echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
