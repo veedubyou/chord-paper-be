@@ -21,18 +21,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install pip
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install pip, venv
         run: |
+          python3 --version
           sudo apt-get update
-          sudo apt install -y python3-pip
 
-      - name: Edit PATH to contain /home/runner/.local/bin
-        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Identify sources of executables
+        run: |
+          which python3
+          which pip
+          python3 --version
+
+      - name: Create python venv
+        run: |
+          python3 -m venv .venv
+      
+      - name: Edit PATH to contain /.venv/bin
+        run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Install Spleeter dependencies
         run: |
-          sudo apt install -y ffmpeg
+          sudo apt-get install -y ffmpeg
 
       - name: Install Spleeter
         run:
@@ -40,7 +53,7 @@ jobs:
 
       - name: Set Spleeter bin environment variable
         run: |
-          ls -al /home/runner/.local/bin
+          ls -al .venv/bin
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
@@ -50,6 +63,10 @@ jobs:
 
       - name: Set Demucs bin environment variable
         run: echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
+
+      - name: Install build tools
+        run: |
+          sudo apt-get install -y build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v3
