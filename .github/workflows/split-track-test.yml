@@ -22,11 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install pip, venv, which
+      - name: Install pip, venv
         run: |
+          python3 --version
           sudo apt-get update
           sudo apt install -y python3-pip
-          sudo apt install -y python3.12-venv
+          sudo apt install -y python3.11-venv
 
       - name: Edit PATH to contain /home/runner/.local/bin
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
