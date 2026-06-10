@@ -24,7 +24,6 @@ jobs:
 
       - name: Use python venv
         run: |
-          which python
           python3 -m venv .venv
           source .venv/bin/activate
 
