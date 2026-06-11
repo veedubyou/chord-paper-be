@@ -21,58 +21,59 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+#      - uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.11'
           
-      - name: Install pip, venv
-        run: |
-          python3 --version
-          sudo apt-get update
+#      - name: Install pip, venv
+#        run: |
+#          python3 --version
+#          sudo apt-get update
 
-      - name: Identify sources of executables
-        run: |
-          which python3
-          which pip
-          python3 --version
+#      - name: Identify sources of executables
+#        run: |
+#          which python3
+#          which pip
+#          python3 --version
 
-      - name: Create python venv
-        run: |
-          python3 -m venv .venv
+#      - name: Create python venv
+#        run: |
+#          python3 -m venv .venv
       
-      - name: Edit PATH to contain /.venv/bin
+      - name: Edit PATH to contain $PWD/.venv/bin
         run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
 
-      - name: Install Spleeter dependencies
-        run: |
-          sudo apt-get install -y ffmpeg
+#      - name: Install Spleeter dependencies
+#        run: |
+#          sudo apt-get install -y ffmpeg
 
-      - name: Install Spleeter
-        run:
-          pip install --no-cache-dir spleeter==2.4.2
+#      - name: Install Spleeter
+#        run:
+#          pip install --no-cache-dir spleeter==2.4.2
 
       - name: Set Spleeter bin environment variable
         run: |
-          ls -al .venv/bin
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
-      - name: Install Demucs
-        run:
-          pip install --no-cache-dir demucs==4.0.1
+#      - name: Install Demucs
+#        run:
+#          pip install --no-cache-dir demucs==4.0.1
 
       - name: Set Demucs bin environment variable
-        run: echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
-
-      - name: Install build tools
         run: |
-          sudo apt-get install -y build-essential
+          which demucs
+          echo "DEMUCS_BIN_PATH=$(which demucs)" >> $GITHUB_ENV
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          cache: true
+#      - name: Install build tools
+#        run: |
+#          sudo apt-get install -y build-essential
+
+#      - name: Set up Go
+#        uses: actions/setup-go@v3
+#        with:
+#          go-version: 1.18
+#          cache: true
 
       - name: Test
         working-directory: ./src/shared/integration_test/track_split
