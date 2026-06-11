@@ -53,6 +53,8 @@ jobs:
 
       - name: Set Spleeter bin environment variable
         run: |
+          pwd
+          ls
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
