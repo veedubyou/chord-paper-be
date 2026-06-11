@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-<<<<<<< workflow-tester
+
 #      - uses: actions/setup-python@v5
 #        with:
 #          python-version: '3.11'
@@ -47,7 +47,7 @@ jobs:
 #      - name: Install Spleeter dependencies
 #        run: |
 #          sudo apt-get install -y ffmpeg
-=======
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -73,7 +73,6 @@ jobs:
       - name: Install Spleeter dependencies
         run: |
           sudo apt-get install -y ffmpeg
->>>>>>> master
 
 #      - name: Install Spleeter
 #        run:
@@ -81,10 +80,7 @@ jobs:
 
       - name: Set Spleeter bin environment variable
         run: |
-<<<<<<< workflow-tester
-=======
           ls -al .venv/bin
->>>>>>> master
           which spleeter
           echo "SPLEETER_BIN_PATH=$(which spleeter)" >> $GITHUB_ENV
 
@@ -101,13 +97,12 @@ jobs:
 #        run: |
 #          sudo apt-get install -y build-essential
 
-<<<<<<< workflow-tester
 #      - name: Set up Go
 #        uses: actions/setup-go@v3
 #        with:
 #          go-version: 1.18
 #          cache: true
-=======
+
       - name: Install build tools
         run: |
           sudo apt-get install -y build-essential
@@ -117,7 +112,6 @@ jobs:
         with:
           go-version: 1.18
           cache: true
->>>>>>> master
 
       - name: Test
         working-directory: ./src/shared/integration_test/track_split
