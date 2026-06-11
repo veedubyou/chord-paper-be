@@ -1,0 +1,10 @@
+name: Custom Runner Image Tester
+on:
+  workflow_dispatch:
+
+jobs:
+  test-runners:
+    runs-on: arc-chord-be-runner-set
+    steps:
+    - name: Check if stuff is there
+      run: python3 --version && which demucs && which spleeter && which python3 && which go
