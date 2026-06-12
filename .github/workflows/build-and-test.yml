@@ -10,11 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          cache: true
+#      - name: Set up Go
+#        uses: actions/setup-go@v3
+#        with:
+#          go-version: 1.18
+#          cache: true
 
       - name: Server Build
         working-directory: ./src/server
@@ -45,16 +45,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up build-essential
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential
+#      - name: Set up build-essential
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y build-essential
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          cache: true
+#      - name: Set up Go
+#        uses: actions/setup-go@v3
+#        with:
+#          go-version: 1.18
+#          cache: true
 
       - name: Test
         working-directory: ./src
@@ -62,9 +62,9 @@ jobs:
           SKIP_SPLIT_TRACK_TEST: true
         run: go test -v ./...
 
-  lol:
-    name: Lol
-    runs-on: arc-chord-be-runner-set
-    steps:
-      - name: is which missing?
-        run: which apt
+ # lol:
+ #   name: Lol
+ #   runs-on: arc-chord-be-runner-set
+ #   steps:
+ #     - name: is which missing?
+ #       run: which apt
