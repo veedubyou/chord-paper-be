@@ -3,7 +3,7 @@ FROM python:3.11.15-bookworm as builder
 RUN apt-get update
 RUN apt install -y ffmpeg
 
-RUN pip install --no-cache-dir spleeter==2.3.0
+RUN pip install --no-cache-dir spleeter==2.4.2
 RUN pip install --no-cache-dir demucs==4.0.1
 
 RUN mkdir /spleeter-scratch
