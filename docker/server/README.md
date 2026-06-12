@@ -1,0 +1,3 @@
+Since reinstalling ~5-10GBs worth of dependencies each time the workflow runs is a giant waste of resources, the runner image has been customized to include spleeter, demucs, go, and python 3.11.  Subsequently the only thing that the workflow has to do is test the code.
+
+`Dockerfile-runner` contains the build for the runner, and must be pushed to pw1124/chord-be:runner-latest, where it is used by the arc-runner-set hosted on k8s.  It can be built with build.sh and pushed with push.sh.

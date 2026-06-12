@@ -22,14 +22,14 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
     update-alternatives --set python3 /usr/bin/python3.11
 RUN python3 -m venv .venv
 RUN pip install --no-cache-dir spleeter==2.4.2
-RUN echo $PATH && ls -al /home/runner/.venv/bin
 RUN pip install --no-cache-dir demucs==4.0.1
-RUN python3 --version && which demucs && which spleeter && which python3 && pwd
 
-RUN curl -sLO https://go.dev/dl/go1.18.linux-amd64.tar.gz
-RUN tar -C /usr/local -xzf go1.18.linux-amd64.tar.gz && rm go1.18.linux-amd64.tar.gz
-RUN ls -al /usr/local/go/bin
-RUN which go
-#RUN rm -rf /var/lib/apt/lists/*
+RUN curl -sLO https://go.dev/dl/go1.18.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.18.linux-amd64.tar.gz && \
+    rm go1.18.linux-amd64.tar.gz
+
+RUN rm -rf /var/lib/apt/lists/*
 
 USER runner
+
+# make sure this is pushed to repo as pw1124/chord-be:runner-latest
