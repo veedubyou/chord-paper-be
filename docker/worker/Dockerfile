@@ -1,4 +1,4 @@
-FROM python:3.9-buster as builder
+FROM python:3.11.15-bookworm as builder
 
 RUN apt-get update
 RUN apt install -y ffmpeg
