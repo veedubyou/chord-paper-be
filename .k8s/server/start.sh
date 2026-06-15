@@ -7,6 +7,7 @@ export LATEST_IMAGE=$(curl -L --fail "https://hub.docker.com/v2/repositories/pw1
         jq '.results | .[] | .name' -r | \
         sed 's/latest//' | \
         sort --version-sort | \
+        grep -v runner | \
         tail -n 1)
 
 printenv LATEST_IMAGE
