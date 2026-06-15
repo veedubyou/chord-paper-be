@@ -7,6 +7,7 @@ export LATEST_WORKERS_IMAGE=$(curl -L --fail "https://hub.docker.com/v2/reposito
         jq '.results | .[] | .name' -r | \
         sed 's/latest//' | \
         sort --version-sort | \
+        grep -v preinstall | \
         tail -n 1)
 export LATEST_YOUTUBE_IMAGE=$(curl -L --fail "https://hub.docker.com/v2/repositories/pw1124/youtube-dl-bin/tags/?page_size=1000" | \
         jq '.results | .[] | .name' -r | \
