@@ -8,6 +8,8 @@ RUN apt install -y python3-pip
 
 RUN pip install --no-cache-dir syncedlyrics==1.0.1
 
+RUN curl -fsSL https://deno.land/install.sh | sh
+
 WORKDIR /chord-paper-be/src/server
 
 COPY ./go.mod ./go.sum ./
