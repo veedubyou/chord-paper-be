@@ -6,6 +6,8 @@ RUN mkdir /spleeter-scratch
 RUN mkdir /demucs-scratch
 RUN mkdir /youtubedl-scratch
 
+RUN curl -fsSL https://deno.land/install.sh | sh
+
 WORKDIR /chord-paper-be/src/worker
 
 COPY ./go.mod ./go.sum ./
