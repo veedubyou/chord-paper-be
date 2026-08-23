@@ -6,6 +6,7 @@ RUN mkdir /spleeter-scratch
 RUN mkdir /demucs-scratch
 RUN mkdir /youtubedl-scratch
 
+RUN apt-get install -y unzip
 RUN curl -fsSL https://deno.land/install.sh | sh
 
 WORKDIR /chord-paper-be/src/worker
